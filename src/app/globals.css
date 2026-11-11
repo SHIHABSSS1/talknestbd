@@ -1,1 +1,199 @@
 @import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-hind);
+  --font-display: var(--font-bengali-serif);
+
+  --color-cream-50: #fdfaf3;
+  --color-cream-100: #f9f4e8;
+  --color-cream-200: #f2e8d3;
+  --color-cream-300: #e7d7b8;
+
+  --color-forest-50: #eef6f1;
+  --color-forest-100: #d7e8dd;
+  --color-forest-200: #b2d3c0;
+  --color-forest-300: #84b79c;
+  --color-forest-400: #559876;
+  --color-forest-500: #357c5b;
+  --color-forest-600: #246246;
+  --color-forest-700: #1d4f39;
+  --color-forest-800: #194131;
+  --color-forest-900: #153629;
+  --color-forest-950: #0a2118;
+
+  --color-gold-300: #e3cd93;
+  --color-gold-400: #d8b96e;
+  --color-gold-500: #c8a24a;
+  --color-gold-600: #a98336;
+
+  --color-clay-400: #d07a58;
+  --color-clay-500: #b95e3d;
+  --color-clay-600: #9a4830;
+
+  --color-ink: #1e2c24;
+  --color-muted: #6e7c73;
+}
+
+:root {
+  --page-bg: #fdfaf3;
+  --page-ink: #1e2c24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--page-bg);
+  color: var(--page-ink);
+  font-family: var(--font-hind), "Hind Siliguri", system-ui, sans-serif;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-bengali-serif), Georgia, serif;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: #c8a24a;
+  color: #0a2118;
+}
+
+button,
+a {
+  outline-offset: 3px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.paper-texture {
+  background-image:
+    radial-gradient(rgba(20, 54, 41, 0.09) 0.6px, transparent 0.6px),
+    radial-gradient(rgba(20, 54, 41, 0.05) 0.6px, transparent 0.6px);
+  background-size: 18px 18px, 28px 28px;
+  background-position: 0 0, 9px 9px;
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(circle at 15% 30%, rgba(200, 162, 74, 0.18), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(53, 124, 91, 0.5), transparent 42%),
+    radial-gradient(circle at 68% 90%, rgba(185, 94, 61, 0.16), transparent 36%),
+    #0a2118;
+}
+
+.book-shadow {
+  box-shadow:
+    0 1px 1px rgba(10, 33, 24, 0.08),
+    0 14px 28px -16px rgba(10, 33, 24, 0.5);
+}
+
+.soft-shadow {
+  box-shadow: 0 24px 60px -38px rgba(10, 33, 24, 0.52);
+}
+
+.gold-underline {
+  background-image: linear-gradient(to right, #c8a24a, #d8b96e);
+  background-repeat: no-repeat;
+  background-size: 100% 0.35em;
+  background-position: 0 88%;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--float-rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--float-rotate, 0deg));
+  }
+}
+
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-float,
+  .animate-fade-up,
+  .animate-soft-pulse {
+    animation: none;
+  }
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #153629 !important;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-receipt {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+}
