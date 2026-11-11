@@ -85,7 +85,7 @@ export function CategoryShowcase() {
           })}
         </div>
 
-        <div className="mt-3 grid gap-3 sm:mt-4 sm:grid-cols-2">
+        <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 sm:mt-4 sm:grid-cols-2">
           {secondary.map((category) => {
             const Icon = categoryIcons[category.slug];
             const count = books.filter((book) => book.category === category.slug).length;
@@ -93,23 +93,23 @@ export function CategoryShowcase() {
               <Link
                 key={category.slug}
                 href={`/category/${category.slug}`}
-                className="group flex items-center gap-4 rounded-2xl border border-forest-900/10 bg-cream-100/60 px-5 py-4 transition-colors hover:border-forest-900/20 hover:bg-cream-100"
+                className="group flex w-full min-w-0 max-w-full items-center gap-3 overflow-hidden rounded-2xl border border-forest-900/10 bg-cream-100/60 px-4 py-4 transition-colors hover:border-forest-900/20 hover:bg-cream-100 sm:gap-4 sm:px-5"
               >
                 <span
-                  className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-cream-50"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-cream-50 sm:h-11 sm:w-11"
                   style={{ backgroundColor: category.accent }}
                 >
                   <Icon size={20} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-display text-base font-semibold text-forest-950">
+                  <span className="block truncate font-display text-base font-semibold text-forest-950">
                     {category.name}
                   </span>
                   <span className="block truncate text-[11px] text-muted">
                     {category.description}
                   </span>
                 </span>
-                <span className="shrink-0 text-[10px] text-muted">
+                <span className="hidden shrink-0 text-[10px] text-muted min-[380px]:block">
                   {toBn(count)}টি বই
                 </span>
                 <ArrowUpRight

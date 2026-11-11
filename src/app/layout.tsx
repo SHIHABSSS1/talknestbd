@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Hind_Siliguri, Noto_Serif_Bengali } from "next/font/google";
+import { Anek_Bangla, Tiro_Bangla } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
 import { Header } from "@/components/layout/Header";
 import { HeaderSkeleton } from "@/components/layout/HeaderSkeleton";
@@ -9,17 +9,17 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { Toast } from "@/components/layout/Toast";
 import "./globals.css";
 
-const hind = Hind_Siliguri({
+const bodyFont = Anek_Bangla({
   subsets: ["bengali", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-hind",
+  weight: "variable",
+  variable: "--font-bengali-body",
   display: "swap",
 });
 
-const serif = Noto_Serif_Bengali({
+const displayFont = Tiro_Bangla({
   subsets: ["bengali", "latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-bengali-serif",
+  weight: "400",
+  variable: "--font-bengali-display",
   display: "swap",
 });
 
@@ -64,7 +64,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="bn" className={`${hind.variable} ${serif.variable}`}>
+    <html lang="bn" className={`${bodyFont.variable} ${displayFont.variable}`}>
       <body className="min-h-screen bg-cream-50 font-sans text-ink antialiased">
         <a
           href="#main-content"
