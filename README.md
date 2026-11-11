@@ -6,7 +6,7 @@
 
 ## Live deployment
 
-- **Vercel:** (deployment URL যুক্ত করা হবে)
+- **Vercel:** [talknestbd.vercel.app](https://talknestbd.vercel.app)
 - **GitHub:** [SHIHABSSS1/talknestbd](https://github.com/SHIHABSSS1/talknestbd)
 
 ## Features
