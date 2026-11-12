@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock3, Mail, MapPin, Phone } from "lucide-react";
+import { BookOpen, Clock3, Mail, MapPin, Phone, Sparkles } from "lucide-react";
 import { footerLinks } from "@/lib/navigation";
 import { siteConfig } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
@@ -10,26 +10,47 @@ import { SocialLinks } from "./SocialLinks";
 export function Footer() {
   return (
     <footer className="print-hide mt-12 bg-brand-950 pb-16 text-white/65 md:pb-0">
-      <div className="bg-brand-600">
-        <Container className="grid gap-7 py-10 sm:py-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
-          <div>
-            <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/65">
-              The TalkNest Letter
-            </span>
-            <h2 className="mt-2 text-[22px] font-bold leading-snug text-white sm:text-[28px]">
-              New books, author stories and offers — once a week.
-            </h2>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/70">
-              One thoughtful email with the best new releases, reader reviews and
-              TalkNest events. No noise, no daily spam.
-            </p>
+      <div className="bg-canvas">
+        <Container className="py-10 sm:py-12">
+          <div className="hero-mesh relative overflow-hidden rounded-[12px] px-5 py-7 text-white sm:px-8 sm:py-9 lg:px-10">
+            <div
+              aria-hidden="true"
+              className="absolute -right-16 -top-24 h-72 w-72 rounded-full border border-white/10"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -bottom-32 left-1/3 h-72 w-72 rounded-full border border-white/10"
+            />
+            <div className="relative grid gap-7 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-14">
+              <div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/80">
+                  <Sparkles size={11} className="text-sale" />
+                  The TalkNest Letter
+                </span>
+                <h2 className="mt-3 max-w-2xl text-[24px] font-bold leading-tight text-white sm:text-[30px]">
+                  Better books for your inbox, not more noise.
+                </h2>
+                <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-white/70 sm:text-sm">
+                  A weekly edit of new releases, reader favourites, author stories
+                  and subscriber-only offers.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[10px] text-white/65">
+                  <span className="inline-flex items-center gap-1.5">
+                    <BookOpen size={12} className="text-brand-200" /> One thoughtful email a week
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Mail size={12} className="text-brand-200" /> Unsubscribe anytime
+                  </span>
+                </div>
+              </div>
+              <NewsletterForm />
+            </div>
           </div>
-          <NewsletterForm />
         </Container>
       </div>
 
-      <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.45fr_1fr_1fr_1fr] lg:gap-8">
-        <div>
+      <Container className="grid grid-cols-2 gap-x-5 gap-y-10 py-12 lg:grid-cols-[1.45fr_1fr_1fr_1fr] lg:gap-8">
+        <div className="col-span-2 lg:col-span-1">
           <Logo light />
           <p className="mt-5 max-w-xs text-xs leading-relaxed text-white/55 sm:text-[13px]">
             A warm home for books, stories, audiobooks and a community of readers
@@ -95,7 +116,7 @@ export function Footer() {
           </ul>
         </div>
 
-        <div>
+        <div className="col-span-2 lg:col-span-1">
           <h3 className="text-sm font-bold text-white">Community</h3>
           <ul className="mt-4 space-y-2.5 text-xs sm:text-[13px]">
             {footerLinks.community.map((link) => (

@@ -1,4 +1,4 @@
-import { MapPin, Search, Truck } from "lucide-react";
+import { MapPin, Search, Truck, User } from "lucide-react";
 import { siteConfig } from "@/lib/utils";
 import { Logo } from "./Logo";
 
@@ -9,8 +9,8 @@ import { Logo } from "./Logo";
  */
 export function HeaderSkeleton() {
   return (
-    <header className="print-hide relative z-40" aria-hidden="true">
-      <div className="border-b border-line bg-white">
+    <>
+      <div className="print-hide relative z-40 border-b border-line bg-white" aria-hidden="true">
         <div className="mx-auto flex h-9 w-full max-w-[1425px] items-center justify-between gap-4 px-4 text-[11px] sm:px-6 lg:px-8">
           <span className="flex items-center gap-1.5 whitespace-nowrap text-muted">
             <Truck size={13} className="text-brand-600" />
@@ -23,7 +23,7 @@ export function HeaderSkeleton() {
         </div>
       </div>
 
-      <div className="sticky top-0 z-50 border-b border-line bg-white shadow-[0_1px_0_rgba(17,24,39,0.04)]">
+      <header className="print-hide sticky top-0 z-50 border-b border-line bg-white shadow-[0_1px_0_rgba(17,24,39,0.06)]" aria-hidden="true">
         <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-[64px] items-center gap-3 sm:h-[72px] sm:gap-5">
             <span className="h-10 w-10 shrink-0 rounded-[4px] border border-line lg:hidden" />
@@ -33,8 +33,10 @@ export function HeaderSkeleton() {
               <span className="text-xs">Search books, authors, publishers...</span>
             </div>
             <div className="ml-auto flex items-center gap-2 md:ml-0">
-              <span className="hidden h-10 w-10 rounded-full bg-canvas sm:block" />
-              <span className="h-10 w-20 rounded-[4px] bg-brand-100" />
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-canvas text-muted xl:hidden">
+                <User size={18} />
+              </span>
+              <span className="hidden h-10 w-20 rounded-[4px] bg-brand-100 sm:block" />
             </div>
           </div>
           <div className="pb-3 md:hidden">
@@ -51,7 +53,7 @@ export function HeaderSkeleton() {
             ))}
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

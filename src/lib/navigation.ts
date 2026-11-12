@@ -43,6 +43,7 @@ export const categoryLinks: NavLink[] = [
   { label: "Biographies", href: "/category/jiboni", description: "Real lives, real inspiration" },
   { label: "Student Books", href: "/category/student", description: "Study guides and exam prep" },
   { label: "International", href: "/category/international", description: "World literature and translations" },
+  { label: "Audiobooks", href: "/audio-books", description: "Listen to stories wherever you are", icon: Headphones },
 ];
 
 export const moreLinks: NavLink[] = [

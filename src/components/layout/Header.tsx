@@ -51,7 +51,7 @@ export function Header() {
 
   return (
     <>
-      <header className="print-hide relative z-40">
+      <div className="print-hide relative z-40">
         <div className="border-b border-line bg-white">
           <div className="mx-auto flex h-9 w-full max-w-[1425px] items-center justify-between gap-4 px-4 text-[11px] sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-5 text-body">
@@ -90,7 +90,10 @@ export function Header() {
           </div>
         </div>
 
-        <div className="sticky top-0 z-50 border-b border-line bg-white shadow-[0_1px_0_rgba(17,24,39,0.04)]">
+      </div>
+
+      <header className="print-hide sticky top-0 z-50 border-b border-line bg-white shadow-[0_1px_0_rgba(17,24,39,0.06)]">
+        <div>
           <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
             <div className="flex h-[64px] items-center gap-3 sm:h-[72px] sm:gap-5">
               <button
@@ -119,7 +122,7 @@ export function Header() {
                 <Link
                   href="/account"
                   aria-label="My account"
-                  className="hidden h-10 w-10 place-items-center rounded-full text-body transition-colors hover:bg-brand-50 hover:text-brand-600 sm:grid xl:hidden"
+                  className="grid h-10 w-10 place-items-center rounded-full text-body transition-colors hover:bg-brand-50 hover:text-brand-600 xl:hidden"
                 >
                   <User size={19} />
                 </Link>
@@ -138,7 +141,7 @@ export function Header() {
                 <Link
                   href="/cart"
                   aria-label="Cart"
-                  className="relative flex h-10 items-center gap-2 rounded-[4px] bg-brand-600 px-3 text-white transition-colors hover:bg-brand-700 sm:px-4"
+                  className="relative hidden h-10 items-center gap-2 rounded-[4px] bg-brand-600 px-3 text-white transition-colors hover:bg-brand-700 sm:flex sm:px-4"
                 >
                   <ShoppingBag size={18} />
                   <span className="hidden text-xs font-medium sm:inline">Cart</span>

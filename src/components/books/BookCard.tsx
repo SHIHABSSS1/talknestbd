@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Heart, ShoppingBag } from "lucide-react";
 import type { Book } from "@/lib/types";
 import { categoryLabel } from "@/data/categories";
 import { discountPercent, cn, formatCount } from "@/lib/utils";
@@ -31,9 +32,24 @@ function coverBadge(book: Book): { label: string; className: string } | null {
 }
 
 export function BookCard({ book, compact = false }: { book: Book; compact?: boolean }) {
+  const router = useRouter();
   const { addItem, toggleWishlist, isWishlisted, hydrated } = useStore();
   const badge = coverBadge(book);
   const wished = hydrated && isWishlisted(book.slug);
+
+  const addBook = () =>
+    addItem({
+      slug: book.slug,
+      kind: "book",
+      title: book.title,
+      price: book.price,
+      meta: book.author,
+    });
+
+  const buyNow = () => {
+    addBook();
+    router.push("/checkout");
+  };
 
   return (
     <article className="group flex h-full flex-col rounded-[8px] border border-line bg-white p-2.5 transition-colors duration-200 hover:border-brand-300 sm:p-3">
@@ -101,21 +117,23 @@ export function BookCard({ book, compact = false }: { book: Book; compact?: bool
           </div>
           <button
             type="button"
-            onClick={() =>
-              addItem({
-                slug: book.slug,
-                kind: "book",
-                title: book.title,
-                price: book.price,
-                meta: book.author,
-              })
-            }
+            onClick={addBook}
             aria-label={`Add ${book.title} to cart`}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-[4px] bg-brand-600 text-white transition-colors hover:bg-brand-700 sm:h-9 sm:w-9"
           >
             <ShoppingBag size={14} />
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={buyNow}
+          aria-label={`Buy ${book.title} now`}
+          className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-[4px] border border-brand-600 bg-white text-[11px] font-semibold text-brand-700 transition-colors hover:bg-brand-600 hover:text-white sm:text-[12px]"
+        >
+          Buy now
+          <ArrowRight size={13} />
+        </button>
       </div>
     </article>
   );
