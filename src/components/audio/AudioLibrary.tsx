@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
 function formatTime(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return "০০:০০";
+  if (!Number.isFinite(seconds) || seconds < 0) return "00:00";
   const minutes = Math.floor(seconds / 60);
   const rest = Math.floor(seconds % 60);
   return `${toBn(String(minutes).padStart(2, "0"))}:${toBn(String(rest).padStart(2, "0"))}`;
@@ -130,7 +130,7 @@ export function AudioLibrary() {
       kind: "audio",
       title: book.title,
       price,
-      meta: `অডিও বুক · ${book.audio?.narrator ?? "TalkNest Voices"}`,
+      meta: `Audiobook · ${book.audio?.narrator ?? "TalkNest Voices"}`,
     });
   };
 
@@ -140,7 +140,7 @@ export function AudioLibrary() {
       kind: "audio",
       title: book.title,
       price,
-      meta: `অডিও বুক · ${book.audio?.narrator ?? "TalkNest Voices"}`,
+      meta: `Audiobook · ${book.audio?.narrator ?? "TalkNest Voices"}`,
     });
     router.push("/checkout");
   };
@@ -150,9 +150,9 @@ export function AudioLibrary() {
       <aside className="rounded-3xl border border-forest-900/8 bg-cream-100/50 p-3 sm:p-4">
         <div className="flex items-center justify-between px-1 pb-3">
           <h2 className="font-display text-base font-bold text-forest-950">
-            অডিও লাইব্রেরি
+            Audio Library
           </h2>
-          <Badge tone="outline">{toBn(audioBooks.length)}টি বই</Badge>
+          <Badge tone="outline">{toBn(audioBooks.length)} books</Badge>
         </div>
         <div className="space-y-2">
           {audioBooks.map((entry) => {
@@ -197,15 +197,15 @@ export function AudioLibrary() {
                   <span className="mt-1.5 flex items-center gap-1.5">
                     {free ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-forest-100 px-1.5 py-0.5 text-[8px] font-semibold text-forest-700">
-                        <Sparkles size={8} /> ফ্রি
+                        <Sparkles size={8} /> Free
                       </span>
                     ) : isOwned ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/15 px-1.5 py-0.5 text-[8px] font-semibold text-gold-600">
-                        <BadgeCheck size={8} /> আনলকড
+                        <BadgeCheck size={8} /> Unlocked
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-cream-200 px-1.5 py-0.5 text-[8px] font-semibold text-forest-800/60">
-                        <Lock size={8} /> প্রিমিয়াম
+                        <Lock size={8} /> Premium
                       </span>
                     )}
                     <span className="flex items-center gap-1 text-[8px] text-muted">
@@ -219,8 +219,8 @@ export function AudioLibrary() {
         </div>
         <p className="mt-3 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
           <Sparkles size={11} className="mr-1 inline text-gold-600" />
-          দুইটি অডিও বুক সম্পূর্ণ ফ্রি। বাকি বইগুলোর প্রথম অধ্যায় ফ্রি —
-          সম্পূর্ণ শুনতে অডিও বুকটি আনলক করুন।
+          Two audiobooks are completely free. Every other book has a free first
+          chapter — unlock the audiobook to listen in full.
         </p>
       </aside>
 
@@ -245,15 +245,15 @@ export function AudioLibrary() {
                   </span>
                   {isFreeAudio(book.slug) ? (
                     <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[8px] font-semibold text-cream-100/80">
-                      সম্পূর্ণ ফ্রি
+                      Completely free
                     </span>
                   ) : owned ? (
                     <span className="rounded-full border border-forest-400/30 bg-forest-500/20 px-2 py-0.5 text-[8px] font-semibold text-forest-200">
-                      আপনার লাইব্রেরি
+                      In your library
                     </span>
                   ) : (
                     <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[8px] font-semibold text-cream-100/80">
-                      প্রথম অধ্যায় ফ্রি
+                      First chapter free
                     </span>
                   )}
                 </div>
@@ -261,7 +261,7 @@ export function AudioLibrary() {
                   {book.title}
                 </h2>
                 <p className="mt-1 text-[11px] text-cream-100/55">
-                  {book.author} · বাচক: {book.audio?.narrator}
+                  {book.author} · Narrator: {book.audio?.narrator}
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] text-cream-100/45">
                   <span className="flex items-center gap-1.5">
@@ -270,10 +270,10 @@ export function AudioLibrary() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock3 size={12} className="text-gold-400" />
-                    ৩টি অধ্যায়
+                    3 chapters
                   </span>
                   <Link href={`/books/${book.slug}`} className="font-semibold text-gold-300 hover:text-gold-400">
-                    বইয়ের বিবরণ →
+                    Book details →
                   </Link>
                 </div>
               </div>
@@ -285,7 +285,7 @@ export function AudioLibrary() {
                   type="button"
                   onClick={togglePlay}
                   disabled={!playable}
-                  aria-label={playing ? "বিরতি দিন" : "শুনুন"}
+                  aria-label={playing ? "Pause" : "Listen"}
                   className={cn(
                     "grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors",
                     playable
@@ -319,7 +319,7 @@ export function AudioLibrary() {
                       setProgress(value);
                       if (audio) audio.currentTime = value;
                     }}
-                    aria-label="অডিও প্লেয়ার সময়"
+                    aria-label="Audio player time"
                     className="mt-2 h-1 w-full cursor-pointer appearance-none rounded-full bg-white/15 accent-gold-500"
                   />
                 </div>
@@ -338,7 +338,7 @@ export function AudioLibrary() {
               />
               {audioError && (
                 <p className="mt-2 text-[9px] text-gold-300/80">
-                  ডেমো অডিও লোড করা যায়নি। ইন্টারনেট সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।
+                  The demo audio could not load. Check your internet connection and try again.
                 </p>
               )}
             </div>
@@ -347,10 +347,10 @@ export function AudioLibrary() {
           <div className="border-t border-white/10 px-4 py-4 sm:px-6">
             <div className="flex items-center justify-between gap-3">
               <h3 className="font-display text-sm font-semibold text-cream-50">
-                অধ্যায় তালিকা
+                Chapter list
               </h3>
               <span className="text-[9px] text-cream-100/40">
-                {owned ? "সব অধ্যায় আনলকড" : "১টি ফ্রি প্রিভিউ"}
+                {owned ? "All chapters unlocked" : "1 free preview"}
               </span>
             </div>
             <div className="mt-3 space-y-1.5">
@@ -392,11 +392,11 @@ export function AudioLibrary() {
                         {item.title}
                       </span>
                       <span className="block text-[9px] text-cream-100/35">
-                        {accessible ? item.duration : "কিনলে আনলক হবে"} · ডেমো অডিও
+                        {accessible ? item.duration : "Unlocks after purchase"} · Demo audio
                       </span>
                     </span>
                     <span className="shrink-0 text-[9px] text-cream-100/35">
-                      {accessible ? (item.free ? "ফ্রি" : "আনলকড") : "লকড"}
+                      {accessible ? (item.free ? "Free" : "Unlocked") : "Locked"}
                     </span>
                   </button>
                 );
@@ -411,13 +411,13 @@ export function AudioLibrary() {
               <CheckCircle2 size={20} className="text-forest-600" />
               <div>
                 <p className="text-xs font-semibold text-forest-900">
-                  {isFreeAudio(book.slug) ? "এই অডিও বুকটি সম্পূর্ণ ফ্রি" : "অডিও বুকটি আনলক করা আছে"}
+                  {isFreeAudio(book.slug) ? "This audiobook is completely free" : "This audiobook is unlocked"}
                 </p>
-                <p className="text-[10px] text-muted">সব অধ্যায় শুনতে পারবেন যেকোনো সময়।</p>
+                <p className="text-[10px] text-muted">Listen to every chapter anytime.</p>
               </div>
             </div>
             <Button href="/books" variant="outline" size="sm">
-              আরও বই দেখুন
+              Browse more books
             </Button>
           </div>
         ) : (
@@ -429,29 +429,29 @@ export function AudioLibrary() {
               <div>
                 <p className="inline-flex items-center gap-1.5 rounded-full bg-forest-900 px-2.5 py-1 text-[9px] font-semibold text-gold-300">
                   <Lock size={10} />
-                  পুরো অডিও বুক আনলক করুন
+                  Unlock the full audiobook
                 </p>
                 <p className="mt-2 font-display text-lg font-bold text-forest-950">
                   {book.title}
                 </p>
                 <p className="mt-0.5 text-[11px] text-muted">
-                  ৩টি অধ্যায় · {book.audio?.duration} · একবার কিনলে স্থায়ীভাবে শুনতে পারবেন
+                  3 chapters · {book.audio?.duration} · buy once and listen forever
                 </p>
                 <p className="mt-2 font-display text-2xl font-bold text-forest-950">
                   {formatPrice(price)}{" "}
-                  <span className="text-[10px] font-normal text-muted">/ এককালীন</span>
+                  <span className="text-[10px] font-normal text-muted">/ one-time</span>
                 </p>
               </div>
               <div className="flex shrink-0 flex-col gap-2 sm:w-44">
                 <Button type="button" onClick={buyNow} variant="primary">
                   <ShoppingBag size={15} />
-                  কিনে আনলক করুন
+                  Buy & unlock
                 </Button>
                 <Button type="button" onClick={addAudioToCart} variant="outline" size="sm">
-                  কার্টে যোগ করুন
+                  Add to cart
                 </Button>
                 <p className="text-center text-[8px] text-muted">
-                  চেকআউটের পর অডিওটি স্বয়ংক্রিয়ভাবে আনলক হবে
+                  The audiobook unlocks automatically after checkout
                 </p>
               </div>
             </div>
@@ -459,10 +459,10 @@ export function AudioLibrary() {
         )}
 
         <div className="rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3 text-[9px] leading-relaxed text-muted">
-          <strong className="text-forest-800">ডেমো নোট:</strong> অডিও প্লেয়ারে
-          ডেমো ফাইল ব্যবহার করা হয়েছে। বাণিজ্যিকভাবে প্রকাশের আগে এখানে
-          TalkNest-এর আসল বাচক-কণ্ঠের অডিও যুক্ত হবে। ফ্রি অডিওগুলো কার্ট বা
-          পেমেন্ট ছাড়াই শোনা যায়।
+          <strong className="text-forest-800">Demo note:</strong> The audio player
+          uses demo files. Before commercial release, real TalkNest narrator audio
+          will be added here. Free audio can be listened to without a cart or
+          payment.
         </div>
       </div>
     </div>

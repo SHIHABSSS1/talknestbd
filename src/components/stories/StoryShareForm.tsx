@@ -23,9 +23,9 @@ import { Button } from "@/components/ui/Button";
 type Mode = "text" | "voice" | "pdf";
 
 const modes: Array<{ key: Mode; label: string; icon: typeof Mic; detail: string }> = [
-  { key: "text", label: "লিখে শেয়ার", icon: PenLine, detail: "নিজের ভাষায় গল্প লিখুন" },
-  { key: "voice", label: "ভয়েস রেকর্ড", icon: Mic, detail: "নিজের কণ্ঠে গল্প বলুন" },
-  { key: "pdf", label: "PDF আপলোড", icon: FileText, detail: "ডায়েরি বা লেখা আপলোড করুন" },
+  { key: "text", label: "Write & share", icon: PenLine, detail: "Tell your story in your own words" },
+  { key: "voice", label: "Voice recording", icon: Mic, detail: "Narrate your story in your own voice" },
+  { key: "pdf", label: "Upload PDF", icon: FileText, detail: "Upload a diary or written piece" },
 ];
 
 const inputClass =
@@ -64,7 +64,7 @@ export function StoryShareForm() {
   const start = async () => {
     setMicError("");
     if (typeof window === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setMicError("এই ব্রাউজারে ভয়েস রেকর্ডিং সমর্থিত নয়। লেখা বা PDF বেছে নিন।");
+      setMicError("Voice recording is not supported in this browser. Choose text or PDF instead.");
       return;
     }
     try {
@@ -88,7 +88,7 @@ export function StoryShareForm() {
       setRecording(true);
       timerRef.current = setInterval(() => setSeconds((value) => value + 1), 1000);
     } catch {
-      setMicError("মাইক্রোফোন ব্যবহারের অনুমতি পাওয়া যায়নি। ব্রাউজার সেটিংস থেকে অনুমতি দিন।");
+      setMicError("Microphone permission was denied. Allow access in your browser settings.");
     }
   };
 
@@ -115,16 +115,16 @@ export function StoryShareForm() {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next: Record<string, string> = {};
-    if (name.trim().length < 3) next.name = "আপনার নাম লিখুন";
-    if (title.trim().length < 4) next.title = "গল্পের একটি শিরোনাম দিন";
+    if (name.trim().length < 3) next.name = "Enter your name";
+    if (title.trim().length < 4) next.title = "Give your story a title";
     if (mode === "text" && text.trim().length < 40) {
-      next.text = "অন্তত ৪০ অক্ষরের গল্প লিখুন";
+      next.text = "Write at least 40 characters";
     }
     if (mode === "voice" && !recordingReady && !recording) {
-      next.voice = "একটি ভয়েস রেকর্ডিং করুন অথবা ডেমো রেকর্ডিং ব্যবহার করুন";
+      next.voice = "Record a voice story before submitting";
     }
     if (mode === "pdf" && !fileName) {
-      next.pdf = "একটি PDF ফাইল বেছে নিন";
+      next.pdf = "Choose a PDF file";
     }
     if (Object.keys(next).length > 0) {
       setErrors(next);
@@ -144,18 +144,19 @@ export function StoryShareForm() {
           Share to My Heart
         </p>
         <h2 className="mt-1.5 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-          ধন্যবাদ, আপনার গল্প আমাদের পৌঁছেছে
+          Thank you — your story has reached us
         </h2>
         <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-muted">
-          সম্পাদকীয় টিম গল্পটি পড়ে যাচাই করবে। অনুমোদনের পর এটি “হৃদয়ের গল্প”
-          পাতায় প্রকাশ করা হবে। ডেমো সাইটে কোনো তথ্য সার্ভারে পাঠানো হয়নি।
+          Our editorial team will read and review your story. Once approved, it
+          will be published on the “Stories from the Heart” page. This demo site
+          does not send any information to a server.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Button href="/stories" size="sm">
-            সব গল্প পড়ুন
+            Read all stories
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={() => setSubmitted(false)}>
-            আরেকটি গল্প লিখুন
+            Write another story
           </Button>
         </div>
       </div>
@@ -167,7 +168,7 @@ export function StoryShareForm() {
       <div className="space-y-4">
         <div className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-            কীভাবে শেয়ার করবেন
+            How would you like to share?
           </p>
           <div className="mt-2.5 grid gap-2 sm:grid-cols-3">
             {modes.map((item) => {
@@ -202,12 +203,12 @@ export function StoryShareForm() {
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                আপনার নাম <span className="text-clay-500">*</span>
+                Your name <span className="text-clay-500">*</span>
               </span>
               <input
                 value={name}
                 onChange={(event) => setName(event.target.value)}
-                placeholder="যেমন: রুমানা ইসলাম"
+                placeholder="e.g. Rumana Islam"
                 autoComplete="name"
                 className={cn(inputClass, errors.name && "border-clay-500/70")}
               />
@@ -215,12 +216,12 @@ export function StoryShareForm() {
             </label>
             <label className="block">
               <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                গল্পের শিরোনাম <span className="text-clay-500">*</span>
+                Story title <span className="text-clay-500">*</span>
               </span>
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
-                placeholder="গল্পের একটি নাম দিন"
+                placeholder="Give your story a name"
                 className={cn(inputClass, errors.title && "border-clay-500/70")}
               />
               {errors.title && <span className="mt-1 block text-[10px] text-clay-600">{errors.title}</span>}
@@ -231,13 +232,13 @@ export function StoryShareForm() {
             {mode === "text" && (
               <label className="block">
                 <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                  আপনার গল্প <span className="text-clay-500">*</span>
+                  Your story <span className="text-clay-500">*</span>
                 </span>
                 <textarea
                   value={text}
                   onChange={(event) => setText(event.target.value)}
                   rows={9}
-                  placeholder="জীবনের একটা ছোট মুহূর্ত, স্মৃতি বা অনুভূতি লিখে ফেলুন..."
+                  placeholder="Write down a small moment, memory or feeling from life..."
                   className={cn(
                     "w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 py-3 text-[13px] leading-relaxed text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25",
                     errors.text && "border-clay-500/70",
@@ -245,7 +246,7 @@ export function StoryShareForm() {
                 />
                 <span className="mt-1 flex items-center justify-between text-[9px] text-muted">
                   <span>{errors.text && <span className="text-clay-600">{errors.text}</span>}</span>
-                  <span>{text.trim().length} অক্ষর</span>
+                  <span>{text.trim().length} characters</span>
                 </span>
               </label>
             )}
@@ -253,7 +254,7 @@ export function StoryShareForm() {
             {mode === "voice" && (
               <div>
                 <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                  ভয়েস রেকর্ডিং <span className="text-clay-500">*</span>
+                  Voice recording <span className="text-clay-500">*</span>
                 </span>
                 <div className="rounded-2xl border border-dashed border-forest-900/15 bg-cream-100/50 p-4">
                   {!recordingReady ? (
@@ -262,19 +263,19 @@ export function StoryShareForm() {
                         <Mic size={22} />
                       </span>
                       <p className="mt-2 text-xs font-semibold text-forest-950">
-                        {recording ? "রেকর্ডিং চলছে..." : "মাইক্রোফোনে গল্প বলুন"}
+                        {recording ? "Recording..." : "Tell your story into the microphone"}
                       </p>
                       <p className="mt-1 text-[10px] text-muted">
-                        {recording ? formatTime(seconds) : "৫ মিনিটের মধ্যে রাখুন · ডেমো সাইটে অডিও আপলোড হয় না"}
+                        {recording ? formatTime(seconds) : "Keep it under 5 minutes · Audio is not uploaded on this demo site"}
                       </p>
                       <div className="mt-3 flex justify-center gap-2">
                         {!recording ? (
                           <Button type="button" size="sm" onClick={start}>
-                            <Mic size={13} /> রেকর্ডিং শুরু
+                            <Mic size={13} /> Start recording
                           </Button>
                         ) : (
                           <Button type="button" size="sm" variant="clay" onClick={stop}>
-                            <Square size={12} className="fill-cream-50" /> রেকর্ডিং বন্ধ
+                            <Square size={12} className="fill-cream-50" /> Stop recording
                           </Button>
                         )}
                       </div>
@@ -286,13 +287,13 @@ export function StoryShareForm() {
                           type="button"
                           onClick={() => setPlaying((value) => !value)}
                           className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-forest-900 text-gold-300"
-                          aria-label={playing ? "পজ করুন" : "প্লে করুন"}
+                          aria-label={playing ? "Pause" : "Play"}
                         >
                           {playing ? <Pause size={15} className="fill-gold-300" /> : <Play size={15} className="ml-0.5 fill-gold-300" />}
                         </button>
                         <div className="min-w-0 flex-1">
-                          <p className="text-[11px] font-semibold text-forest-950">আপনার রেকর্ডিং প্রস্তুত</p>
-                          <p className="text-[9px] text-muted">{formatTime(seconds)} · শুনে দেখুন তারপর জমা দিন</p>
+                          <p className="text-[11px] font-semibold text-forest-950">Your recording is ready</p>
+                          <p className="text-[9px] text-muted">{formatTime(seconds)} · Listen back, then submit</p>
                           <div className="mt-1.5 flex h-5 items-center gap-[2px]">
                             {[35, 65, 45, 80, 55, 70, 40, 85, 50, 75, 42, 68, 36, 72].map((height, index) => (
                               <span key={index} className={playing ? "flex-1 animate-pulse rounded-full bg-clay-500/60" : "flex-1 rounded-full bg-clay-500/30"} style={{ height: `${height}%`, animationDelay: `${index * 60}ms` }} />
@@ -302,7 +303,7 @@ export function StoryShareForm() {
                         <button
                           type="button"
                           onClick={discard}
-                          aria-label="রেকর্ডিং মুছুন"
+                          aria-label="Delete recording"
                           className="grid h-8 w-8 place-items-center rounded-full text-clay-600 hover:bg-clay-500/10"
                         >
                           <Trash2 size={14} />
@@ -326,7 +327,7 @@ export function StoryShareForm() {
                   )}
                   {errors.voice && <p className="mt-2 text-[9px] text-clay-600">{errors.voice}</p>}
                   <p className="mt-2 text-center text-[8px] text-muted">
-                    ডেমো: অনুমতি না পেলে “লেখা” মোডে গল্পটি লিখে জমা দিতে পারেন।
+                    Demo: if you can&apos;t grant permission, switch to “Write” mode and submit your story as text.
                   </p>
                 </div>
               </div>
@@ -335,15 +336,15 @@ export function StoryShareForm() {
             {mode === "pdf" && (
               <div>
                 <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                  PDF ডায়েরি <span className="text-clay-500">*</span>
+                  PDF diary <span className="text-clay-500">*</span>
                 </span>
                 <label className="flex cursor-pointer flex-col items-center rounded-2xl border border-dashed border-forest-900/20 bg-cream-100/50 px-4 py-7 text-center transition-colors hover:border-forest-900/40 hover:bg-cream-100">
                   <Upload size={24} className="text-forest-700/50" />
                   <span className="mt-2 text-[11px] font-semibold text-forest-900">
-                    {fileName || "PDF ফাইল বেছে নিন"}
+                    {fileName || "Choose a PDF file"}
                   </span>
                   <span className="mt-0.5 text-[9px] text-muted">
-                    সর্বোচ্চ ১০ MB · ডেমোতে ফাইলটি আপলোড হয় না
+                    Max 10 MB · Files are not uploaded in this demo
                   </span>
                   <input
                     type="file"
@@ -355,8 +356,8 @@ export function StoryShareForm() {
                 {errors.pdf && <span className="mt-1 block text-[10px] text-clay-600">{errors.pdf}</span>}
                 <p className="mt-2 flex items-start gap-1.5 text-[9px] leading-relaxed text-muted">
                   <FileText size={11} className="mt-0.5 shrink-0" />
-                  হাতে লেখা ডায়েরি হলে স্ক্যান করে PDF বানিয়ে আপলোড করুন। ছবি
-                  পরিষ্কার হলে প্রকাশনার সম্ভাবনা বেশি।
+                  If you have a handwritten diary, scan it into a PDF and upload
+                  it. Clear images improve the chances of publication.
                 </p>
               </div>
             )}
@@ -365,28 +366,28 @@ export function StoryShareForm() {
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3">
           <Link href="/stories" className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-forest-800 hover:text-clay-600">
-            <ArrowLeft size={12} /> সব গল্পে ফিরুন
+            <ArrowLeft size={12} /> Back to all stories
           </Link>
           <Button type="submit" size="sm">
-            <Send size={13} /> গল্প জমা দিন
+            <Send size={13} /> Submit story
           </Button>
         </div>
         <p className="text-center text-[8px] text-muted">
-          জমা দেওয়ার মাধ্যমে আপনি নিশ্চিত করছেন গল্পটি আপনার নিজের এবং প্রকাশের অনুমতি দিচ্ছেন।
+          By submitting, you confirm this story is your own and give permission for it to be published.
         </p>
       </div>
 
       <aside className="space-y-3 lg:sticky lg:top-32">
         <div className="rounded-3xl bg-forest-950 p-5 text-cream-50">
           <Sparkles size={19} className="text-gold-400" />
-          <h2 className="mt-2 font-display text-lg font-bold leading-snug">ভালো গল্পের ছোট্ট টিপস</h2>
+          <h2 className="mt-2 font-display text-lg font-bold leading-snug">Quick tips for a good story</h2>
           <ul className="mt-3 space-y-2 text-[10px] leading-relaxed text-cream-100/60">
             {[
-              "শুরুতেই একটি দৃশ্য বা মুহূর্ত দিয়ে গল্প শুরু করুন",
-              "নিজের অনুভূতি সৎভাবে লিখুন — পাঠক তা বুঝতে পারে",
-              "বড় ঘটনার বদলে ছোট খুঁটিনাটি বিবরণ দিন",
-              "শেষে একটি প্রশ্ন বা শিক্ষা রাখুন",
-              "ভয়েসে স্বাভাবিক গতিতে ও স্পষ্ট করে বলুন",
+              "Open with a scene or a moment",
+              "Write your feelings honestly — readers can tell",
+              "Choose small, specific details over big events",
+              "End with a question or a lesson",
+              "For voice, speak clearly at a natural pace",
             ].map((tip) => (
               <li key={tip} className="flex items-start gap-1.5">
                 <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-gold-400" />
@@ -397,11 +398,11 @@ export function StoryShareForm() {
         </div>
         <div className="rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-950">
-            <CheckCircle2 size={13} className="text-gold-600" /> সম্পাদকীয় রিভিউ
+            <CheckCircle2 size={13} className="text-gold-600" /> Editorial review
           </p>
           <p className="mt-1 text-[9px] leading-relaxed text-muted">
-            প্রতিটি গল্প প্রকাশের আগে পড়া হয়। গোপনীয়তা রক্ষা ও ভাষার শুদ্ধতার
-            জন্য সামান্য সম্পাদনা হতে পারে।
+            Every story is read before publication. We may make small edits to
+            protect privacy and improve clarity.
           </p>
         </div>
       </aside>

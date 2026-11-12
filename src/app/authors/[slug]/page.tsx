@@ -20,7 +20,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const author = getAuthor(slug);
-  if (!author) return { title: "লেখক" };
+  if (!author) return { title: "Authors" };
   return { title: author.name, description: author.bio };
 }
 
@@ -39,7 +39,7 @@ export default async function AuthorDetailPage({
       <section className="border-b border-forest-900/8 bg-cream-100/50">
         <Container className="py-6 sm:py-10">
           <Breadcrumb
-            items={[{ label: "লেখক", href: "/authors" }, { label: author.name }]}
+            items={[{ label: "Authors", href: "/authors" }, { label: author.name }]}
           />
           <div className="mt-6 grid gap-7 md:grid-cols-[240px_1fr] md:items-start lg:grid-cols-[300px_1fr] lg:gap-10">
             <div className="relative mx-auto w-full max-w-[280px] md:mx-0">
@@ -57,14 +57,14 @@ export default async function AuthorDetailPage({
                 )}
               </div>
               <span className="absolute -bottom-3 right-4 rounded-full bg-gold-500 px-3 py-1.5 text-[9px] font-semibold text-forest-950 shadow">
-                {toBn(authorBooks.length)}টি বই
+                {toBn(authorBooks.length)} books
               </span>
             </div>
 
             <div>
               <div className="flex flex-wrap items-center gap-2 text-[10px]">
                 <span className="rounded-full bg-forest-900 px-3 py-1 font-semibold text-cream-50">
-                  {author.featured ? "ফিচার্ড লেখক" : "লেখক"}
+                  {author.featured ? "Featured author" : "Author"}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1 text-forest-800">
                   <MapPin size={11} />
@@ -94,13 +94,13 @@ export default async function AuthorDetailPage({
                   href="/authors"
                   className="rounded-full border border-forest-900/15 px-4 py-2 text-[11px] font-semibold text-forest-800 hover:border-forest-900"
                 >
-                  সব লেখক
+                  All authors
                 </Link>
                 <Link
                   href="/books"
                   className="rounded-full bg-forest-900 px-4 py-2 text-[11px] font-semibold text-cream-50 hover:bg-forest-700"
                 >
-                  বই ঘুরে দেখুন
+                  Browse books
                 </Link>
               </div>
             </div>
@@ -116,16 +116,16 @@ export default async function AuthorDetailPage({
                 Books by {author.name}
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-                লেখকের বই
+                Books by this author
               </h2>
             </div>
-            <span className="text-xs text-muted">{toBn(authorBooks.length)}টি বই</span>
+            <span className="text-xs text-muted">{toBn(authorBooks.length)} books</span>
           </div>
           {authorBooks.length > 0 ? (
             <BookGrid books={authorBooks} columns="four" />
           ) : (
             <p className="rounded-2xl bg-cream-100 p-8 text-center text-sm text-muted">
-              এই লেখকের বই খুব শিগগিরই যোগ হচ্ছে।
+              This author&apos;s books are coming soon.
             </p>
           )}
         </Container>

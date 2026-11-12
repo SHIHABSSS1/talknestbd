@@ -26,7 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  if (!post) return { title: "ব্লগ" };
+  if (!post) return { title: "Blog" };
   return {
     title: post.title,
     description: post.excerpt,
@@ -55,7 +55,7 @@ export default async function BlogDetailPage({
         <Container className="max-w-5xl py-6 sm:py-9">
           <Breadcrumb
             items={[
-              { label: "ব্লগ", href: "/blogs" },
+              { label: "Blog", href: "/blogs" },
               { label: post.category },
             ]}
           />
@@ -139,7 +139,7 @@ export default async function BlogDetailPage({
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-forest-900/8 pt-4">
                 <p className="text-[10px] text-muted">
-                  লেখাটি ভালো লাগলে বন্ধুদের সঙ্গে শেয়ার করুন।
+                  If you enjoyed this piece, share it with friends.
                 </p>
                 <div className="flex flex-wrap gap-2">
                   <a
@@ -167,7 +167,7 @@ export default async function BlogDetailPage({
             <aside className="space-y-3 lg:sticky lg:top-32">
               <div className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-                  লেখক
+                  Author
                 </p>
                 <div className="mt-2 flex items-center gap-2.5">
                   <span className="grid h-10 w-10 place-items-center rounded-full bg-forest-900 text-[11px] font-bold text-gold-300">
@@ -179,30 +179,30 @@ export default async function BlogDetailPage({
                   </div>
                 </div>
                 <p className="mt-2 text-[9px] leading-relaxed text-muted">
-                  TalkNest BD-এর জন্য নিয়মিত বই, পাঠ ও কমিউনিটি বিষয়ে লিখছেন।
+                  Writes regularly about books, reading and community for TalkNest BD.
                 </p>
               </div>
 
               <div className="rounded-2xl bg-forest-950 p-4 text-cream-50">
                 <BookOpenText size={20} className="text-gold-400" />
                 <p className="mt-2 font-display text-sm font-semibold">
-                  এই লেখার বিষয়ে বই পড়তে চান?
+                  Want to read books on this topic?
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-cream-100/50">
-                  TalkNest-এর সংগ্রহে আছে সিরাত, ইতিহাস, উপন্যাস ও অডিও বুক।
+                  TalkNest&apos;s collection includes Seerah, history, fiction and audiobooks.
                 </p>
                 <Link
                   href="/books"
                   className="mt-3 inline-flex h-8 items-center gap-1.5 rounded-full bg-gold-500 px-3 text-[9px] font-semibold text-forest-950 hover:bg-gold-400"
                 >
-                  বই ঘুরে দেখুন
+                  Browse books
                   <ArrowRight size={11} />
                 </Link>
               </div>
 
               <div className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-                  আরও পড়ুন
+                  More to read
                 </p>
                 <div className="mt-2 space-y-2">
                   {related.slice(0, 3).map((entry) => (
@@ -226,7 +226,7 @@ export default async function BlogDetailPage({
                 rel="noopener noreferrer"
                 className="flex items-center justify-between gap-2 rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3 text-[10px] font-semibold text-forest-900 hover:border-forest-900/20"
               >
-                বই নিয়ে কথা বলুন
+                Talk books with us
                 <ArrowRight size={13} />
               </a>
             </aside>
@@ -242,14 +242,14 @@ export default async function BlogDetailPage({
                 Keep Reading
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-forest-950">
-                আরও কিছু লেখা
+                More stories
               </h2>
             </div>
             <Link
               href="/blogs"
               className="inline-flex items-center gap-1 text-[11px] font-semibold text-forest-800 hover:text-clay-500"
             >
-              সব লেখা
+              All stories
               <ArrowRight size={12} />
             </Link>
           </div>
@@ -259,7 +259,7 @@ export default async function BlogDetailPage({
             ))}
           </div>
           <p className="mt-6 text-center text-[9px] text-muted">
-            মোট {toBn(blogPosts.length)}টি লেখা · নতুন লেখা প্রতি সপ্তাহে
+            {toBn(blogPosts.length)} stories in total · New stories every week
           </p>
         </Container>
       </section>

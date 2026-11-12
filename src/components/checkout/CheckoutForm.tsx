@@ -42,9 +42,9 @@ const deliveryOptions: {
   icon: typeof Truck;
   base: number;
 }[] = [
-  { value: "standard", title: "স্ট্যান্ডার্ড ডেলিভারি", eta: "২–৪ কর্মদিবস", icon: Truck, base: 60 },
-  { value: "express", title: "এক্সপ্রেস ডেলিভারি", eta: "১–২ কর্মদিবস", icon: Zap, base: 120 },
-  { value: "pickup", title: "নিজে সংগ্রহ", eta: "আজ থেকে সংগ্রহ", icon: Store, base: 0 },
+  { value: "standard", title: "Standard delivery", eta: "2–4 business days", icon: Truck, base: 60 },
+  { value: "express", title: "Express delivery", eta: "1–2 business days", icon: Zap, base: 120 },
+  { value: "pickup", title: "Store pickup", eta: "Ready today", icon: Store, base: 0 },
 ];
 
 const paymentOptions: {
@@ -53,9 +53,9 @@ const paymentOptions: {
   subtitle: string;
   icon: typeof Banknote;
 }[] = [
-  { value: "cod", title: "ক্যাশ অন ডেলিভারি", subtitle: "বই হাতে পেয়ে টাকা দিন", icon: Banknote },
-  { value: "bkash", title: "বিকাশ", subtitle: "মোবাইল ব্যাংকিং", icon: Smartphone },
-  { value: "nagad", title: "নগদ", subtitle: "মোবাইল ব্যাংকিং", icon: Smartphone },
+  { value: "cod", title: "Cash on delivery", subtitle: "Pay when your books arrive", icon: Banknote },
+  { value: "bkash", title: "bKash", subtitle: "Mobile banking", icon: Smartphone },
+  { value: "nagad", title: "Nagad", subtitle: "Mobile banking", icon: Smartphone },
 ];
 
 function addressToValues(address: SavedAddress): AddressFormValues {
@@ -126,13 +126,13 @@ export function CheckoutForm() {
     return (
       <EmptyState
         icon={<ShoppingBag size={24} />}
-        title="চেকআউট করার জন্য কার্টে বই নেই"
-        description="প্রথমে পছন্দের বই বা সুন্নাহ সামগ্রী কার্টে যোগ করুন, তারপর চেকআউট করুন।"
+        title="There are no books in your cart to check out"
+        description="Add your favourite books or Sunnah items to the cart first, then come back to check out."
         action={
           <div className="flex flex-wrap justify-center gap-3">
-            <Button href="/books">বই দেখুন</Button>
+            <Button href="/books">Browse books</Button>
             <Button href="/cart" variant="outline">
-              কার্টে ফিরুন
+              Back to cart
             </Button>
           </div>
         }
@@ -142,23 +142,23 @@ export function CheckoutForm() {
 
   const validate = () => {
     const next: Record<string, string> = {};
-    if (!activeAddress.name.trim()) next.name = "প্রাপকের নাম লিখুন";
+    if (!activeAddress.name.trim()) next.name = "Enter the recipient's name";
     if (activeAddress.phone.replace(/\D/g, "").length < 11) {
-      next.phone = "১১ ডিজিটের সঠিক মোবাইল নম্বর দিন";
+      next.phone = "Enter a valid 11-digit mobile number";
     }
     if (activeAddress.email && !/^\S+@\S+\.\S+$/.test(activeAddress.email)) {
-      next.email = "সঠিক ইমেইল ঠিকানা দিন";
+      next.email = "Enter a valid email address";
     }
     if (mode === "new") {
-      if (!values.district.trim()) next.district = "জেলার নাম লিখুন";
-      if (!values.area.trim()) next.area = "থানা বা এলাকার নাম লিখুন";
-      if (!values.street.trim()) next.street = "বিস্তারিত ঠিকানা লিখুন";
+      if (!values.district.trim()) next.district = "Enter your district";
+      if (!values.area.trim()) next.area = "Enter your upazila or area";
+      if (!values.street.trim()) next.street = "Enter your full street address";
     }
     if (mode === "saved" && !selectedAddress) {
-      next.address = "একটি সংরক্ষিত ঠিকানা বেছে নিন";
+      next.address = "Choose a saved address";
     }
     if (paymentMethod !== "cod" && paymentNumber.replace(/\D/g, "").length < 11) {
-      next.paymentNumber = "যে নম্বর থেকে পেমেন্ট করবেন সেটি লিখুন";
+      next.paymentNumber = "Enter the number you'll pay from";
     }
     return next;
   };
@@ -197,7 +197,7 @@ export function CheckoutForm() {
       },
       note: note.trim() || undefined,
       paymentNumber: paymentMethod === "cod" ? undefined : paymentNumber.trim(),
-      status: "কনফার্মড" as const,
+      status: "Confirmed" as const,
     };
 
     saveOrder(order);
@@ -211,7 +211,7 @@ export function CheckoutForm() {
         isDefault: savedAddresses.length === 0,
       });
     }
-    notify("অর্ডার সফলভাবে সম্পন্ন হয়েছে");
+    notify("Order placed successfully");
     clearCart();
     router.push(`/orders/${order.id}`);
   };
@@ -221,19 +221,19 @@ export function CheckoutForm() {
       <div className="mb-5 flex items-start gap-2.5 rounded-2xl border border-gold-500/25 bg-gold-500/8 px-4 py-3">
         <ShieldCheck size={17} className="mt-0.5 shrink-0 text-gold-600" />
         <p className="text-[11px] leading-relaxed text-forest-800">
-          <strong>ডেমো চেকআউট:</strong> এটি একটি ফ্রন্টএন্ড ডেমো। কোনো আসল
-          পেমেন্ট নেওয়া হবে না এবং অর্ডারটি শুধু আপনার ব্রাউজারে সংরক্ষিত থাকবে।
+          <strong>Demo checkout:</strong> This is a front-end demo. No real
+          payment will be taken, and your order will be stored only in this browser.
         </p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1fr_380px] lg:items-start">
         <div className="space-y-4">
           <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
-            <StepTitle number="০১" title="যোগাযোগ ও ঠিকানা" icon={MapPin} />
+            <StepTitle number="01" title="Contact & address" icon={MapPin} />
             {savedAddresses.length > 0 && (
               <div className="mt-4">
                 <p className="mb-2 text-[11px] font-semibold text-forest-900">
-                  সংরক্ষিত ঠিকানা
+                  Saved addresses
                 </p>
                 <SavedAddressPicker
                   addresses={savedAddresses}
@@ -257,7 +257,7 @@ export function CheckoutForm() {
               <div className={cn(savedAddresses.length > 0 && "mt-5 border-t border-forest-900/8 pt-4")}>
                 {savedAddresses.length === 0 && (
                   <p className="mb-3 text-[10px] text-muted">
-                    ডেলিভারির জন্য নিচের তথ্যগুলো পূরণ করুন।
+                    Fill in the details below for delivery.
                   </p>
                 )}
                 <AddressFields
@@ -273,7 +273,7 @@ export function CheckoutForm() {
                     onChange={(event) => setSaveNewAddress(event.target.checked)}
                     className="h-3.5 w-3.5 accent-forest-900"
                   />
-                  পরবর্তী অর্ডারের জন্য এই ঠিকানা সংরক্ষণ করুন
+                  Save this address for next time
                 </label>
               </div>
             )}
@@ -284,7 +284,7 @@ export function CheckoutForm() {
           </section>
 
           <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
-            <StepTitle number="০২" title="ডেলিভারি পদ্ধতি" icon={Truck} />
+            <StepTitle number="02" title="Delivery method" icon={Truck} />
             <div className="mt-4 grid gap-2">
               {deliveryOptions.map((option) => {
                 const active = deliveryMethod === option.value;
@@ -323,7 +323,7 @@ export function CheckoutForm() {
                     </span>
                     <span className="shrink-0 text-right text-[11px] font-semibold text-forest-900">
                       {charge === 0 ? (
-                        <span className="text-forest-600">ফ্রি</span>
+                        <span className="text-forest-600">Free</span>
                       ) : (
                         formatPrice(charge)
                       )}
@@ -344,13 +344,13 @@ export function CheckoutForm() {
             </div>
             {deliveryMethod === "pickup" && (
               <p className="mt-2 rounded-xl bg-cream-100 px-3 py-2 text-[10px] leading-relaxed text-muted">
-                সংগ্রহের ঠিকানা: {siteConfig.address} · শনি–বৃহস্পতি, সকাল ১০টা – রাত ৮টা
+                Pickup address: {siteConfig.address} · Sat–Thu, 10:00 AM – 8:00 PM
               </p>
             )}
           </section>
 
           <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
-            <StepTitle number="০৩" title="পেমেন্ট পদ্ধতি" icon={Banknote} />
+            <StepTitle number="03" title="Payment method" icon={Banknote} />
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {paymentOptions.map((option) => {
                 const active = paymentMethod === option.value;
@@ -396,7 +396,7 @@ export function CheckoutForm() {
             {paymentMethod !== "cod" && (
               <label className="mt-4 block" htmlFor="payment-number">
                 <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                  যে নম্বর থেকে পেমেন্ট করবেন <span className="text-clay-500">*</span>
+                  Number you'll pay from <span className="text-clay-500">*</span>
                 </span>
                 <input
                   id="payment-number"
@@ -415,26 +415,26 @@ export function CheckoutForm() {
                   </span>
                 )}
                 <span className="mt-1 block text-[9px] leading-relaxed text-muted">
-                  ডেমো সাইটে কোনো টাকা কাটা হবে না। অর্ডার কনফার্মের পর পেমেন্ট
-                  নির্দেশনা পাঠানো হবে।
+                  No money will be charged on this demo site. Payment
+                  instructions will be sent after your order is confirmed.
                 </span>
               </label>
             )}
           </section>
 
           <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
-            <StepTitle number="০৪" title="অতিরিক্ত নির্দেশনা" icon={ShoppingBag} />
+            <StepTitle number="04" title="Order notes" icon={ShoppingBag} />
             <label className="mt-4 block" htmlFor="order-note">
               <span className="mb-1 block text-[11px] font-semibold text-forest-900">
-                অর্ডার সম্পর্কে কিছু বলতে চান?{" "}
-                <span className="font-normal text-muted">(ঐচ্ছিক)</span>
+                Anything we should know about your order?{" "}
+                <span className="font-normal text-muted">(optional)</span>
               </span>
               <textarea
                 id="order-note"
                 value={note}
                 onChange={(event) => setNote(event.target.value)}
                 rows={3}
-                placeholder="যেমন: বিকেল ৫টার পরে কল করবেন, বইটি গিফট প্যাক করতে..."
+                placeholder="For example: call after 5 PM, gift-wrap the book..."
                 className="w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 py-2.5 text-[13px] placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
               />
             </label>
@@ -453,29 +453,29 @@ export function CheckoutForm() {
           <div className="mt-3 rounded-3xl border border-forest-900/8 bg-cream-50 p-4">
             <Button type="submit" size="lg" className="w-full" disabled={submitting}>
               {submitting ? (
-                "অর্ডার তৈরি হচ্ছে..."
+                "Placing your order..."
               ) : (
                 <>
                   <Lock size={15} />
-                  অর্ডার কনফার্ম করুন · {formatPrice(total)}
+                  Confirm order · {formatPrice(total)}
                 </>
               )}
             </Button>
             <p className="mt-2.5 text-center text-[9px] leading-relaxed text-muted">
-              কনফার্ম করলে আপনি আমাদের{" "}
+              By confirming, you agree to our{" "}
               <Link href="/terms" className="font-semibold text-clay-600 hover:text-clay-500">
-                শর্তাবলি
-              </Link>{" "}
-              মেনে নিচ্ছেন। অর্ডারটি ডেমো হিসেবে আপনার ব্রাউজারে সংরক্ষিত হবে।
+                Terms & Conditions
+              </Link>
+              . This order will be saved in your browser as a demo.
             </p>
           </div>
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-forest-900/8 bg-forest-50/50 px-4 py-3 text-[10px] text-forest-800/75">
             <span className="flex items-center gap-1.5">
               <ShieldCheck size={13} className="text-forest-600" />
-              নিরাপদ ও সুরক্ষিত
+              Secure & protected
             </span>
-            <Badge tone="outline">১০০% অরিজিনাল</Badge>
-            <span className="tabular-nums">{toBn(items.length)} আইটেম</span>
+            <Badge tone="outline">100% original</Badge>
+            <span className="tabular-nums">{toBn(items.length)} items</span>
           </div>
         </aside>
       </div>

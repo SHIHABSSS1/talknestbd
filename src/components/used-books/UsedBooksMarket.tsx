@@ -19,16 +19,16 @@ import { cn, formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
 import { Button } from "@/components/ui/Button";
 
-const conditionFilters = ["সব", "প্রায় নতুন", "চমৎকার", "ভালো"] as const;
+const conditionFilters = ["All", "Like new", "Very good", "Good"] as const;
 
 export function UsedBooksMarket() {
-  const [condition, setCondition] = useState<(typeof conditionFilters)[number]>("সব");
+  const [condition, setCondition] = useState<(typeof conditionFilters)[number]>("All");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<UsedBook | null>(null);
 
   const filtered = useMemo(() => {
     return usedBooks.filter((book) => {
-      const matchesCondition = condition === "সব" || book.condition === condition;
+      const matchesCondition = condition === "All" || book.condition === condition;
       const haystack = `${book.title} ${book.author} ${book.seller} ${book.location}`.toLowerCase();
       const matchesQuery = query.trim() === "" || haystack.includes(query.trim().toLowerCase());
       return matchesCondition && matchesQuery;
@@ -44,12 +44,12 @@ export function UsedBooksMarket() {
               <span className="h-px w-5 bg-clay-500/50" /> Pre-loved Books
             </span>
             <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-              পাঠক থেকে পাঠকের বই
+              Books from reader to reader
             </h2>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-100 px-3 py-1.5 text-[9px] font-semibold text-forest-700">
-              <Recycle size={11} /> {toBn(usedBooks.length)}টি বই এখন পাওয়া যাচ্ছে
+              <Recycle size={11} /> {toBn(usedBooks.length)} books available now
             </span>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function UsedBooksMarket() {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="বই, লেখক বা বিক্রেতা খুঁজুন..."
+              placeholder="Search books, authors or sellers..."
               className="h-10 w-full rounded-full border border-forest-900/10 bg-cream-100/50 pl-10 pr-4 text-[12px] text-forest-950 placeholder:text-muted/60 focus:border-forest-700/30 focus:bg-cream-50 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
             />
           </div>
@@ -94,14 +94,14 @@ export function UsedBooksMarket() {
                   type="button"
                   onClick={() => setSelected(book)}
                   className="relative block aspect-[3/4] overflow-hidden bg-cream-100 p-2 text-left"
-                  aria-label={`${book.title} বিস্তারিত দেখুন`}
+                  aria-label={`${book.title} — view details`}
                 >
                   <span className="block h-full w-full overflow-hidden rounded-lg transition-transform duration-500 group-hover:-translate-y-1">
                     <BookCover
                       book={{
                         title: book.title,
                         author: book.author,
-                        publisher: "পুরাতন বই",
+                        publisher: "Used book",
                         cover: book.cover,
                       }}
                       size="sm"
@@ -111,7 +111,7 @@ export function UsedBooksMarket() {
                     {book.condition}
                   </span>
                   <span className="absolute right-3.5 top-3.5 rounded-full bg-cream-50/95 px-2 py-0.5 text-[8px] font-bold text-clay-600">
-                    ৫০% আপ
+                    50% off
                   </span>
                 </button>
                 <div className="flex flex-1 flex-col p-3">
@@ -130,7 +130,7 @@ export function UsedBooksMarket() {
                     onClick={() => setSelected(book)}
                     className="mt-2 inline-flex h-8 items-center justify-center gap-1 rounded-full bg-forest-900 text-[9px] font-semibold text-cream-50 transition-colors hover:bg-forest-700"
                   >
-                    বিস্তারিত দেখুন
+                    View details
                   </button>
                 </div>
               </article>
@@ -139,8 +139,8 @@ export function UsedBooksMarket() {
         ) : (
           <div className="mt-4 rounded-3xl border border-dashed border-forest-900/15 bg-cream-100/40 px-6 py-12 text-center">
             <Search size={24} className="mx-auto text-forest-900/25" />
-            <p className="mt-2 text-sm font-semibold text-forest-900">কোনো বই খুঁজে পাওয়া যায়নি</p>
-            <p className="mt-1 text-[10px] text-muted">অন্য কিছু লিখে খুঁজুন অথবা ফিল্টার বদলান।</p>
+            <p className="mt-2 text-sm font-semibold text-forest-900">No books found</p>
+            <p className="mt-1 text-[10px] text-muted">Try a different search or change the filter.</p>
           </div>
         )}
       </section>
@@ -149,7 +149,7 @@ export function UsedBooksMarket() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <button
             type="button"
-            aria-label="বন্ধ করুন"
+            aria-label="Close"
             onClick={() => setSelected(null)}
             className="absolute inset-0 h-full w-full bg-forest-950/75 backdrop-blur-sm"
           />
@@ -165,7 +165,7 @@ export function UsedBooksMarket() {
                   book={{
                     title: selected.title,
                     author: selected.author,
-                    publisher: "পুরাতন বই",
+                    publisher: "Used book",
                     cover: selected.cover,
                   }}
                   size="sm"
@@ -183,33 +183,34 @@ export function UsedBooksMarket() {
                   <span className="font-display text-xl font-bold text-forest-950">{formatPrice(selected.price)}</span>
                   <span className="text-[10px] text-muted line-through">{formatPrice(selected.originalPrice)}</span>
                   <span className="rounded-full bg-clay-500/10 px-1.5 py-0.5 text-[8px] font-semibold text-clay-600">
-                    {toBn(Math.round(((selected.originalPrice - selected.price) / selected.originalPrice) * 100))}% সাশ্রয়
+                    {toBn(Math.round(((selected.originalPrice - selected.price) / selected.originalPrice) * 100))}% saved
                   </span>
                 </div>
               </div>
             </div>
             <div className="space-y-2.5 p-5">
               <p className="flex items-center gap-2 text-[10px] text-forest-800">
-                <UserRound size={12} className="text-forest-600" /> বিক্রেতা: {selected.seller}
+                <UserRound size={12} className="text-forest-600" /> Seller: {selected.seller}
               </p>
               <p className="flex items-center gap-2 text-[10px] text-forest-800">
                 <MapPin size={12} className="text-forest-600" /> {selected.location}
               </p>
               <p className="rounded-xl bg-forest-50 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
-                বইটি হাতে দেখে কিনতে পারেন। ডেমো সাইটে অর্ডার নিশ্চিত করার পর
-                বিক্রেতার সঙ্গে যোগাযোগের তথ্য শেয়ার করা হবে।
+                You can inspect the book in person before buying. On this demo
+                site, the seller&apos;s contact details are shared after an order
+                is confirmed.
               </p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <Button
-                  href={`https://wa.me/8801712345678?text=${encodeURIComponent(`${selected.title} — পুরাতন বইটি কিনতে চাই`)}`}
+                  href={`https://wa.me/8801712345678?text=${encodeURIComponent(`I'd like to buy this used copy of ${selected.title}`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   size="sm"
                 >
-                  <MessageCircle size={13} /> কিনতে চাই
+                  <MessageCircle size={13} /> I want to buy
                 </Button>
                 <Button type="button" variant="outline" size="sm" onClick={() => setSelected(null)}>
-                  পরে দেখব
+                  Save for later
                 </Button>
               </div>
             </div>
@@ -224,7 +225,7 @@ export function UsedBookSellForm() {
   const [form, setForm] = useState({
     title: "",
     author: "",
-    condition: "ভালো",
+    condition: "Good",
     expected: "",
     seller: "",
     location: "",
@@ -238,11 +239,11 @@ export function UsedBookSellForm() {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next: Record<string, string> = {};
-    if (form.title.trim().length < 2) next.title = "বইয়ের নাম লিখুন";
-    if (form.author.trim().length < 2) next.author = "লেখকের নাম লিখুন";
-    if (form.seller.trim().length < 3) next.seller = "আপনার নাম লিখুন";
-    if (form.location.trim().length < 2) next.location = "এলাকা বা শহর লিখুন";
-    if (form.contact.replace(/\D/g, "").length < 11) next.contact = "১১ ডিজিটের মোবাইল নম্বর দিন";
+    if (form.title.trim().length < 2) next.title = "Enter the book title";
+    if (form.author.trim().length < 2) next.author = "Enter the author's name";
+    if (form.seller.trim().length < 3) next.seller = "Enter your name";
+    if (form.location.trim().length < 2) next.location = "Enter your area or city";
+    if (form.contact.replace(/\D/g, "").length < 11) next.contact = "Enter an 11-digit mobile number";
     if (Object.keys(next).length > 0) {
       setErrors(next);
       return;
@@ -260,20 +261,20 @@ export function UsedBookSellForm() {
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-forest-100 text-forest-700">
           <CheckCircle2 size={22} />
         </span>
-        <h3 className="mt-3 font-display text-lg font-bold text-forest-950">বইটির তথ্য জমা হয়েছে</h3>
+        <h3 className="mt-3 font-display text-lg font-bold text-forest-950">Your book details have been submitted</h3>
         <p className="mx-auto mt-1.5 max-w-xs text-[10px] leading-relaxed text-muted">
-          আমাদের টিম বইয়ের ছবি ও অবস্থা যাচাই করে যোগাযোগ করবে। ডেমো সাইটে কোনো
-          তথ্য সার্ভারে পাঠানো হয়নি।
+          Our team will review the book&apos;s photos and condition, then get in
+          touch. This demo site does not send any information to a server.
         </p>
         <button
           type="button"
           onClick={() => {
             setDone(false);
-            setForm({ title: "", author: "", condition: "ভালো", expected: "", seller: "", location: "", contact: "" });
+            setForm({ title: "", author: "", condition: "Good", expected: "", seller: "", location: "", contact: "" });
           }}
           className="mt-3 text-[10px] font-semibold text-clay-600 hover:text-clay-500"
         >
-          আরেকটি বই যোগ করুন
+          Add another book
         </button>
       </div>
     );
@@ -286,61 +287,61 @@ export function UsedBookSellForm() {
           <Upload size={16} />
         </span>
         <div>
-          <h3 className="font-display text-base font-bold text-forest-950">নিজের বই বিক্রি করুন</h3>
-          <p className="text-[9px] text-muted">বইয়ের তথ্য দিন — আমরা যাচাই করে জানাব</p>
+          <h3 className="font-display text-base font-bold text-forest-950">Sell your own books</h3>
+          <p className="text-[9px] text-muted">Tell us about the book — we&apos;ll review it and get back to you</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-2.5">
         <label className="block">
-          <span className="mb-1 block text-[10px] font-semibold text-forest-900">বইয়ের নাম</span>
-          <input value={form.title} onChange={(event) => update({ title: event.target.value })} placeholder="যেমন: নীল মেঘের ভ্রমণ" className={cn(inputClass, errors.title && "border-clay-500/70")} />
+          <span className="mb-1 block text-[10px] font-semibold text-forest-900">Book title</span>
+          <input value={form.title} onChange={(event) => update({ title: event.target.value })} placeholder="e.g. A Journey Through Blue Clouds" className={cn(inputClass, errors.title && "border-clay-500/70")} />
           {errors.title && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.title}</span>}
         </label>
         <label className="block">
-          <span className="mb-1 block text-[10px] font-semibold text-forest-900">লেখক</span>
-          <input value={form.author} onChange={(event) => update({ author: event.target.value })} placeholder="লেখকের নাম" className={cn(inputClass, errors.author && "border-clay-500/70")} />
+          <span className="mb-1 block text-[10px] font-semibold text-forest-900">Author</span>
+          <input value={form.author} onChange={(event) => update({ author: event.target.value })} placeholder="Author's name" className={cn(inputClass, errors.author && "border-clay-500/70")} />
           {errors.author && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.author}</span>}
         </label>
         <div className="grid grid-cols-2 gap-2.5">
           <label className="block">
-            <span className="mb-1 block text-[10px] font-semibold text-forest-900">অবস্থা</span>
+            <span className="mb-1 block text-[10px] font-semibold text-forest-900">Condition</span>
             <select value={form.condition} onChange={(event) => update({ condition: event.target.value })} className={inputClass}>
-              {["প্রায় নতুন", "চমৎকার", "ভালো", "পাঠযোগ্য"].map((item) => <option key={item}>{item}</option>)}
+              {["Like new", "Very good", "Good", "Readable"].map((item) => <option key={item}>{item}</option>)}
             </select>
           </label>
           <label className="block">
-            <span className="mb-1 block text-[10px] font-semibold text-forest-900">প্রত্যাশিত দাম (৳)</span>
-            <input value={form.expected} onChange={(event) => update({ expected: event.target.value })} inputMode="numeric" placeholder="২৫০" className={inputClass} />
+            <span className="mb-1 block text-[10px] font-semibold text-forest-900">Expected price (৳)</span>
+            <input value={form.expected} onChange={(event) => update({ expected: event.target.value })} inputMode="numeric" placeholder="250" className={inputClass} />
           </label>
         </div>
         <div className="grid grid-cols-2 gap-2.5">
           <label className="block">
-            <span className="mb-1 block text-[10px] font-semibold text-forest-900">আপনার নাম</span>
-            <input value={form.seller} onChange={(event) => update({ seller: event.target.value })} placeholder="নাম" className={cn(inputClass, errors.seller && "border-clay-500/70")} />
+            <span className="mb-1 block text-[10px] font-semibold text-forest-900">Your name</span>
+            <input value={form.seller} onChange={(event) => update({ seller: event.target.value })} placeholder="Name" className={cn(inputClass, errors.seller && "border-clay-500/70")} />
             {errors.seller && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.seller}</span>}
           </label>
           <label className="block">
-            <span className="mb-1 block text-[10px] font-semibold text-forest-900">এলাকা</span>
-            <input value={form.location} onChange={(event) => update({ location: event.target.value })} placeholder="ঢাকা" className={cn(inputClass, errors.location && "border-clay-500/70")} />
+            <span className="mb-1 block text-[10px] font-semibold text-forest-900">Area</span>
+            <input value={form.location} onChange={(event) => update({ location: event.target.value })} placeholder="Dhaka" className={cn(inputClass, errors.location && "border-clay-500/70")} />
             {errors.location && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.location}</span>}
           </label>
         </div>
         <label className="block">
-          <span className="mb-1 block text-[10px] font-semibold text-forest-900">মোবাইল নম্বর</span>
+          <span className="mb-1 block text-[10px] font-semibold text-forest-900">Mobile number</span>
           <input value={form.contact} onChange={(event) => update({ contact: event.target.value })} inputMode="tel" placeholder="+880 1XXXXXXXXX" className={cn(inputClass, errors.contact && "border-clay-500/70")} />
           {errors.contact && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.contact}</span>}
         </label>
         <div className="rounded-xl border border-dashed border-forest-900/15 bg-cream-100/50 px-3 py-3 text-center">
           <BookOpen size={16} className="mx-auto text-forest-900/25" />
           <p className="mt-1 text-[9px] text-muted">
-            ছবি আপলোড ডেমোতে উল্লেখযোগ্য নয় — যোগাযোগের সময় বইয়ের ছবি পাঠাতে হবে।
+            Photo upload isn&apos;t available in this demo — you&apos;ll share book photos when we contact you.
           </p>
         </div>
         <Button type="submit" size="sm" className="w-full">
-          <Sparkles size={13} /> বই বিক্রির আবেদন করুন
+          <Sparkles size={13} /> List my book for sale
         </Button>
-        <p className="text-center text-[8px] text-muted">ডেমো ফর্ম · কোনো আসল লেনদেন হয় না</p>
+        <p className="text-center text-[8px] text-muted">Demo form · No real transaction takes place</p>
       </div>
     </form>
   );

@@ -29,13 +29,13 @@ export function CollectionPage({
       >
         <div className="flex flex-wrap gap-2 text-[11px]">
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            মোট {toBn(books.length)}টি বই
+            Total {toBn(books.length)} books
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            ৳৯৯৯+ অর্ডারে ফ্রি ডেলিভারি
+            Free delivery on orders over ৳999
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            পড়া শেষে ৫০% ফেরত
+            50% back after you read
           </span>
         </div>
       </PageHeader>

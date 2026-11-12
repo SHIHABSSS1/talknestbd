@@ -103,7 +103,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         }
         return [...previous, { ...item, quantity }];
       });
-      notify("কার্টে যোগ হয়েছে");
+      notify("Added to cart");
     },
     [notify],
   );
@@ -134,7 +134,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     (slug: string) => {
       setWishlist((previous) => {
         const exists = previous.includes(slug);
-        notify(exists ? "উইশলিস্ট থেকে সরানো হয়েছে" : "উইশলিস্টে যোগ হয়েছে");
+        notify(exists ? "Removed from wishlist" : "Added to wishlist");
         return exists ? previous.filter((item) => item !== slug) : [...previous, slug];
       });
     },

@@ -4,9 +4,9 @@ import { Container } from "@/components/ui/Container";
 import { BooksExplorer } from "@/components/books/BooksExplorer";
 
 export const metadata: Metadata = {
-  title: "সব বই",
+  title: "All Books",
   description:
-    "TalkNest BD-এর সম্পূর্ণ বইয়ের সংগ্রহ — উপন্যাস, সাহিত্য, ইসলামিক ইতিহাস, জীবনী, স্টুডেন্ট বুকস ও আন্তর্জাতিক বই।",
+    "The complete TalkNest BD collection — novels, literature, Islamic history, biographies, student books and international titles.",
 };
 
 export default function BooksPage() {
@@ -14,9 +14,9 @@ export default function BooksPage() {
     <>
       <PageHeader
         eyebrow="Book Collection"
-        title="আপনার পরের প্রিয় বইটি এখানে"
-        description="২৪টি বাছাই করা বইয়ের সম্পূর্ণ সংগ্রহ। ক্যাটাগরি, দাম বা জনপ্রিয়তা অনুযায়ী খুঁজে নিন আপনার পছন্দের বইটি।"
-        crumbs={[{ label: "সব বই" }]}
+        title="Your next favourite book is here"
+        description="A curated collection of 24 books. Browse by category, price or popularity to find the right one for you."
+        crumbs={[{ label: "All Books" }]}
       />
       <section className="py-8 sm:py-12">
         <Container>

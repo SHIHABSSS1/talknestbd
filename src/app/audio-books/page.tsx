@@ -4,9 +4,9 @@ import { Container } from "@/components/ui/Container";
 import { AudioLibrary } from "@/components/audio/AudioLibrary";
 
 export const metadata: Metadata = {
-  title: "অডিও বুক",
+  title: "Audiobooks",
   description:
-    "TalkNest BD-এর অডিও বুক লাইব্রেরি — কিছু বই সম্পূর্ণ ফ্রি, প্রথম অধ্যায় ফ্রি প্রিভিউ এবং বাকিগুলো আনলক করে শুনুন।",
+    "The TalkNest BD audiobook library — free titles, free first-chapter previews and premium books you can unlock once and keep.",
 };
 
 export default function AudioBooksPage() {
@@ -14,20 +14,20 @@ export default function AudioBooksPage() {
     <>
       <PageHeader
         eyebrow="TalkNest Audio"
-        title="চোখ ব্যস্ত থাকুক, গল্প শুনুন কানে"
-        description="দুইটি অডিও বুক সম্পূর্ণ ফ্রি। প্রতিটি প্রিমিয়াম অডিও বুকের প্রথম অধ্যায় ফ্রি প্রিভিউ হিসেবে শোনা যায় — পুরো বই শুনতে অডিও বুকটি আনলক করুন।"
+        title="Let your eyes rest, listen to the story"
+        description="Two audiobooks are completely free. Every premium audiobook includes a free first-chapter preview — unlock the title to listen all the way through."
         tone="dark"
-        crumbs={[{ label: "অডিও বুক" }]}
+        crumbs={[{ label: "Audiobooks" }]}
       >
         <div className="flex flex-wrap gap-2 text-[10px]">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            ২টি সম্পূর্ণ ফ্রি
+            2 completely free
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            প্রথম অধ্যায় ফ্রি প্রিভিউ
+            Free first-chapter preview
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            একবার কিনলে চিরকাল শোনা
+            Buy once, listen forever
           </span>
         </div>
       </PageHeader>

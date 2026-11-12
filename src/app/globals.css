@@ -1,42 +1,69 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-bengali-body);
-  --font-display: var(--font-bengali-display);
+  --font-sans: var(--font-roboto);
+  --font-display: var(--font-roboto);
 
-  --color-cream-50: #fdfaf3;
-  --color-cream-100: #f9f4e8;
-  --color-cream-200: #f2e8d3;
-  --color-cream-300: #e7d7b8;
+  /* Measured Rokomari-driven palette */
+  --color-primary: #4398fe;
+  --color-accent: #1877f2;
+  --color-canvas: #f9fafb;
+  --color-surface: #ffffff;
+  --color-hairline: #d0e2ff;
+  --color-sale: #ff9900;
 
-  --color-forest-50: #eef6f1;
-  --color-forest-100: #d7e8dd;
-  --color-forest-200: #b2d3c0;
-  --color-forest-300: #84b79c;
-  --color-forest-400: #559876;
-  --color-forest-500: #357c5b;
-  --color-forest-600: #246246;
-  --color-forest-700: #1d4f39;
-  --color-forest-800: #194131;
-  --color-forest-900: #153629;
-  --color-forest-950: #0a2118;
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #dceeff;
+  --color-brand-200: #b9ddff;
+  --color-brand-300: #8bc8ff;
+  --color-brand-400: #5aabff;
+  --color-brand-500: #4398fe;
+  --color-brand-600: #1877f2;
+  --color-brand-700: #1163cc;
+  --color-brand-800: #0d4f9e;
+  --color-brand-900: #0b3d7a;
+  --color-brand-950: #082a52;
 
-  --color-gold-300: #e3cd93;
-  --color-gold-400: #d8b96e;
-  --color-gold-500: #c8a24a;
-  --color-gold-600: #a98336;
+  /* Legacy names are remapped so every route inherits the new system. */
+  --color-cream-50: #ffffff;
+  --color-cream-100: #f9fafb;
+  --color-cream-200: #f1f2f4;
+  --color-cream-300: #e5e7eb;
 
-  --color-clay-400: #d07a58;
-  --color-clay-500: #b95e3d;
-  --color-clay-600: #9a4830;
+  --color-forest-50: #eef6ff;
+  --color-forest-100: #e0efff;
+  --color-forest-200: #bcdcff;
+  --color-forest-300: #8dc5ff;
+  --color-forest-400: #5faaff;
+  --color-forest-500: #4398fe;
+  --color-forest-600: #1877f2;
+  --color-forest-700: #1163cc;
+  --color-forest-800: #0d4f9e;
+  --color-forest-900: #0b3d7a;
+  --color-forest-950: #101828;
 
-  --color-ink: #1e2c24;
-  --color-muted: #6e7c73;
+  --color-gold-300: #ffd18a;
+  --color-gold-400: #ffb347;
+  --color-gold-500: #ff9900;
+  --color-gold-600: #e07f00;
+
+  --color-clay-400: #5aabff;
+  --color-clay-500: #4398fe;
+  --color-clay-600: #1877f2;
+
+  --color-ink: #1b1b1b;
+  --color-body: #333333;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  --color-lavender: #e1c0ff;
+  --color-mint: #96db9d;
 }
 
 :root {
-  --page-bg: #fdfaf3;
-  --page-ink: #1e2c24;
+  --page-bg: #f9fafb;
+  --page-ink: #1b1b1b;
+  --radius-card: 8px;
+  --radius-control: 4px;
 }
 
 * {
@@ -55,8 +82,9 @@ body {
   overflow-x: clip;
   background: var(--page-bg);
   color: var(--page-ink);
-  font-family: var(--font-bengali-body), "Anek Bangla", system-ui, sans-serif;
-  line-height: 1.7;
+  font-family: var(--font-roboto), Roboto, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  line-height: 1.5;
   text-rendering: optimizeLegibility;
 }
 
@@ -66,26 +94,36 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-bengali-display), "Tiro Bangla", Georgia, serif;
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: -0.01em;
+  font-family: var(--font-roboto), Roboto, sans-serif;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 
 .font-display {
-  font-family: var(--font-bengali-display), "Tiro Bangla", Georgia, serif;
-  font-weight: 400;
+  font-family: var(--font-roboto), Roboto, sans-serif;
+  font-weight: 700;
   font-synthesis-weight: none;
+  letter-spacing: 0;
 }
 
 ::selection {
-  background: #c8a24a;
-  color: #0a2118;
+  background: #4398fe;
+  color: #ffffff;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  outline-color: #4398fe;
+  outline-offset: 3px;
 }
 
 button,
 a {
-  outline-offset: 3px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .no-scrollbar {
@@ -96,37 +134,52 @@ a {
   display: none;
 }
 
+/* Soft blue utility background used by commerce panels. */
+.brand-wash {
+  background:
+    radial-gradient(circle at 92% 8%, rgba(255, 153, 0, 0.14), transparent 30%),
+    linear-gradient(135deg, #e8f3ff 0%, #f9fafb 66%);
+}
+
 .paper-texture {
   background-image:
-    radial-gradient(rgba(20, 54, 41, 0.09) 0.6px, transparent 0.6px),
-    radial-gradient(rgba(20, 54, 41, 0.05) 0.6px, transparent 0.6px);
+    radial-gradient(rgba(67, 152, 254, 0.14) 0.6px, transparent 0.6px),
+    radial-gradient(rgba(67, 152, 254, 0.08) 0.6px, transparent 0.6px);
   background-size: 18px 18px, 28px 28px;
   background-position: 0 0, 9px 9px;
 }
 
 .hero-mesh {
   background:
-    radial-gradient(circle at 15% 30%, rgba(200, 162, 74, 0.18), transparent 32%),
-    radial-gradient(circle at 82% 12%, rgba(53, 124, 91, 0.5), transparent 42%),
-    radial-gradient(circle at 68% 90%, rgba(185, 94, 61, 0.16), transparent 36%),
-    #0a2118;
+    radial-gradient(circle at 82% 6%, rgba(255, 255, 255, 0.2), transparent 28%),
+    radial-gradient(circle at 10% 90%, rgba(255, 153, 0, 0.16), transparent 30%),
+    linear-gradient(128deg, #0b3d7a 0%, #1877f2 55%, #4398fe 100%);
 }
 
 .book-shadow {
   box-shadow:
-    0 1px 1px rgba(10, 33, 24, 0.08),
-    0 14px 28px -16px rgba(10, 33, 24, 0.5);
+    0 1px 2px rgba(17, 24, 39, 0.12),
+    0 12px 20px -14px rgba(17, 24, 39, 0.35);
 }
 
 .soft-shadow {
-  box-shadow: 0 24px 60px -38px rgba(10, 33, 24, 0.52);
+  box-shadow: 0 18px 45px -32px rgba(17, 24, 39, 0.35);
 }
 
 .gold-underline {
-  background-image: linear-gradient(to right, #c8a24a, #d8b96e);
+  background-image: linear-gradient(to right, #4398fe, #8bc8ff);
   background-repeat: no-repeat;
-  background-size: 100% 0.35em;
+  background-size: 100% 0.3em;
   background-position: 0 88%;
+}
+
+.section-marker::before {
+  content: "";
+  width: 4px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #4398fe;
 }
 
 @keyframes float {
@@ -135,7 +188,7 @@ a {
     transform: translateY(0) rotate(var(--float-rotate, 0deg));
   }
   50% {
-    transform: translateY(-10px) rotate(var(--float-rotate, 0deg));
+    transform: translateY(-8px) rotate(var(--float-rotate, 0deg));
   }
 }
 
@@ -155,7 +208,7 @@ a {
 }
 
 .animate-fade-up {
-  animation: fade-up 0.6s ease-out both;
+  animation: fade-up 0.5s ease-out both;
 }
 
 @keyframes soft-pulse {
@@ -192,7 +245,7 @@ a {
 
   body {
     background: #ffffff !important;
-    color: #153629 !important;
+    color: #1b1b1b !important;
   }
 
   .print-hide {

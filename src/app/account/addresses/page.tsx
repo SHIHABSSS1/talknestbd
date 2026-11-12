@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AddressManager } from "@/components/account/AddressManager";
 
 export const metadata: Metadata = {
-  title: "সংরক্ষিত ঠিকানা",
+  title: "Saved Addresses",
 };
 
 export default function AccountAddressesPage() {

@@ -25,12 +25,12 @@ import {
 } from "@/lib/orders";
 import { books } from "@/data/books";
 import { sunnahItems } from "@/data/sunnah";
-import { formatPrice, siteConfig, toBn } from "@/lib/utils";
+import { formatCount, formatPrice, siteConfig } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 
-const steps = ["কনফার্মড", "প্রসেসিং", "ডেলিভারিতে"] as const;
+const steps = ["Confirmed", "Processing", "Out for delivery"] as const;
 
 export function OrderReceipt({ orderId }: { orderId: string }) {
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
@@ -52,13 +52,13 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
     return (
       <EmptyState
         icon={<ShoppingBag size={24} />}
-        title="অর্ডারটি খুঁজে পাওয়া যায়নি"
-        description="অর্ডারটি হয়তো এই ব্রাউজারে সংরক্ষিত নেই অথবা লিংকটি ভুল। ডেমো অর্ডারগুলো শুধু যে ব্রাউজারে কেনা হয়েছে সেখানেই দেখা যায়।"
+        title="Order not found"
+        description="This order may not be saved in this browser, or the link may be incorrect. Demo orders are available only in the browser where they were placed."
         action={
           <div className="flex flex-wrap justify-center gap-3">
-            <Button href="/account/orders">আমার অর্ডার</Button>
+            <Button href="/account/orders">My orders</Button>
             <Button href="/books" variant="outline">
-              বই দেখুন
+              Browse books
             </Button>
           </div>
         }
@@ -81,10 +81,10 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
                 Order Confirmed
               </p>
               <h1 className="mt-1 font-display text-2xl font-bold sm:text-3xl">
-                ধন্যবাদ, আপনার অর্ডার সফল হয়েছে!
+                 Thank you, your order is confirmed!
               </h1>
               <p className="mt-1 text-[11px] text-cream-100/55">
-                অর্ডার নম্বর <strong className="text-gold-300">{order.id}</strong> ·{" "}
+                 Order number <strong className="text-gold-300">{order.id}</strong> ·{" "}
                 {formatOrderDate(order.createdAt)}
               </p>
             </div>
@@ -96,7 +96,7 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
               className="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 px-4 text-[11px] font-semibold text-cream-100 transition-colors hover:border-gold-400 hover:text-gold-300"
             >
               <Printer size={14} />
-              প্রিন্ট / PDF
+               Print / PDF
             </button>
           </div>
         </div>
@@ -109,14 +109,14 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
               TalkNest BD · Order Receipt
             </p>
             <h2 className="mt-1 font-display text-xl font-bold text-forest-950">
-              অর্ডার রিসিট
+               Order receipt
             </h2>
             <p className="mt-0.5 text-[10px] text-muted">
-              অর্ডার আইডি: {order.id} · {formatOrderDate(order.createdAt)}
+               Order ID: {order.id} · {formatOrderDate(order.createdAt)}
             </p>
           </div>
           <div className="rounded-xl bg-forest-50 px-3 py-2 text-left sm:text-right">
-            <p className="text-[9px] text-muted">অর্ডার স্ট্যাটাস</p>
+             <p className="text-[9px] text-muted">Order status</p>
             <p className="text-xs font-semibold text-forest-800">{order.status}</p>
           </div>
         </div>
@@ -167,13 +167,13 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
           </div>
           <p className="mt-3 flex items-center gap-1.5 text-[10px] text-muted">
             <Clock3 size={12} />
-            আমাদের টিম ২৪ ঘণ্টার মধ্যে কল করে ডেলিভারি নিশ্চিত করবে।
+             Our team will call within 24 hours to confirm delivery.
           </p>
         </div>
 
         <div className="px-5 py-5 sm:px-7">
           <h3 className="font-display text-sm font-bold text-forest-950">
-            অর্ডার করা আইটেম
+             Ordered items
           </h3>
           <div className="mt-3">
             {order.items.map((item) => {
@@ -208,15 +208,15 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
                     </p>
                     <p className="text-[9px] text-muted">
                       {item.kind === "audio"
-                        ? "অডিও বুক"
+                        ? "Audiobook"
                         : item.kind === "sunnah"
-                          ? "সুন্নাহ সামগ্রী"
-                          : "বই"}
+                          ? "Sunnah essential"
+                          : "Book"}
                       {item.meta ? ` · ${item.meta}` : ""}
                     </p>
                   </div>
                   <div className="shrink-0 text-right text-[11px]">
-                    <p className="text-muted">× {toBn(item.quantity)}</p>
+                     <p className="text-muted">× {formatCount(item.quantity)}</p>
                     <p className="font-semibold text-forest-900">
                       {formatPrice(item.price * item.quantity)}
                     </p>
@@ -229,7 +229,7 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="rounded-2xl bg-cream-100/60 p-4">
               <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-forest-800">
-                <MapPin size={12} /> ডেলিভারি ঠিকানা
+                 <MapPin size={12} /> Delivery address
               </h4>
               <p className="mt-2 text-xs font-semibold text-forest-950">
                 {order.address.name}
@@ -246,7 +246,7 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
             </div>
             <div className="rounded-2xl bg-cream-100/60 p-4">
               <h4 className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-forest-800">
-                <ShieldCheck size={12} /> পেমেন্ট ও ডেলিভারি
+                 <ShieldCheck size={12} /> Payment and delivery
               </h4>
               <p className="mt-2 text-xs font-semibold text-forest-950">
                 {paymentLabels[order.paymentMethod]}
@@ -256,12 +256,12 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
               </p>
               {order.paymentNumber && (
                 <p className="mt-1 text-[9px] text-muted">
-                  পেমেন্ট নম্বর: {order.paymentNumber}
+                   Payment number: {order.paymentNumber}
                 </p>
               )}
               {order.note && (
                 <p className="mt-2 rounded-lg bg-cream-50 px-2.5 py-2 text-[9px] leading-relaxed text-muted">
-                  নির্দেশনা: {order.note}
+                   Note: {order.note}
                 </p>
               )}
             </div>
@@ -269,19 +269,19 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
 
           <div className="mt-4 ml-auto max-w-sm space-y-2 text-[11px]">
             <div className="flex items-center justify-between">
-              <span className="text-muted">সাবটোটাল</span>
+               <span className="text-muted">Subtotal</span>
               <span className="font-semibold text-forest-950">
                 {formatPrice(order.subtotal)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted">ডেলিভারি চার্জ</span>
+               <span className="text-muted">Delivery charge</span>
               <span className="font-semibold text-forest-950">
-                {order.deliveryCharge === 0 ? "ফ্রি" : formatPrice(order.deliveryCharge)}
+                 {order.deliveryCharge === 0 ? "Free" : formatPrice(order.deliveryCharge)}
               </span>
             </div>
             <div className="flex items-center justify-between border-t border-dashed border-forest-900/15 pt-2">
-              <span className="text-sm font-semibold text-forest-950">সর্বমোট</span>
+               <span className="text-sm font-semibold text-forest-950">Total</span>
               <span className="font-display text-xl font-bold text-forest-950">
                 {formatPrice(order.total)}
               </span>
@@ -290,14 +290,14 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
         </div>
 
         <div className="border-t border-forest-900/8 bg-cream-100/40 px-5 py-4 text-[9px] leading-relaxed text-muted sm:px-7">
-          <p className="font-semibold text-forest-800">ডেমো রিসিট</p>
+           <p className="font-semibold text-forest-800">Demo receipt</p>
           <p className="mt-0.5">
-            এটি একটি ফ্রন্টএন্ড ডেমো অর্ডার। কোনো আসল পেমেন্ট নেওয়া হয়নি এবং
-            অর্ডারটি শুধু আপনার ব্রাউজারে সংরক্ষিত আছে। বই হাতে পাওয়ার ৭ দিনের
-            মধ্যে রিটার্ন বা এক্সচেঞ্জের জন্য যোগাযোগ করতে পারবেন।
+             This is a front-end demo order. No real payment was taken, and the
+             order is saved only in your browser. For a live order, you could
+             contact us within seven days of delivery for a return or exchange.
           </p>
           <p className="mt-1.5">
-            সহায়তা: {siteConfig.phone} · {siteConfig.email} · {siteConfig.address}
+             Support: {siteConfig.phone} · {siteConfig.email} · {siteConfig.address}
           </p>
         </div>
       </div>
@@ -307,14 +307,14 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
           <div>
             <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
               <Headphones size={14} className="text-forest-600" />
-              অডিও বুক কিনেছেন?
+               Bought an audiobook?
             </p>
             <p className="mt-0.5 text-[9px] text-muted">
-              অডিও বুকটি আপনার লাইব্রেরিতে স্বয়ংক্রিয়ভাবে আনলক হয়েছে।
+               It has been unlocked automatically in your audio library.
             </p>
           </div>
           <Button href="/audio-books" variant="outline" size="sm">
-            শুনুন
+             Listen now
             <ArrowRight size={13} />
           </Button>
         </div>
@@ -322,24 +322,24 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
           <div>
             <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
               <Phone size={14} className="text-forest-600" />
-              অর্ডার নিয়ে সহায়তা
+               Help with your order
             </p>
             <p className="mt-0.5 text-[9px] text-muted">
-              অর্ডার নম্বরটি বলুন — আমাদের টিম দ্রুত সহায়তা করবে।
+               Share the order number and our team will help quickly.
             </p>
           </div>
           <Button href="/contact" variant="outline" size="sm">
-            যোগাযোগ
+             Contact us
           </Button>
         </div>
       </div>
 
       <div className="print-hide mt-4 flex flex-wrap items-center justify-center gap-3">
         <Button href="/account/orders" variant="ghost" size="sm">
-          আমার সব অর্ডার
+           All my orders
         </Button>
         <Button href="/books" variant="primary" size="sm">
-          আরও বই কিনুন
+           Buy more books
         </Button>
         <Link
           href={siteConfig.whatsapp}
@@ -348,7 +348,7 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
           className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-forest-800 hover:text-clay-500"
         >
           <Download size={13} />
-          হোয়াটসঅ্যাপে রিসিট নিন
+           Get the receipt on WhatsApp
         </Link>
       </div>
     </div>

@@ -11,28 +11,28 @@ export interface BookCoverData {
 
 const sizeStyles = {
   sm: {
-    inner: "p-3",
-    brand: "text-[6px] tracking-[0.18em]",
-    title: "text-[12px] leading-[1.25] line-clamp-3",
-    author: "text-[8px]",
-    publisher: "text-[7px]",
-    rule: "w-5 mb-2",
+    inner: "p-2.5",
+    brand: "text-[5px] tracking-[0.14em]",
+    title: "text-[10px] leading-[1.2] line-clamp-3",
+    author: "text-[7px]",
+    publisher: "text-[6px]",
+    rule: "w-4 mb-1.5",
   },
   md: {
-    inner: "p-4 sm:p-5",
-    brand: "text-[7px] tracking-[0.2em]",
-    title: "text-base leading-[1.3] line-clamp-4 sm:text-lg",
-    author: "text-[10px] sm:text-[11px]",
-    publisher: "text-[8px] sm:text-[9px]",
-    rule: "w-7 mb-3",
+    inner: "p-3 sm:p-4",
+    brand: "text-[6px] tracking-[0.16em] sm:text-[7px]",
+    title: "text-[13px] leading-[1.22] line-clamp-4 sm:text-[15px]",
+    author: "text-[8px] sm:text-[9px]",
+    publisher: "text-[7px] sm:text-[8px]",
+    rule: "w-6 mb-2",
   },
   lg: {
     inner: "p-6 sm:p-8 lg:p-9",
-    brand: "text-[9px] tracking-[0.24em]",
-    title: "text-2xl leading-tight line-clamp-5 sm:text-3xl lg:text-[2.65rem]",
-    author: "text-xs sm:text-sm",
-    publisher: "text-[10px] sm:text-xs",
-    rule: "w-10 mb-4",
+    brand: "text-[8px] tracking-[0.18em] sm:text-[9px]",
+    title: "text-xl leading-tight line-clamp-5 sm:text-2xl lg:text-[2.2rem]",
+    author: "text-[11px] sm:text-xs",
+    publisher: "text-[9px] sm:text-[10px]",
+    rule: "w-8 mb-3",
   },
 };
 
@@ -155,7 +155,7 @@ export function BookCover({
   return (
     <div
       className={cn(
-        "relative isolate h-full w-full overflow-hidden rounded-[5px] book-shadow",
+        "relative isolate h-full w-full overflow-hidden rounded-[4px] book-shadow",
         className,
       )}
       style={{
@@ -172,9 +172,7 @@ export function BookCover({
 
       <div className={cn("relative flex h-full flex-col", styles.inner)}>
         <div className="flex items-start justify-between gap-2">
-          <span
-            className={cn("font-medium uppercase text-white/55", styles.brand)}
-          >
+          <span className={cn("font-medium uppercase text-white/55", styles.brand)}>
             TalkNest · BD
           </span>
           <span
@@ -190,7 +188,7 @@ export function BookCover({
           />
           {book.subtitle && size !== "sm" && (
             <p
-              className="mb-1.5 line-clamp-1 text-[8px] tracking-wide text-white/55 sm:text-[9px]"
+              className="mb-1 line-clamp-1 text-[8px] leading-tight tracking-wide text-white/55 sm:text-[9px]"
               style={{ color: `${book.cover.accent}bb` }}
             >
               {book.subtitle}
@@ -198,16 +196,16 @@ export function BookCover({
           )}
           <h3
             className={cn(
-              "font-display font-semibold tracking-tight text-cream-50",
+              "font-bold tracking-tight text-white",
               styles.title,
             )}
           >
             {book.title}
           </h3>
-          <p className={cn("mt-2 font-medium text-white/70", styles.author)}>
+          <p className={cn("mt-1.5 font-medium text-white/75", styles.author)}>
             {book.author}
           </p>
-          <div className="mt-3 flex items-end justify-between gap-2 border-t border-white/10 pt-2">
+          <div className="mt-2 flex items-end justify-between gap-2 border-t border-white/10 pt-1.5">
             <span className={cn("line-clamp-1 text-white/45", styles.publisher)}>
               {book.publisher}
             </span>

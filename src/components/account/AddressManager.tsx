@@ -48,16 +48,16 @@ export function AddressManager() {
 
   const save = () => {
     const next: Record<string, string> = {};
-    if (!values.name.trim()) next.name = "প্রাপকের নাম লিখুন";
+    if (!values.name.trim()) next.name = "Enter the recipient's name";
     if (values.phone.replace(/\D/g, "").length < 11) {
-      next.phone = "১১ ডিজিটের মোবাইল নম্বর দিন";
+      next.phone = "Enter an 11-digit mobile number";
     }
     if (values.email && !/^\S+@\S+\.\S+$/.test(values.email)) {
-      next.email = "সঠিক ইমেইল দিন";
+      next.email = "Enter a valid email address";
     }
-    if (!values.district.trim()) next.district = "জেলার নাম লিখুন";
-    if (!values.area.trim()) next.area = "থানা বা এলাকার নাম লিখুন";
-    if (!values.street.trim()) next.street = "বিস্তারিত ঠিকানা লিখুন";
+    if (!values.district.trim()) next.district = "Enter the district";
+    if (!values.area.trim()) next.area = "Enter the thana or area";
+    if (!values.street.trim()) next.street = "Enter the full street address";
 
     if (Object.keys(next).length > 0) {
       setErrors(next);
@@ -70,7 +70,7 @@ export function AddressManager() {
       isDefault: makeDefault || addresses.length === 0,
     });
     refresh();
-    notify("ঠিকানা সংরক্ষণ হয়েছে");
+    notify("Address saved");
     resetForm();
   };
 
@@ -82,15 +82,15 @@ export function AddressManager() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h1 className="font-display text-xl font-bold text-forest-950">সংরক্ষিত ঠিকানা</h1>
+          <h1 className="font-display text-xl font-bold text-forest-950">Saved addresses</h1>
           <p className="mt-0.5 text-[10px] text-muted">
-            চেকআউটের সময় দ্রুত ঠিকানা বেছে নিতে সংরক্ষণ করুন।
+            Save addresses now for a faster checkout later.
           </p>
         </div>
         {!formOpen && (
           <Button type="button" size="sm" onClick={() => setFormOpen(true)}>
             <Plus size={14} />
-            নতুন ঠিকানা
+            New address
           </Button>
         )}
       </div>
@@ -101,14 +101,14 @@ export function AddressManager() {
             <MapPin size={20} />
           </span>
           <h2 className="mt-3 font-display text-lg font-bold text-forest-950">
-            এখনো কোনো ঠিকানা সংরক্ষণ করা হয়নি
+            No addresses saved yet
           </h2>
           <p className="mx-auto mt-1 max-w-sm text-[11px] leading-relaxed text-muted">
-            প্রথম ঠিকানাটি যোগ করুন — চেকআউটে আর প্রতিবার একই তথ্য লিখতে হবে না।
+            Add your first address so you do not need to enter the same details at every checkout.
           </p>
           <Button type="button" size="sm" className="mt-4" onClick={() => setFormOpen(true)}>
             <Plus size={13} />
-            ঠিকানা যোগ করুন
+            Add address
           </Button>
         </div>
       )}
@@ -132,7 +132,7 @@ export function AddressManager() {
                 </span>
                 {address.isDefault ? (
                   <Badge tone="gold">
-                    <Star size={9} className="fill-current" /> ডিফল্ট
+                    <Star size={9} className="fill-current" /> Default
                   </Badge>
                 ) : (
                   <button
@@ -140,11 +140,11 @@ export function AddressManager() {
                     onClick={() => {
                       makeDefaultAddress(address.id);
                       refresh();
-                      notify("ডিফল্ট ঠিকানা বদলানো হয়েছে");
+                      notify("Default address updated");
                     }}
                     className="text-[9px] font-medium text-clay-600 hover:text-clay-500"
                   >
-                    ডিফল্ট করুন
+                    Make default
                   </button>
                 )}
               </div>
@@ -161,12 +161,12 @@ export function AddressManager() {
                   onClick={() => {
                     removeAddress(address.id);
                     refresh();
-                    notify("ঠিকানা সরানো হয়েছে");
+                    notify("Address removed");
                   }}
                   className="inline-flex items-center gap-1 text-[9px] font-medium text-clay-600 hover:text-clay-500"
                 >
                   <Trash2 size={11} />
-                  সরান
+                  Remove
                 </button>
               </div>
             </article>
@@ -178,12 +178,12 @@ export function AddressManager() {
         <div className="rounded-3xl border border-forest-900/10 bg-cream-50 p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h2 className="font-display text-base font-bold text-forest-950">
-              নতুন ঠিকানা যোগ করুন
+              Add a new address
             </h2>
             <button
               type="button"
               onClick={resetForm}
-              aria-label="ফর্ম বন্ধ করুন"
+              aria-label="Close form"
               className="grid h-8 w-8 place-items-center rounded-full border border-forest-900/10 text-forest-800 hover:bg-cream-100"
             >
               <X size={14} />
@@ -206,15 +206,15 @@ export function AddressManager() {
                 onChange={(event) => setMakeDefault(event.target.checked)}
                 className="h-3.5 w-3.5 accent-forest-900"
               />
-              {addresses.length === 0 ? "এটি আমার ডিফল্ট ঠিকানা" : "ডিফল্ট ঠিকানা হিসেবে সেট করুন"}
+              {addresses.length === 0 ? "This is my default address" : "Set as default address"}
             </label>
             <div className="flex gap-2">
               <Button type="button" variant="ghost" size="sm" onClick={resetForm}>
-                বাতিল
+                Cancel
               </Button>
               <Button type="button" size="sm" onClick={save}>
                 <Check size={13} />
-                ঠিকানা সংরক্ষণ করুন
+                Save address
               </Button>
             </div>
           </div>

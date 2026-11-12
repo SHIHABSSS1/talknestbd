@@ -32,9 +32,9 @@ export function CheckoutSummary({
   return (
     <div className="overflow-hidden rounded-3xl border border-forest-900/10 bg-cream-50">
       <div className="border-b border-forest-900/8 bg-cream-100/60 px-5 py-4">
-        <h2 className="font-display text-lg font-bold text-forest-950">অর্ডার সারাংশ</h2>
+        <h2 className="font-display text-lg font-bold text-forest-950">Order summary</h2>
         <p className="mt-0.5 text-[10px] text-muted">
-          {toBn(items.length)}টি আইটেম · ডেলিভারি চার্জসহ
+          {toBn(items.length)} items · delivery included
         </p>
       </div>
 
@@ -72,7 +72,7 @@ export function CheckoutSummary({
                 <p className="line-clamp-1 text-[11px] font-semibold text-forest-950">
                   {item.title}
                 </p>
-                <p className="text-[9px] text-muted">পরিমাণ: {toBn(item.quantity)}</p>
+                <p className="text-[9px] text-muted">Qty: {toBn(item.quantity)}</p>
               </div>
               <span className="shrink-0 text-[11px] font-semibold text-forest-900">
                 {formatPrice(item.price * item.quantity)}
@@ -84,17 +84,17 @@ export function CheckoutSummary({
 
       <div className="space-y-2 border-t border-forest-900/8 px-5 py-4 text-[11px]">
         <div className="flex items-center justify-between">
-          <span className="text-muted">সাবটোটাল</span>
+          <span className="text-muted">Subtotal</span>
           <span className="font-semibold text-forest-950">{formatPrice(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-muted">
-            ডেলিভারি <span className="text-[9px]">({deliveryLabels[deliveryMethod]})</span>
+            Delivery <span className="text-[9px]">({deliveryLabels[deliveryMethod]})</span>
           </span>
           <span className="font-semibold text-forest-950">
             {deliveryCharge === 0 ? (
               <span className="inline-flex items-center gap-1 text-forest-600">
-                <Check size={11} /> ফ্রি
+                <Check size={11} /> Free
               </span>
             ) : (
               formatPrice(deliveryCharge)
@@ -102,13 +102,13 @@ export function CheckoutSummary({
           </span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-muted">পেমেন্ট</span>
+          <span className="text-muted">Payment</span>
           <span className="font-semibold text-forest-950">
             {paymentLabels[paymentMethod]}
           </span>
         </div>
         <div className="flex items-end justify-between border-t border-dashed border-forest-900/15 pt-3">
-          <span className="text-sm font-semibold text-forest-950">সর্বমোট</span>
+          <span className="text-sm font-semibold text-forest-950">Total</span>
           <span className="font-display text-2xl font-bold text-forest-950">
             {formatPrice(total)}
           </span>
@@ -117,8 +117,8 @@ export function CheckoutSummary({
 
       <div className="flex items-start gap-2 border-t border-forest-900/8 bg-forest-50/60 px-5 py-3 text-[9px] leading-relaxed text-forest-800/70">
         <Truck size={14} className="mt-0.5 shrink-0 text-forest-600" />
-        অর্ডার কনফার্ম হলে ২৪ ঘণ্টার মধ্যে আমাদের টিম আপনাকে কল করে
-        ডেলিভারি নিশ্চিত করবে।
+        Once your order is confirmed, our team will call you within 24 hours
+        to arrange delivery.
       </div>
     </div>
   );

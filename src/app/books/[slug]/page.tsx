@@ -37,7 +37,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const book = getBook(slug);
-  if (!book) return { title: "বই" };
+  if (!book) return { title: "Books" };
   return {
     title: book.title,
     description: book.description,
@@ -67,7 +67,7 @@ export default async function BookDetailPage({
         <Container className="py-6 sm:py-9">
           <Breadcrumb
             items={[
-              { label: "সব বই", href: "/books" },
+              { label: "All books", href: "/books" },
               {
                 label: categoryLabel(book.category),
                 href: `/category/${book.category}`,
@@ -94,12 +94,12 @@ export default async function BookDetailPage({
                       className="shadow-sm"
                     >
                       {tag === "bestseller"
-                        ? "বেস্ট সেলার"
+                        ? "Bestseller"
                         : tag === "new"
-                          ? "নতুন"
+                          ? "New"
                           : tag === "viral"
-                            ? "ভাইরাল"
-                            : "ফ্রি ডেলিভারি"}
+                            ? "Viral"
+                            : "Free delivery"}
                     </Badge>
                   ))}
                 </div>
@@ -110,17 +110,17 @@ export default async function BookDetailPage({
                   <RefreshCcw size={16} className="mt-0.5 shrink-0 text-forest-600" />
                   <div>
                     <p className="text-[11px] font-semibold text-forest-900">
-                      পড়া শেষে ৫০% ফেরত
+                      Get 50% back after reading
                     </p>
                     <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/65">
-                      বইটি আমাদের কাছেই ফেরত দিলে পাবেন{" "}
-                      {toBn(Math.round(book.price * 0.5))} টাকা।
+                      Return the book to us and get{" "}
+                      ৳{toBn(Math.round(book.price * 0.5))} back.
                     </p>
                     <Link
                       href="/buyback"
                       className="mt-1 inline-flex text-[10px] font-semibold text-clay-600 hover:text-clay-500"
                     >
-                      বিস্তারিত →
+                      Details →
                     </Link>
                   </div>
                 </div>
@@ -134,7 +134,7 @@ export default async function BookDetailPage({
                 <Badge tone="outline">{book.binding}</Badge>
                 {discount && (
                   <span className="rounded-full bg-clay-500 px-2.5 py-1 text-[10px] font-bold leading-none text-cream-50">
-                    {toBn(discount)}% ছাড়
+                    {toBn(discount)}% off
                   </span>
                 )}
               </div>
@@ -155,7 +155,7 @@ export default async function BookDetailPage({
                     <PenLine size={15} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">লেখক</span>
+                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">Author</span>
                     <span className="block truncate text-[11px] font-semibold text-forest-950 group-hover:text-clay-600">
                       {book.author}
                     </span>
@@ -169,7 +169,7 @@ export default async function BookDetailPage({
                     <Building2 size={15} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">প্রকাশনী</span>
+                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">Publisher</span>
                     <span className="block truncate text-[11px] font-semibold text-forest-950 group-hover:text-clay-600">
                       {book.publisher}
                     </span>
@@ -183,9 +183,9 @@ export default async function BookDetailPage({
                     <Star size={15} className="fill-current" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">রেটিং</span>
+                    <span className="block text-[9px] uppercase tracking-[0.14em] text-muted">Rating</span>
                     <span className="block truncate text-[11px] font-semibold text-forest-950 group-hover:text-clay-600">
-                      {toBn(book.rating)} · {toBn(book.reviewCount)} রিভিউ
+                      {toBn(book.rating)} · {toBn(book.reviewCount)} reviews
                     </span>
                   </span>
                 </Link>
@@ -194,13 +194,13 @@ export default async function BookDetailPage({
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <Rating value={book.rating} count={book.reviewCount} />
                 <span className="text-[10px] text-muted">
-                  {toBn(book.stock)} কপি স্টকে আছে
+                  {toBn(book.stock)} copies in stock
                 </span>
               </div>
 
               <div className="mt-5">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-clay-500">
-                  সংক্ষিপ্ত বিবরণ
+                  Overview
                 </p>
                 <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-forest-900/75 sm:text-[15px]">
                   {book.description}
@@ -223,7 +223,7 @@ export default async function BookDetailPage({
               <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-forest-900/10 pt-4 text-[10px] text-muted">
                 <span className="flex items-center gap-1.5">
                   <BookOpen size={13} />
-                  {toBn(book.pages)} পৃষ্ঠা
+                  {toBn(book.pages)} pages
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Layers3 size={13} />
@@ -239,7 +239,7 @@ export default async function BookDetailPage({
                 </span>
                 <span className="flex items-center gap-1.5">
                   <RefreshCcw size={13} />
-                  ৫০% বাইব্যাক সুবিধা
+                  50% buyback
                 </span>
               </div>
 
@@ -259,7 +259,7 @@ export default async function BookDetailPage({
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="text-[9px] uppercase tracking-[0.15em] text-muted">
-                      লেখক পরিচিতি
+                      About the author
                     </p>
                     <Link
                       href={`/authors/${author.slug}`}
@@ -273,7 +273,7 @@ export default async function BookDetailPage({
                     href={`/authors/${author.slug}`}
                     className="shrink-0 rounded-full border border-forest-900/15 px-3 py-1.5 text-[10px] font-medium text-forest-800 hover:border-forest-900"
                   >
-                    দেখুন
+                    View
                   </Link>
                 </div>
               )}
@@ -294,10 +294,10 @@ export default async function BookDetailPage({
       <BookRail
         books={related}
         eyebrow="You may also like"
-        title="একই ধরনের আরও বই"
-        description="আপনার পছন্দের বইটির সঙ্গে আরও কিছু সুন্দর বই।"
+        title="More books like this"
+        description="More great books to go with your pick."
         href="/books"
-        linkLabel="সব বই"
+        linkLabel="All books"
       />
     </>
   );

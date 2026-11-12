@@ -16,12 +16,12 @@ import { readProfile, type Profile } from "@/lib/orders";
 import { cn, initials } from "@/lib/utils";
 
 const links = [
-  { label: "ড্যাশবোর্ড", href: "/account", icon: LayoutDashboard },
-  { label: "আমার অর্ডার", href: "/account/orders", icon: Package },
-  { label: "সংরক্ষিত ঠিকানা", href: "/account/addresses", icon: MapPin },
-  { label: "উইশলিস্ট", href: "/wishlist", icon: Heart },
-  { label: "অডিও লাইব্রেরি", href: "/audio-books", icon: Headphones },
-  { label: "সেটিংস", href: "/account/settings", icon: Settings },
+  { label: "Dashboard", href: "/account", icon: LayoutDashboard },
+  { label: "My Orders", href: "/account/orders", icon: Package },
+  { label: "Saved Addresses", href: "/account/addresses", icon: MapPin },
+  { label: "Wishlist", href: "/wishlist", icon: Heart },
+  { label: "Audio Library", href: "/audio-books", icon: Headphones },
+  { label: "Settings", href: "/account/settings", icon: Settings },
 ];
 
 export function AccountNav() {
@@ -41,10 +41,10 @@ export function AccountNav() {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-forest-950">
-              {profile?.name ?? "অতিথি পাঠক"}
+              {profile?.name ?? "Guest reader"}
             </p>
             <p className="truncate text-[9px] text-muted">
-              {profile?.email ?? "লগইন করে প্রোফাইল দেখুন"}
+              {profile?.email ?? "Sign in to view your profile"}
             </p>
           </div>
         </div>
@@ -76,15 +76,15 @@ export function AccountNav() {
       </div>
 
       <div className="mt-3 rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
-        <p className="text-[11px] font-semibold text-forest-900">পড়া শেষে ৫০% ফেরত</p>
+        <p className="text-[11px] font-semibold text-forest-900">Get 50% back after reading</p>
         <p className="mt-1 text-[9px] leading-relaxed text-muted">
-          আমাদের কাছ থেকে কেনা বই ফেরত দিলে কেনা মূল্যের ৫০% ফেরত পান।
+          Return a book you bought from us and get 50% of the purchase price back.
         </p>
         <Link
           href="/buyback"
           className="mt-2 inline-flex text-[10px] font-semibold text-clay-600 hover:text-clay-500"
         >
-          বিস্তারিত →
+          Learn more →
         </Link>
       </div>
     </aside>

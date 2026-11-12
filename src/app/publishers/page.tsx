@@ -8,9 +8,9 @@ import { Container } from "@/components/ui/Container";
 import { toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "প্রকাশনী",
+  title: "Publishers",
   description:
-    "TalkNest BD-এর সঙ্গে যুক্ত বাংলাদেশের বিশ্বস্ত প্রকাশনী — অন্যধারা, পাঠশালা, মাকতাবাতুল ফুরকানসহ আরও।",
+    "Trusted Bangladeshi publishers partnered with TalkNest BD — Onnodhara, Pathshala, Maktabatul Furqan and more.",
 };
 
 export default function PublishersPage() {
@@ -18,9 +18,9 @@ export default function PublishersPage() {
     <>
       <PageHeader
         eyebrow="Our Publishers"
-        title="যাদের বই পাঠকের হাতে পৌঁছায়"
-        description="বাছাই করা প্রকাশনীর বই, তাদের পরিচয় ও সংগ্রহ — সব এক জায়গায়। প্রতিটি প্রকাশনীর সঙ্গে সরাসরি কাজ করি আমরা।"
-        crumbs={[{ label: "প্রকাশনী" }]}
+        title="The publishers who bring books to readers"
+        description="Curated publisher catalogues, their stories and collections — all in one place. We work directly with every publisher."
+        crumbs={[{ label: "Publishers" }]}
       />
 
       <section className="py-8 sm:py-12">
@@ -67,14 +67,14 @@ export default function PublishersPage() {
                   <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-forest-900/8 pt-3 text-[9px] text-muted">
                     <span className="flex items-center gap-1">
                       <Building2 size={10} />
-                      প্রতিষ্ঠা {publisher.established}
+                      Est. {publisher.established}
                     </span>
                     <span className="flex items-center gap-1">
                       <MapPin size={10} />
                       {publisher.location}
                     </span>
                     <span className="ml-auto font-semibold text-forest-800">
-                      {toBn(publisherBooks.length)}টি বই
+                      {toBn(publisherBooks.length)} books
                     </span>
                   </div>
                 </Link>
@@ -90,18 +90,18 @@ export default function PublishersPage() {
                   For Publishers
                 </span>
                 <h2 className="mt-1 font-display text-2xl font-bold">
-                  আপনার প্রকাশনীকে TalkNest-এ আনুন
+                  Bring your publishing house to TalkNest
                 </h2>
                 <p className="mt-1 max-w-xl text-[11px] leading-relaxed text-cream-100/55">
-                  পাঠকের কাছে পৌঁছাতে চান? আমাদের সঙ্গে যুক্ত হয়ে পাইকারি,
-                  ডেলিভারি ও পাঠক কমিউনিটির সুবিধা নিন।
+                  Want to reach more readers? Partner with us for wholesale,
+                  delivery and community benefits.
                 </p>
               </div>
               <Link
                 href="/wholesale"
                 className="inline-flex h-10 w-fit shrink-0 items-center gap-1.5 rounded-full bg-gold-500 px-5 text-[11px] font-semibold text-forest-950 transition-colors hover:bg-gold-400"
               >
-                যোগাযোগ করুন
+                Get in touch
                 <ArrowUpRight size={13} />
               </Link>
             </div>

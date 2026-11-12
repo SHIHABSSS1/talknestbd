@@ -31,46 +31,40 @@ export function SunnahItemCard({ item }: { item: SunnahItem }) {
   const Icon = icons[item.icon];
 
   return (
-    <article className="group flex h-full flex-col rounded-2xl border border-forest-900/8 bg-white/70 p-3 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_40px_-30px_rgba(10,33,24,0.4)]">
+    <article className="group flex h-full flex-col rounded-[8px] border border-line bg-white p-2.5 transition-colors duration-200 hover:border-brand-300 sm:p-3">
       <div
-        className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-xl"
-        style={{
-          background: `linear-gradient(145deg, ${item.accent}12, ${item.accent}28)`,
-        }}
+        className="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-[4px]"
+        style={{ backgroundColor: `${item.accent}40` }}
       >
         <div
           aria-hidden="true"
-          className="absolute left-1/2 top-1/2 h-28 w-28 -translate-x-1/2 -translate-y-1/2 rounded-full border opacity-20"
-          style={{ borderColor: item.accent }}
+          className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand-900/10"
         />
         <div
           aria-hidden="true"
-          className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border opacity-15"
-          style={{ borderColor: item.accent }}
+          className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border border-brand-900/10"
         />
-        <Icon
-          size={40}
-          strokeWidth={1.3}
-          className="relative transition-transform duration-500 group-hover:scale-110"
-          style={{ color: item.accent }}
-        />
+        <span className="relative grid h-14 w-14 place-items-center rounded-full bg-white/75">
+          <Icon
+            size={28}
+            strokeWidth={1.5}
+            className="text-brand-800 transition-transform duration-500 group-hover:scale-110"
+          />
+        </span>
         {item.badge && (
-          <span
-            className="absolute left-2.5 top-2.5 rounded-full px-2 py-0.5 text-[8px] font-semibold text-white"
-            style={{ backgroundColor: item.accent }}
-          >
+          <span className="absolute left-2 top-2 rounded-[3px] bg-brand-600 px-2 py-1 text-[8px] font-medium leading-none text-white">
             {item.badge}
           </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col pt-3">
-        <p className="text-[9px] text-muted">{item.subtitle}</p>
-        <h3 className="mt-0.5 line-clamp-1 font-display text-sm font-semibold text-forest-950 sm:text-base">
+      <div className="flex flex-1 flex-col pt-2.5">
+        <p className="line-clamp-1 text-[10px] text-muted">{item.subtitle}</p>
+        <h3 className="mt-0.5 line-clamp-1 text-[13px] font-medium text-ink sm:text-sm">
           {item.name}
         </h3>
         <div className="mt-auto flex items-end justify-between gap-2 pt-2.5">
           <div>
-            <span className="font-display text-base font-bold text-forest-950">
+            <span className="text-[15px] font-bold text-ink">
               {formatPrice(item.price)}
             </span>
             {item.oldPrice && (
@@ -90,8 +84,8 @@ export function SunnahItemCard({ item }: { item: SunnahItem }) {
                 meta: item.subtitle,
               })
             }
-            aria-label={`${item.name} কার্টে যোগ করুন`}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-forest-900 text-cream-50 transition-colors hover:bg-gold-500 hover:text-forest-950"
+            aria-label={`Add ${item.name} to cart`}
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-[4px] bg-brand-600 text-white transition-colors hover:bg-brand-700"
           >
             <Plus size={15} />
           </button>

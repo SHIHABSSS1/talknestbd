@@ -53,11 +53,11 @@ const demoTracks = [
   "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
 ];
 
-const demoDurations = ["১২:৪০", "১৮:০৫", "১৪:৩২"];
+const demoDurations = ["12:40", "18:05", "14:32"];
 
 export function audioChapters(book: Book): AudioChapter[] {
   const fullyFree = isFreeAudio(book.slug);
-  return ["প্রথম অধ্যায়", "দ্বিতীয় অধ্যায়", "তৃতীয় অধ্যায়"].map((title, index) => ({
+  return ["Chapter 1", "Chapter 2", "Chapter 3"].map((title, index) => ({
     id: `${book.slug}-${index + 1}`,
     title,
     duration: demoDurations[index],

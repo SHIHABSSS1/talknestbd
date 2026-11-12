@@ -4,12 +4,11 @@ import { sunnahItems } from "@/data/sunnah";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { SunnahItemCard } from "@/components/sunnah/SunnahItemCard";
-import { toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "সুন্নাহ সামগ্রী",
+  title: "Sunnah Essentials",
   description:
-    "মিসওয়াক, তাসবিহ, আতর, জায়নামাজ ও সুন্নাহ ডায়েরিসহ দৈনন্দিন সুন্নাহ চর্চার সামগ্রী — TalkNest BD।",
+    "Miswak, tasbih, attar, prayer mats and Sunnah diaries — everyday Sunnah essentials from TalkNest BD.",
 };
 
 export default function SunnahItemsPage() {
@@ -17,19 +16,19 @@ export default function SunnahItemsPage() {
     <>
       <PageHeader
         eyebrow="Sunnah Essentials"
-        title="দৈনন্দিন সুন্নাহর সঙ্গী"
-        description="রাসূলুল্লাহ ﷺ-এর সুন্নাহ অনুসরণে সহায়ক বাছাই করা সামগ্রী — যত্নের সঙ্গে বেছে নেওয়া, সুন্দর প্যাকেজিংয়ে আপনার দরজায়।"
-        crumbs={[{ label: "সুন্নাহ সামগ্রী" }]}
+        title="Your everyday Sunnah companion"
+        description="Curated essentials to help you follow the Sunnah of the Prophet ﷺ — carefully selected and delivered to your door in beautiful packaging."
+        crumbs={[{ label: "Sunnah Essentials" }]}
       >
         <div className="flex flex-wrap gap-2 text-[10px]">
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            {toBn(sunnahItems.length)}টি সামগ্রী
+            {sunnahItems.length} items
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            ৳৯৯৯+ অর্ডারে ফ্রি ডেলিভারি
+            Free delivery on orders ৳999+
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            উপহার প্যাকিং সুবিধা
+            Gift packing available
           </span>
         </div>
       </PageHeader>
@@ -38,9 +37,9 @@ export default function SunnahItemsPage() {
         <Container>
           <div className="mb-5 grid gap-2 sm:grid-cols-3">
             {[
-              { icon: BadgeCheck, title: "যাচাই করা সামগ্রী", text: "প্রতিটি পণ্য হাতে দেখে বাছাই করা" },
-              { icon: Truck, title: "সারাদেশে ডেলিভারি", text: "ঢাকায় ২–৪, বাইরে ৩–৭ কর্মদিবস" },
-              { icon: HeartHandshake, title: "উপহার প্যাকিং", text: "প্রিয়জনকে দেওয়ার জন্য সুন্দর বক্স" },
+              { icon: BadgeCheck, title: "Verified essentials", text: "Every product is hand-picked" },
+              { icon: Truck, title: "Nationwide delivery", text: "2–4 days in Dhaka, 3–7 business days outside" },
+              { icon: HeartHandshake, title: "Gift packing", text: "A beautiful box for someone special" },
             ].map((item) => (
               <div
                 key={item.title}
@@ -66,10 +65,10 @@ export default function SunnahItemsPage() {
               <Sparkles size={18} className="mt-0.5 shrink-0 text-gold-600" />
               <div>
                 <p className="text-xs font-semibold text-forest-950">
-                  সুন্নাহ গিফট প্যাক বানিয়ে দিন
+                  Build a Sunnah gift pack
                 </p>
                 <p className="mt-0.5 text-[10px] text-muted">
-                  মিসওয়াক, আতর, তাসবিহ একসঙ্গে — প্রিয়জনকে উপহার দেওয়ার জন্য সুন্দর বক্সে।
+                  Miswak, attar and tasbih together — in a beautiful box to gift someone special.
                 </p>
               </div>
             </div>
@@ -79,7 +78,7 @@ export default function SunnahItemsPage() {
               rel="noopener noreferrer"
               className="inline-flex h-9 shrink-0 items-center rounded-full bg-forest-900 px-4 text-[10px] font-semibold text-cream-50 hover:bg-forest-700"
             >
-              হোয়াটসঅ্যাপে অর্ডার
+              Order on WhatsApp
             </a>
           </div>
         </Container>

@@ -16,7 +16,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
       >
         <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 text-[10px] font-medium text-forest-800">
           <FileText size={12} />
-          সর্বশেষ হালনাগাদ: {document.lastUpdated}
+          Last updated: {document.lastUpdated}
         </span>
       </PageHeader>
 
@@ -26,7 +26,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
             <aside className="lg:sticky lg:top-32">
               <div className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-clay-500">
-                  এই পেজে
+                  On this page
                 </p>
                 <nav className="mt-2 space-y-0.5">
                   {document.sections.map((section) => (
@@ -44,10 +44,10 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
               <div className="mt-3 rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
                   <ShieldCheck size={13} className="text-gold-600" />
-                  সহায়তা প্রয়োজন?
+                  Need help?
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-muted">
-                  নিয়ম নিয়ে প্রশ্ন থাকলে আমাদের টিম সঙ্গে যোগাযোগ করুন।
+                  Contact our team if you have a question about these policies.
                 </p>
                 <div className="mt-2.5 space-y-1.5 text-[9px] text-forest-800">
                   <a href={`mailto:${siteConfig.email}`} className="flex items-center gap-1.5 hover:text-clay-600">
@@ -64,7 +64,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
                   href="/contact"
                   className="mt-3 inline-flex h-8 items-center rounded-full bg-forest-900 px-3 text-[9px] font-semibold text-cream-50 hover:bg-forest-700"
                 >
-                  যোগাযোগ করুন
+                  Contact us
                 </Link>
               </div>
             </aside>
@@ -107,9 +107,9 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
                 ))}
               </div>
               <div className="border-t border-forest-900/8 bg-cream-100/40 px-5 py-4 text-[9px] leading-relaxed text-muted sm:px-7">
-                এই নীতিমালাটি TalkNest BD-এর ডেমো ওয়েবসাইটের জন্য প্রস্তুত করা
-                হয়েছে। ভবিষ্যতে আসল সেবা চালু হলে আইনগত পরামর্শের ভিত্তিতে এটি
-                হালনাগাদ করা হবে।
+                These policies were prepared for the TalkNest BD demo website.
+                They will be reviewed with legal advice before a live service is
+                launched.
               </div>
             </article>
           </div>

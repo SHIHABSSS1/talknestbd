@@ -5,8 +5,8 @@ import { Container } from "@/components/ui/Container";
 import { OrderReceipt } from "@/components/orders/OrderReceipt";
 
 export const metadata: Metadata = {
-  title: "অর্ডার রিসিট",
-  description: "TalkNest BD অর্ডার কনফার্মেশন ও রিসিট।",
+  title: "Order Receipt",
+  description: "TalkNest BD order confirmation and receipt.",
 };
 
 export default function OrderReceiptPage({

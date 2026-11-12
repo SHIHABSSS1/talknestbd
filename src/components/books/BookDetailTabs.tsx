@@ -7,8 +7,8 @@ import { categoryLabel } from "@/data/categories";
 import { cn, toBn } from "@/lib/utils";
 
 const tabs = [
-  { key: "description", label: "সংক্ষিপ্ত ও বিস্তারিত বিবরণ" },
-  { key: "details", label: "স্পেসিফিকেশন" },
+  { key: "description", label: "Overview & description" },
+  { key: "details", label: "Specifications" },
 ] as const;
 
 type TabKey = (typeof tabs)[number]["key"];
@@ -44,8 +44,8 @@ export function BookDetailTabs({ book }: { book: Book }) {
                 <BookOpen size={15} />
               </span>
               <div>
-                <h3 className="font-display text-lg font-bold text-forest-950">সংক্ষিপ্ত বিবরণ</h3>
-                <p className="text-[9px] uppercase tracking-[0.16em] text-muted">Short description</p>
+                <h3 className="font-display text-lg font-bold text-forest-950">Short description</h3>
+                <p className="text-[9px] uppercase tracking-[0.16em] text-muted">At a glance</p>
               </div>
             </div>
             <p className="mt-3 rounded-2xl border border-forest-900/8 bg-cream-100/50 p-4 text-sm font-medium leading-relaxed text-forest-900/85 sm:text-[15px]">
@@ -58,8 +58,8 @@ export function BookDetailTabs({ book }: { book: Book }) {
                   <Layers3 size={15} />
                 </span>
                 <div>
-                  <h3 className="font-display text-lg font-bold text-forest-950">বিস্তারিত বিবরণ</h3>
-                  <p className="text-[9px] uppercase tracking-[0.16em] text-muted">Long description</p>
+                  <h3 className="font-display text-lg font-bold text-forest-950">Full description</h3>
+                  <p className="text-[9px] uppercase tracking-[0.16em] text-muted">In detail</p>
                 </div>
               </div>
               <div className="prose-bn mt-3 space-y-3 text-sm leading-relaxed text-forest-900/75 sm:text-[15px]">
@@ -71,7 +71,7 @@ export function BookDetailTabs({ book }: { book: Book }) {
 
             <div className="mt-7">
               <h3 className="font-display text-lg font-bold text-forest-950">
-                এই বইয়ের বিশেষত্ব
+                Why readers love this book
               </h3>
               <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
                 {book.highlights.map((highlight) => (
@@ -91,21 +91,21 @@ export function BookDetailTabs({ book }: { book: Book }) {
         {active === "details" && (
           <div>
             <div className="flex items-center justify-between gap-3">
-              <h3 className="font-display text-lg font-bold text-forest-950">বইয়ের স্পেসিফিকেশন</h3>
+              <h3 className="font-display text-lg font-bold text-forest-950">Book specifications</h3>
               <span className="inline-flex items-center gap-1 text-[10px] text-muted">
-                <ChevronDown size={12} /> বিস্তারিত তথ্য
+                <ChevronDown size={12} /> Full details
               </span>
             </div>
             <div className="mt-4 grid max-w-3xl gap-2 sm:grid-cols-2">
               {[
-                ["লেখক", book.author],
-                ["প্রকাশনী", book.publisher],
-                ["ক্যাটাগরি", categoryLabel(book.category)],
-                ["পৃষ্ঠা সংখ্যা", toBn(book.pages)],
-                ["ভাষা", book.language],
-                ["বাঁধাই", book.binding],
-                ["প্রকাশের বছর", toBn(book.publishedYear)],
-                ["আইএসবিএন", "978-984-0000-00-0"],
+                ["Author", book.author],
+                ["Publisher", book.publisher],
+                ["Category", categoryLabel(book.category)],
+                ["Pages", toBn(book.pages)],
+                ["Language", book.language],
+                ["Binding", book.binding],
+                ["Published", toBn(book.publishedYear)],
+                ["ISBN", "978-984-0000-00-0"],
               ].map(([label, value]) => (
                 <div
                   key={label}
@@ -120,8 +120,8 @@ export function BookDetailTabs({ book }: { book: Book }) {
               ))}
             </div>
             <div className="mt-4 rounded-2xl border border-dashed border-forest-500/25 bg-forest-50 px-4 py-3 text-[10px] leading-relaxed text-forest-800/70">
-              বইটি ১০০% অরিজিনাল। প্রকাশকের কাছ থেকে সরাসরি সংগ্রহ করা হয় এবং
-              ডেলিভারির আগে প্রতিটি কপি যাচাই করা হয়।
+              This is a 100% original edition. Each copy is sourced directly
+              from the publisher and checked before delivery.
             </div>
           </div>
         )}

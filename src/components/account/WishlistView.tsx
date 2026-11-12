@@ -30,13 +30,13 @@ export function WishlistView() {
     return (
       <EmptyState
         icon={<Heart size={24} />}
-        title="উইশলিস্ট এখন খালি"
-        description="পছন্দের বইয়ের পাশে হার্ট আইকনে ক্লিক করে সংরক্ষণ করুন — পরে সহজে খুঁজে পাবেন।"
+        title="Your wishlist is empty"
+        description="Select the heart beside any book to save it here for later."
         action={
           <div className="flex flex-wrap justify-center gap-3">
-            <Button href="/books">বই ঘুরে দেখুন</Button>
+            <Button href="/books">Browse books</Button>
             <Button href="/best-sellers" variant="outline">
-              বেস্ট সেলার
+              Best sellers
             </Button>
           </div>
         }
@@ -54,7 +54,7 @@ export function WishlistView() {
         meta: book.author,
       }),
     );
-    notify(`${toBn(savedBooks.length)}টি বই কার্টে যোগ হয়েছে`);
+    notify(`${toBn(savedBooks.length)} books added to cart`);
   };
 
   const total = savedBooks.reduce((sum, book) => sum + book.price, 0);
@@ -64,27 +64,27 @@ export function WishlistView() {
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-100/50 px-4 py-3">
         <div>
           <p className="text-xs font-semibold text-forest-950">
-            {toBn(savedBooks.length)}টি বই সংরক্ষিত
+            {toBn(savedBooks.length)} books saved
           </p>
           <p className="mt-0.5 text-[10px] text-muted">
-            মোট মূল্য {formatPrice(total)} · ফ্রি ডেলিভারি ৳৯৯৯+
+            Total {formatPrice(total)} · Free delivery over ৳999
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" size="sm" onClick={addAll}>
             <ShoppingBag size={13} />
-            সব কার্টে যোগ করুন
+            Add all to cart
           </Button>
           <Button href="/books" variant="outline" size="sm">
-            আরও বই
+            More books
           </Button>
         </div>
       </div>
       <BookGrid books={savedBooks} columns="four" />
       <p className="mt-5 text-center text-[10px] text-muted">
-        বইয়ের কার্ডে হার্ট আইকনে আবার ক্লিক করলে উইশলিস্ট থেকে সরানো যাবে।{" "}
+        Select the heart on a book card again to remove it from your wishlist.{" "}
         <Link href="/account" className="font-semibold text-clay-600">
-          অ্যাকাউন্টে ফিরুন
+          Back to account
         </Link>
       </p>
     </div>

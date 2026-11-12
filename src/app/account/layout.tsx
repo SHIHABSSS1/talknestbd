@@ -4,8 +4,8 @@ import { Container } from "@/components/ui/Container";
 import { AccountNav } from "@/components/account/AccountNav";
 
 export const metadata: Metadata = {
-  title: "আমার অ্যাকাউন্ট",
-  description: "TalkNest BD অ্যাকাউন্ট — অর্ডার, ঠিকানা, উইশলিস্ট ও প্রোফাইল সেটিংস।",
+  title: "My Account",
+  description: "Your TalkNest BD account — orders, addresses, wishlist and profile settings.",
 };
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -13,9 +13,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <>
       <PageHeader
         eyebrow="My Account"
-        title="আমার TalkNest অ্যাকাউন্ট"
-        description="অর্ডার ট্র্যাক করুন, সংরক্ষিত ঠিকানা দেখুন, উইশলিস্ট সাজান আর প্রোফাইল সেটিংস বদলান — সব এক জায়গায়।"
-        crumbs={[{ label: "আমার অ্যাকাউন্ট" }]}
+        title="My TalkNest account"
+        description="Track orders, review saved addresses, manage your wishlist and update profile settings — all in one place."
+        crumbs={[{ label: "My Account" }]}
       />
       <section className="py-8 sm:py-10">
         <Container>

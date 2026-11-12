@@ -3,8 +3,8 @@ import { privacyDocument } from "@/data/legal";
 import { LegalDocument } from "@/components/legal/LegalDocument";
 
 export const metadata: Metadata = {
-  title: "প্রাইভেসি পলিসি",
-  description: "TalkNest BD কীভাবে পাঠকের তথ্য সংগ্রহ, ব্যবহার ও সংরক্ষণ করে।",
+  title: "Privacy Policy",
+  description: "How TalkNest BD collects, uses and stores reader information.",
 };
 
 export default function PrivacyPage() {

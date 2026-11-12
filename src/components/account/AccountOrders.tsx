@@ -44,9 +44,9 @@ export function AccountOrders() {
     return (
       <EmptyState
         icon={<Package size={24} />}
-        title="এখনো কোনো অর্ডার করেননি"
-        description="বই বা সুন্নাহ সামগ্রী অর্ডার করলে সেগুলোর রিসিট ও স্ট্যাটাস এখানে দেখা যাবে।"
-        action={<Button href="/books">বই ঘুরে দেখুন</Button>}
+        title="No orders yet"
+        description="Once you order books or Sunnah items, their receipts and status will show up here."
+        action={<Button href="/books">Browse books</Button>}
       />
     );
   }
@@ -64,14 +64,14 @@ export function AccountOrders() {
         item.quantity,
       );
     });
-    notify("আগের অর্ডারের আইটেম কার্টে যোগ হয়েছে");
+    notify("Items from your previous order were added to the cart");
   };
 
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-display text-xl font-bold text-forest-950">আমার অর্ডার</h1>
-        <Badge tone="forest">মোট {toBn(orders.length)}টি অর্ডার</Badge>
+        <h1 className="font-display text-xl font-bold text-forest-950">My Orders</h1>
+        <Badge tone="forest">Total {toBn(orders.length)} orders</Badge>
       </div>
 
       {orders.map((order) => (
@@ -83,14 +83,14 @@ export function AccountOrders() {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-bold text-forest-950">{order.id}</p>
-                <Badge tone={order.status === "কনফার্মড" ? "gold" : "forest"}>
+                <Badge tone={order.status.toLowerCase().startsWith("confirm") ? "gold" : "forest"}>
                   {order.status}
                 </Badge>
               </div>
               <p className="mt-0.5 text-[9px] text-muted">{formatOrderDate(order.createdAt)}</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] text-muted">সর্বমোট</p>
+              <p className="text-[9px] text-muted">Order total</p>
               <p className="font-display text-lg font-bold text-forest-950">
                 {formatPrice(order.total)}
               </p>
@@ -127,8 +127,8 @@ export function AccountOrders() {
                         {item.title}
                       </p>
                       <p className="text-[9px] text-muted">
-                        {item.kind === "audio" ? "অডিও বুক" : item.kind === "sunnah" ? "সুন্নাহ" : "বই"} ·{" "}
-                        {toBn(item.quantity)}টি
+                        {item.kind === "audio" ? "Audiobook" : item.kind === "sunnah" ? "Sunnah" : "Book"} ·{" "}
+                        Qty {toBn(item.quantity)}
                       </p>
                     </div>
                     <span className="shrink-0 text-[10px] font-semibold text-forest-900">
@@ -139,27 +139,27 @@ export function AccountOrders() {
               })}
               {order.items.length > 3 && (
                 <p className="text-[9px] text-muted">
-                  আরও {toBn(order.items.length - 3)}টি আইটেম...
+                  +{toBn(order.items.length - 3)} more items...
                 </p>
               )}
             </div>
 
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-forest-900/8 pt-3">
               <p className="text-[9px] text-muted">
-                ডেলিভারি: {formatPrice(order.deliveryCharge)}{" "}
-                {order.deliveryCharge === 0 && <span className="text-forest-600">(ফ্রি)</span>}
+                Delivery: {formatPrice(order.deliveryCharge)}{" "}
+                {order.deliveryCharge === 0 && <span className="text-forest-600">(Free)</span>}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => reorder(order)}>
                   <RotateCcw size={12} />
-                  আবার কিনুন
+                  Buy again
                 </Button>
                 <Link
                   href={`/orders/${order.id}`}
                   className="inline-flex h-9 items-center gap-1.5 rounded-full bg-forest-900 px-4 text-[11px] font-semibold text-cream-50 transition-colors hover:bg-forest-700"
                 >
                   <ShoppingBag size={12} />
-                  রিসিট দেখুন
+                  View receipt
                   <ArrowUpRight size={12} />
                 </Link>
               </div>

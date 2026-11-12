@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/Button";
 type SortKey = "popular" | "newest" | "price-low" | "price-high";
 
 const sorts: { value: SortKey; label: string }[] = [
-  { value: "popular", label: "সবচেয়ে জনপ্রিয়" },
-  { value: "newest", label: "নতুন আগে" },
-  { value: "price-low", label: "দাম: কম থেকে বেশি" },
-  { value: "price-high", label: "দাম: বেশি থেকে কম" },
+  { value: "popular", label: "Most popular" },
+  { value: "newest", label: "Newest first" },
+  { value: "price-low", label: "Price: low to high" },
+  { value: "price-high", label: "Price: high to low" },
 ];
 
 export function BooksExplorer() {
@@ -70,7 +70,7 @@ export function BooksExplorer() {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="এই সংগ্রহে বই, লেখক বা প্রকাশনী খুঁজুন..."
+              placeholder="Search books, authors or publishers in this collection..."
               className="h-11 w-full rounded-full border border-forest-900/10 bg-cream-50 pl-11 pr-4 text-[13px] focus:border-forest-700/30 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
             />
           </div>
@@ -82,7 +82,7 @@ export function BooksExplorer() {
                 onChange={(event) => setFreeOnly(event.target.checked)}
                 className="h-3.5 w-3.5 accent-forest-900"
               />
-              ফ্রি ডেলিভারি
+              Free delivery
             </label>
             <div className="relative">
               <SlidersHorizontal
@@ -92,7 +92,7 @@ export function BooksExplorer() {
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value as SortKey)}
-                aria-label="সাজানোর ধরন"
+                aria-label="Sort by"
                 className="h-10 appearance-none rounded-full border border-forest-900/10 bg-cream-50 pl-9 pr-8 text-[11px] font-medium text-forest-800 focus:border-forest-700/30 focus:outline-none"
               >
                 {sorts.map((item) => (
@@ -116,7 +116,7 @@ export function BooksExplorer() {
                 : "border-forest-900/10 bg-cream-50 text-forest-800 hover:border-forest-900/30",
             )}
           >
-            সব বই
+            All books
           </button>
           {categories.map((item) => (
             <button
@@ -138,7 +138,7 @@ export function BooksExplorer() {
 
       <div className="mt-6 flex items-center justify-between gap-3">
         <p className="text-xs text-muted">
-          মোট <span className="font-semibold text-forest-900">{toBn(filtered.length)}</span>টি বই পাওয়া গেছে
+          Showing <span className="font-semibold text-forest-900">{toBn(filtered.length)}</span> books
         </p>
         {hasFilters && (
           <button
@@ -151,7 +151,7 @@ export function BooksExplorer() {
             className="inline-flex items-center gap-1.5 text-[11px] font-medium text-clay-600 hover:text-clay-500"
           >
             <RotateCcw size={12} />
-            ফিল্টার রিসেট
+            Reset filters
           </button>
         )}
       </div>
@@ -161,9 +161,9 @@ export function BooksExplorer() {
           <BookGrid books={filtered} columns="five" />
         ) : (
           <EmptyState
-            title="কোনো বই পাওয়া যায়নি"
-            description="আপনার খোঁজা শব্দ বা ফিল্টার বদলে আবার চেষ্টা করুন।"
-            action={<Button href="/books">সব বই দেখুন</Button>}
+            title="No books found"
+            description="Try a different search term or adjust your filters."
+            action={<Button href="/books">Browse all books</Button>}
           />
         )}
       </div>

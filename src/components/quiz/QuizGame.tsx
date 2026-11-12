@@ -64,10 +64,10 @@ export function QuizGame() {
     const percentage = Math.round((score / quizQuestions.length) * 100);
     const badge =
       percentage >= 80
-        ? { title: "বইপোকা চ্যাম্পিয়ন", emoji: "🏆", text: "আপনার বই ও ইতিহাসের জ্ঞান অসাধারণ!" }
+        ? { title: "Bookworm Champion", emoji: "🏆", text: "Your knowledge of books and history is outstanding!" }
         : percentage >= 50
-          ? { title: "পাঠক পাঠিকা", emoji: "📚", text: "ভালো করছেন! আরও বই পড়লেই চ্যাম্পিয়ন।" }
-          : { title: "নতুন পাঠক", emoji: "🌱", text: "শুরুটা হয়েছে — প্রতিটি প্রশ্নই শেখার সুযোগ।" };
+          ? { title: "Avid Reader", emoji: "📚", text: "Nice work! Keep reading to become a champion." }
+          : { title: "New Reader", emoji: "🌱", text: "You've made a start — every question is a chance to learn." };
 
     return (
       <div className="mx-auto max-w-2xl">
@@ -90,35 +90,35 @@ export function QuizGame() {
                 <p className="font-display text-3xl font-bold text-gold-300">
                   {toBn(score)}/{toBn(quizQuestions.length)}
                 </p>
-                <p className="text-[8px] text-cream-100/45">সঠিক উত্তর</p>
+                <p className="text-[8px] text-cream-100/45">Correct answers</p>
               </div>
               <span className="h-10 w-px bg-white/10" />
               <div>
                 <p className="font-display text-3xl font-bold text-gold-300">{toBn(percentage)}%</p>
-                <p className="text-[8px] text-cream-100/45">স্কোর</p>
+                <p className="text-[8px] text-cream-100/45">Score</p>
               </div>
             </div>
 
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <Button type="button" variant="gold" size="sm" onClick={restart}>
-                <RotateCcw size={13} /> আবার খেলুন
+                <RotateCcw size={13} /> Play again
               </Button>
               <Button href="/books" variant="light" size="sm">
-                <BookOpen size={13} /> বই ঘুরে দেখুন
+                <BookOpen size={13} /> Browse books
               </Button>
               <Button href="/reviews" variant="light" size="sm">
-                রিভিউ পড়ুন
+                Read reviews
               </Button>
             </div>
             <p className="mt-4 text-[8px] text-cream-100/35">
-              ডেমো কুইজ · কোনো পুরস্কার স্বয়ংক্রিয়ভাবে প্রদান করা হয় না
+              Demo quiz · no prizes are awarded automatically
             </p>
           </div>
         </div>
 
         <div className="mt-4 rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
           <p className="flex items-center gap-2 text-[11px] font-semibold text-forest-950">
-            <Sparkles size={13} className="text-gold-600" /> আজকের স্কোর কার্ড
+            <Sparkles size={13} className="text-gold-600" /> Today&apos;s scorecard
           </p>
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
             {quizQuestions.map((item, questionIndex) => {
@@ -145,10 +145,10 @@ export function QuizGame() {
     <div className="mx-auto max-w-2xl">
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-900 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-gold-300">
-          <CircleHelp size={11} /> বুক কুইজ
+          <CircleHelp size={11} /> Book quiz
         </span>
         <span className="text-[10px] font-semibold text-forest-800">
-          প্রশ্ন {toBn(index + 1)} / {toBn(quizQuestions.length)}
+          Question {toBn(index + 1)} / {toBn(quizQuestions.length)}
         </span>
       </div>
 
@@ -201,7 +201,7 @@ export function QuizGame() {
                   ) : answered && isSelected ? (
                     <XCircle size={13} />
                   ) : (
-                    String.fromCharCode(2453 + optionIndex)
+                    String.fromCharCode(65 + optionIndex)
                   )}
                 </span>
                 <span className="flex-1">{option}</span>
@@ -219,7 +219,7 @@ export function QuizGame() {
           >
             <p className={cn("flex items-center gap-1.5 text-[11px] font-semibold", correct ? "text-forest-900" : "text-clay-700")}>
               {correct ? <CheckCircle2 size={14} /> : <Lightbulb size={14} />}
-              {correct ? "সঠিক উত্তর!" : "উত্তরটি ঠিক হয়নি"}
+              {correct ? "Correct answer!" : "Not quite right"}
             </p>
             <p className="mt-1 text-[10px] leading-relaxed text-forest-800/75">{question.explanation}</p>
           </div>
@@ -231,16 +231,16 @@ export function QuizGame() {
             onClick={restart}
             className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted hover:text-forest-900"
           >
-            <RotateCcw size={11} /> রিসেট
+            <RotateCcw size={11} /> Reset
           </button>
           <Button type="button" size="sm" onClick={next} disabled={!answered}>
             {index + 1 >= quizQuestions.length ? (
               <>
-                ফলাফল দেখুন <Trophy size={13} />
+                See results <Trophy size={13} />
               </>
             ) : (
               <>
-                পরের প্রশ্ন <ArrowRight size={13} />
+                Next question <ArrowRight size={13} />
               </>
             )}
           </Button>
@@ -248,8 +248,8 @@ export function QuizGame() {
       </div>
 
       <p className="mt-3 text-center text-[9px] text-muted">
-        বই, লেখক ও ইতিহাস নিয়ে {toBn(quizQuestions.length)}টি প্রশ্ন · প্রতিটি সঠিক উত্তরে{" "}
-        <Link href="/books" className="font-semibold text-clay-600">নতুন কিছু শেখার</Link> সুযোগ
+        {toBn(quizQuestions.length)} questions on books, authors and history · every correct answer is{" "}
+        <Link href="/books" className="font-semibold text-clay-600">a chance to learn something new</Link>
       </p>
     </div>
   );

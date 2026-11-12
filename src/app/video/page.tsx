@@ -4,9 +4,9 @@ import { Container } from "@/components/ui/Container";
 import { VideoGallery } from "@/components/video/VideoGallery";
 
 export const metadata: Metadata = {
-  title: "TalkNest পডকাস্ট ও ভিডিও",
+  title: "TalkNest Podcast & Video",
   description:
-    "লেখক সাক্ষাৎকার, বই রিভিউ, বুক লিস্ট ও আড্ডা — TalkNest পডকাস্টের সব ভিডিও এক জায়গায়, YouTube প্লেয়ারসহ।",
+    "Author interviews, book reviews, reading lists and conversations — every TalkNest episode in one place, playable through YouTube.",
 };
 
 export default function VideoPage() {
@@ -14,20 +14,20 @@ export default function VideoPage() {
     <>
       <PageHeader
         eyebrow="TalkNest Podcast"
-        title="বই, লেখক আর গল্পের আড্ডা"
-        description="প্রতি সপ্তাহে নতুন এপিসোড — লেখকের সঙ্গে সাক্ষাৎকার, বইয়ের রিভিউ, পাঠকের গল্প আর কুইজ। এপিসোডে ক্লিক করে সরাসরি YouTube প্লেয়ারে দেখুন।"
+        title="Conversations about books, authors and stories"
+        description="A new episode every week — author interviews, book reviews, reader stories and quizzes. Click any episode to watch it in the YouTube player."
         tone="dark"
-        crumbs={[{ label: "ভিডিও" }]}
+        crumbs={[{ label: "Video" }]}
       >
         <div className="flex flex-wrap gap-2 text-[10px]">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            নতুন এপিসোড প্রতি বৃহস্পতিবার
+            New episode every Thursday
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            YouTube-এ সরাসরি প্লে
+            Plays directly on YouTube
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-cream-100/80">
-            লেখক ও পাঠকের আড্ডা
+            Authors and readers in conversation
           </span>
         </div>
       </PageHeader>

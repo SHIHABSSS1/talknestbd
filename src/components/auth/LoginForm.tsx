@@ -31,15 +31,15 @@ export function LoginForm() {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (mode === "register" && name.trim().length < 3) {
-      setError("আপনার পুরো নাম লিখুন");
+      setError("Enter your full name");
       return;
     }
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError("সঠিক ইমেইল ঠিকানা দিন");
+      setError("Enter a valid email address");
       return;
     }
     if (password.length < 4) {
-      setError("কমপক্ষে ৪ অক্ষরের পাসওয়ার্ড দিন (ডেমো)");
+      setError("Enter a password with at least 4 characters (demo)");
       return;
     }
     setError("");
@@ -50,9 +50,9 @@ export function LoginForm() {
         email: email.trim(),
         phone: readProfile().phone,
       });
-      notify("ডেমো অ্যাকাউন্ট তৈরি হয়েছে");
+      notify("Demo account created");
     } else {
-      notify("ডেমো লগইন সফল হয়েছে");
+      notify("Demo login successful");
     }
     router.push("/account");
   };
@@ -77,20 +77,20 @@ export function LoginForm() {
             TalkNest Reader Club
           </span>
           <h2 className="mt-6 max-w-sm font-display text-3xl font-bold leading-snug">
-            আপনার পড়ার জগৎ,
+            Your reading world,
             <br />
-            <span className="text-gold-300">একটি অ্যাকাউন্টে।</span>
+            <span className="text-gold-300">in one account.</span>
           </h2>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-cream-100/55">
-            অর্ডার ট্র্যাক, সংরক্ষিত ঠিকানা, উইশলিস্ট আর অডিও লাইব্রেরি —
-            সবকিছু এক জায়গায় সাজিয়ে রাখুন।
+            Keep order tracking, saved addresses, your wishlist and audio
+            library together in one place.
           </p>
 
           <div className="mt-8 space-y-3">
             {[
-              { icon: Heart, title: "উইশলিস্ট সিঙ্ক", text: "পছন্দের বই সংরক্ষণ করুন" },
-              { icon: ShieldCheck, title: "নিরাপদ অর্ডার", text: "ঠিকানা ও অর্ডার ইতিহাস" },
-              { icon: UserRound, title: "নিজের পাঠ-প্রোফাইল", text: "রিভিউ ও কমিউনিটি অংশগ্রহণ" },
+              { icon: Heart, title: "Synced wishlist", text: "Save books you want to read" },
+              { icon: ShieldCheck, title: "Secure orders", text: "Addresses and order history" },
+              { icon: UserRound, title: "Reader profile", text: "Reviews and community activity" },
             ].map((item) => (
               <div key={item.title} className="flex items-center gap-3">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 text-gold-300">
@@ -106,9 +106,9 @@ export function LoginForm() {
 
           <div className="mt-auto rounded-2xl border border-white/10 bg-white/[0.04] p-4">
             <p className="font-display text-sm font-semibold text-gold-300">
-              “প্রতিটি বই একটি নতুন জীবনের দরজা।”
+              &ldquo;Every book opens the door to another life.&rdquo;
             </p>
-            <p className="mt-1 text-[9px] text-cream-100/40">— TalkNest পাঠক</p>
+            <p className="mt-1 text-[9px] text-cream-100/40">— A TalkNest reader</p>
           </div>
         </div>
       </div>
@@ -120,12 +120,12 @@ export function LoginForm() {
               {mode === "login" ? "Welcome Back" : "Create Account"}
             </p>
             <h1 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-              {mode === "login" ? "আবার স্বাগতম" : "নতুন অ্যাকাউন্ট"}
+              {mode === "login" ? "Welcome back" : "Create an account"}
             </h1>
             <p className="mt-1 text-[11px] text-muted">
               {mode === "login"
-                ? "অর্ডার ও উইশলিস্ট দেখতে লগইন করুন।"
-                : "একটি ডেমো অ্যাকাউন্ট তৈরি করে শুরু করুন।"}
+                ? "Log in to view your orders and wishlist."
+                : "Create a demo account to get started."}
             </p>
           </div>
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-forest-100 text-forest-700">
@@ -136,13 +136,13 @@ export function LoginForm() {
         <form onSubmit={submit} className="mt-5 space-y-3" noValidate>
           {mode === "register" && (
             <label className="block">
-              <span className="mb-1 block text-[11px] font-semibold text-forest-900">পুরো নাম</span>
+              <span className="mb-1 block text-[11px] font-semibold text-forest-900">Full name</span>
               <span className="relative block">
                 <UserRound size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
                 <input
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="আপনার নাম"
+                  placeholder="Your name"
                   autoComplete="name"
                   className={inputClass}
                 />
@@ -151,7 +151,7 @@ export function LoginForm() {
           )}
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">ইমেইল</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Email</span>
             <span className="relative block">
               <Mail size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
               <input
@@ -166,7 +166,7 @@ export function LoginForm() {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">পাসওয়ার্ড</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Password</span>
             <span className="relative block">
               <Lock size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
               <input
@@ -180,7 +180,7 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                aria-label={showPassword ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
                 className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-forest-700/40 hover:text-forest-800"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -197,20 +197,20 @@ export function LoginForm() {
           <div className="flex items-center justify-between gap-3 text-[10px]">
             <label className="flex items-center gap-1.5 text-muted">
               <input type="checkbox" defaultChecked className="h-3.5 w-3.5 accent-forest-900" />
-              মনে রাখুন
+              Remember me
             </label>
-            <span className="font-medium text-clay-600">পাসওয়ার্ড ভুলে গেছেন?</span>
+            <span className="font-medium text-clay-600">Forgot password?</span>
           </div>
 
           <Button type="submit" size="lg" className="w-full">
-            {mode === "login" ? "লগইন করুন" : "অ্যাকাউন্ট তৈরি করুন"}
+            {mode === "login" ? "Log in" : "Create account"}
             <ArrowRight size={15} />
           </Button>
         </form>
 
         <div className="my-4 flex items-center gap-3 text-[9px] text-muted">
           <span className="h-px flex-1 bg-forest-900/10" />
-          অথবা
+          Or
           <span className="h-px flex-1 bg-forest-900/10" />
         </div>
 
@@ -219,15 +219,15 @@ export function LoginForm() {
           variant="outline"
           className="w-full"
           onClick={() => {
-            notify("ডেমো গেস্ট লগইন — সরাসরি অ্যাকাউন্টে যাচ্ছেন");
+            notify("Demo guest login — opening your account");
             router.push("/account");
           }}
         >
-          গেস্ট হিসেবে চালিয়ে যান
+          Continue as guest
         </Button>
 
         <p className="mt-4 text-center text-[10px] text-muted">
-          {mode === "login" ? "নতুন পাঠক?" : "আগে থেকেই অ্যাকাউন্ট আছে?"}{" "}
+          {mode === "login" ? "New reader?" : "Already have an account?"}{" "}
           <button
             type="button"
             onClick={() => {
@@ -236,14 +236,14 @@ export function LoginForm() {
             }}
             className="font-semibold text-clay-600 hover:text-clay-500"
           >
-            {mode === "login" ? "অ্যাকাউন্ট তৈরি করুন" : "লগইন করুন"}
+            {mode === "login" ? "Create an account" : "Log in"}
           </button>
         </p>
 
         <p className="mt-4 rounded-xl bg-cream-100/70 px-3 py-2 text-center text-[9px] leading-relaxed text-muted">
-          ডেমো লগইন — কোনো আসল পাসওয়ার্ড যাচাই বা সার্ভার সংযোগ নেই।{" "}
+          Demo login — there is no real password verification or server connection.{" "}
           <Link href="/privacy" className="font-semibold text-forest-800">
-            প্রাইভেসি
+            Privacy
           </Link>
         </p>
       </div>

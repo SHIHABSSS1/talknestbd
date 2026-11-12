@@ -19,14 +19,14 @@ export function BookReviews({ book }: { book: Book }) {
             Reader Reviews
           </span>
           <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-            পাঠকদের রিভিউ
+            Reader reviews
           </h2>
         </div>
         <Link
           href="/reviews"
           className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/15 px-4 py-2 text-[11px] font-semibold text-forest-800 transition-colors hover:border-forest-900 hover:bg-forest-900 hover:text-cream-50"
         >
-          সব রিভিউ
+          All reviews
           <ArrowUpRight size={13} />
         </Link>
       </div>
@@ -48,7 +48,7 @@ export function BookReviews({ book }: { book: Book }) {
                 ))}
               </div>
               <p className="mt-1 text-[10px] text-muted">
-                {toBn(book.reviewCount)}টি যাচাইকৃত রিভিউ
+                {toBn(book.reviewCount)} verified reviews
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export function BookReviews({ book }: { book: Book }) {
             className="mt-4 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-forest-900 text-[11px] font-semibold text-cream-50 transition-colors hover:bg-forest-700"
           >
             <PenLine size={13} />
-            আপনার রিভিউ লিখুন
+            Write your review
           </Link>
         </div>
 
@@ -94,7 +94,7 @@ export function BookReviews({ book }: { book: Book }) {
                         {review.name}
                         {review.verified && (
                           <span className="rounded-full bg-forest-100 px-1.5 py-0.5 text-[7px] font-semibold text-forest-700">
-                            যাচাইকৃত
+                            Verified
                           </span>
                         )}
                       </p>
@@ -113,7 +113,7 @@ export function BookReviews({ book }: { book: Book }) {
                   {review.text}
                 </p>
                 <p className="mt-2 flex items-center gap-1 text-[9px] text-muted">
-                  <ThumbsUp size={10} /> এই রিভিউটি সহায়ক ছিল
+                  <ThumbsUp size={10} /> This review was helpful
                 </p>
               </article>
             ))
@@ -121,16 +121,16 @@ export function BookReviews({ book }: { book: Book }) {
             <div className="rounded-2xl border border-dashed border-forest-900/15 bg-cream-50 p-8 text-center">
               <Star size={22} className="mx-auto text-gold-500/40" />
               <p className="mt-2 text-sm font-semibold text-forest-900">
-                এই বইয়ের প্রথম রিভিউটি আপনার হোক
+                Be the first to review this book
               </p>
               <p className="mt-1 text-[10px] text-muted">
-                বইটি পড়ে আপনার অনুভূতি শেয়ার করুন — অন্য পাঠকদের সিদ্ধান্তে সাহায্য করুন।
+                Share how the book made you feel — help other readers decide.
               </p>
               <Link
                 href="/reviews#review-form"
                 className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-clay-600 hover:text-clay-500"
               >
-                রিভিউ লিখুন
+                Write a review
                 <ArrowUpRight size={12} />
               </Link>
             </div>

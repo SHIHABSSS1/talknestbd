@@ -12,15 +12,15 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "পাতাটি খুঁজে পাওয়া যায়নি",
-  description: "আপনি যে পাতাটি খুঁজছেন সেটি পাওয়া যায়নি — TalkNest BD-এর বইয়ের সংগ্রহ থেকে ফিরে আসুন।",
+  title: "Page not found",
+  description: "The page you're looking for wasn't found — head back to the TalkNest BD book collection.",
 };
 
 const links = [
-  { icon: Home, label: "হোমপেজ", href: "/" },
-  { icon: BookOpen, label: "সব বই", href: "/books" },
-  { icon: PackageSearch, label: "বই খুঁজুন", href: "/search" },
-  { icon: Compass, label: "ক্যাটাগরি", href: "/categories" },
+  { icon: Home, label: "Home", href: "/" },
+  { icon: BookOpen, label: "All books", href: "/books" },
+  { icon: PackageSearch, label: "Search books", href: "/search" },
+  { icon: Compass, label: "Categories", href: "/categories" },
 ];
 
 export default function NotFound() {
@@ -35,22 +35,22 @@ export default function NotFound() {
             <Sparkles size={12} /> Lost in the pages
           </span>
           <p className="mt-4 font-display text-[5rem] font-bold leading-none text-forest-900/12 sm:text-[7rem]">
-            ৪০৪
+            404
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold leading-snug text-forest-950 sm:text-4xl">
-            পাতাটি খুঁজে পাওয়া যায়নি
+            Page not found
           </h1>
           <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-            মনে হচ্ছে বইয়ের এই পাতাটি সরিয়ে ফেলা হয়েছে, ঠিকানাটি বদলে গেছে, অথবা
-            লিংকটি ভুল। চিন্তা নেই — নিচ থেকে আবার শুরু করুন।
+            It looks like this page has been moved, the address has changed, or
+            the link is broken. Don&apos;t worry — start again below.
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             <Button href="/" size="sm">
-              <Home size={13} /> হোমপেজে ফিরুন
+              <Home size={13} /> Back to home
             </Button>
             <Button href="/books" variant="outline" size="sm">
-              <BookOpen size={13} /> বই ঘুরে দেখুন
+              <BookOpen size={13} /> Browse books
             </Button>
           </div>
 
@@ -69,10 +69,10 @@ export default function NotFound() {
           </div>
 
           <div className="mx-auto mt-9 max-w-md rounded-2xl border border-gold-500/20 bg-gold-500/8 px-4 py-3.5 text-left">
-            <p className="text-[10px] font-semibold text-forest-950">একটি ভালো বইয়ের সুপারিশ চান?</p>
+            <p className="text-[10px] font-semibold text-forest-950">Need a good book recommendation?</p>
             <p className="mt-0.5 text-[9px] leading-relaxed text-muted">
-              আমাদের টিমকে হোয়াটসঅ্যাপে জানান — আপনার পছন্দের ধরন অনুযায়ী বই
-              বেছে দিতে সাহায্য করবে।
+              Message our team on WhatsApp and we&apos;ll help you pick books to
+              suit your taste.
             </p>
             <a
               href="https://wa.me/8801712345678"
@@ -80,7 +80,7 @@ export default function NotFound() {
               rel="noopener noreferrer"
               className="mt-2 inline-flex items-center gap-1 text-[9px] font-semibold text-clay-600 hover:text-clay-500"
             >
-              সুপারিশ চাই <ArrowRight size={11} />
+              Get a recommendation <ArrowRight size={11} />
             </a>
           </div>
         </div>

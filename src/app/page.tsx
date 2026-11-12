@@ -30,9 +30,10 @@ export default function HomePage() {
       <BookRail
         books={bestsellers}
         eyebrow="Best Sellers"
-        title="সবচেয়ে প্রিয় বইগুলো"
-        description="পাঠকদের ভালোবাসায় বারবার ফিরে আসা বইয়ের তালিকা।"
+        title="The books readers love most"
+        description="The titles that keep finding new readers, month after month."
         href="/best-sellers"
+        linkLabel="All bestsellers"
       />
 
       <BuybackBanner />
@@ -40,44 +41,50 @@ export default function HomePage() {
       <BookRail
         books={newBooks}
         eyebrow="New Arrivals"
-        title="এই মাসের নতুন বই"
-        description="সদ্য প্রকাশিত ও সংগ্রহে নতুন যোগ হওয়া বইগুলো।"
+        title="Fresh off the press"
+        description="Newly published and newly added — the latest books on our shelves."
         href="/new-books"
+        linkLabel="All new arrivals"
         tone="soft"
-      />
-
-      <BookRail
-        books={viralBooks}
-        eyebrow="Viral Books"
-        title="সোশ্যালে আলোচিত বই"
-        description="পাঠকদের মুখে মুখে ছড়িয়ে পড়া বই, যেগুলো এখন সবাই পড়ছে।"
-        href="/viral-books"
       />
 
       <FreeOrderWholesale />
 
       <BookRail
-        books={internationalBooks}
-        eyebrow="International"
-        title="বিশ্বসাহিত্য ও অনুবাদ"
-        description="বিশ্বজুড়ে পাঠকপ্রিয় বইয়ের বাংলা ও ইংরেজি সংস্করণ।"
-        href="/international-books"
-        tone="soft"
-      />
-
-      <BookRail
-        books={studentBooks}
-        eyebrow="Student Books"
-        title="পড়াশোনার সঙ্গী"
-        description="একাডেমিক প্রস্তুতি, দক্ষতা ও ক্যারিয়ারের জন্য নির্বাচিত বই।"
-        href="/student-books"
+        books={viralBooks}
+        eyebrow="Trending Now"
+        title="Books everyone is talking about"
+        description="The titles moving through reading groups, social feeds and dinner conversations."
+        href="/viral-books"
+        linkLabel="All trending books"
       />
 
       <AudioShowcase />
       <SunnahShowcase />
       <UsedBooksBanner />
+
+      <BookRail
+        books={internationalBooks}
+        eyebrow="International"
+        title="World literature, within reach"
+        description="Global bestsellers, modern classics and translations for curious readers."
+        href="/international-books"
+        linkLabel="All world literature"
+        tone="soft"
+      />
+
       <AuthorsSpotlight />
       <PublishersStrip />
+
+      <BookRail
+        books={studentBooks}
+        eyebrow="Student Books"
+        title="Books for every study day"
+        description="Study guides, reference books and skill-builders for exams and beyond."
+        href="/student-books"
+        linkLabel="All student books"
+      />
+
       <ReviewsWall />
       <VideoQuizSection />
       <StoryCommunity />

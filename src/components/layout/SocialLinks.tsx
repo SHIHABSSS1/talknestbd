@@ -57,7 +57,7 @@ export function SocialLinks({
         href={siteConfig.whatsapp}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="WhatsApp-এ যোগাযোগ করুন"
+        aria-label="Contact us on WhatsApp"
         className="inline-flex items-center gap-2 transition-colors hover:text-gold-400"
       >
         <WhatsAppIcon size={iconSize} />
@@ -67,7 +67,7 @@ export function SocialLinks({
         href={siteConfig.facebook}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Facebook পেজ"
+        aria-label="TalkNest BD on Facebook"
         className="inline-flex items-center gap-2 transition-colors hover:text-gold-400"
       >
         <FacebookIcon size={iconSize} />
@@ -77,7 +77,7 @@ export function SocialLinks({
         href={siteConfig.youtube}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="YouTube চ্যানেল"
+        aria-label="TalkNest BD on YouTube"
         className="inline-flex items-center gap-2 transition-colors hover:text-gold-400"
       >
         <YouTubeIcon size={iconSize} />

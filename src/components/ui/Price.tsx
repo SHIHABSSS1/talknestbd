@@ -13,12 +13,12 @@ export function Price({
     size === "lg"
       ? "text-2xl sm:text-3xl"
       : size === "sm"
-        ? "text-sm"
+        ? "text-[15px]"
         : "text-lg";
 
   return (
-    <span className="flex flex-wrap items-baseline gap-2">
-      <span className={`font-display font-bold text-forest-950 ${priceClass}`}>
+    <span className="flex flex-wrap items-baseline gap-1.5">
+      <span className={`font-bold text-ink ${priceClass}`}>
         {formatPrice(price)}
       </span>
       {oldPrice && oldPrice > price && (

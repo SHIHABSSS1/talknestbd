@@ -27,56 +27,41 @@ export function PageHeader({
       className={cn(
         "relative overflow-hidden border-b",
         dark
-          ? "hero-mesh border-white/5 text-cream-50"
-          : "border-forest-900/8 bg-cream-100/60 text-forest-950",
+          ? "hero-mesh border-brand-700 text-white"
+          : "border-line bg-white text-ink",
         className,
       )}
     >
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute inset-0",
-          dark ? "paper-texture opacity-[0.12]" : "paper-texture opacity-[0.35]",
-        )}
-      />
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute -right-24 -top-32 h-72 w-72 rounded-full border",
-          dark ? "border-gold-400/15" : "border-forest-900/8",
-        )}
-      />
-      <div
-        aria-hidden="true"
-        className={cn(
-          "pointer-events-none absolute -right-8 -top-16 h-44 w-44 rounded-full border",
-          dark ? "border-gold-400/10" : "border-forest-900/6",
-        )}
-      />
+      {!dark && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-brand-50/70 to-transparent"
+        />
+      )}
+      {dark && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-32 h-80 w-80 rounded-full border border-white/10"
+        />
+      )}
 
-      <Container className="relative py-8 sm:py-12 lg:py-14">
-        {crumbs && <Breadcrumb items={crumbs} light={dark} className="mb-5" />}
+      <Container className="relative py-7 sm:py-10 lg:py-12">
+        {crumbs && <Breadcrumb items={crumbs} light={dark} className="mb-4" />}
         <div className="max-w-3xl">
           {eyebrow && (
             <span
               className={cn(
-                "inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] sm:text-[11px]",
-                dark ? "text-gold-400" : "text-clay-500",
+                "mb-2 block text-[11px] font-medium uppercase tracking-[0.08em]",
+                dark ? "text-brand-200" : "text-brand-600",
               )}
             >
-              <span
-                className={cn(
-                  "h-px w-6",
-                  dark ? "bg-gold-400/60" : "bg-clay-500/50",
-                )}
-              />
               {eyebrow}
             </span>
           )}
           <h1
             className={cn(
-              "mt-2.5 font-display text-3xl font-bold leading-[1.2] tracking-tight sm:text-4xl lg:text-[2.9rem]",
-              dark ? "text-cream-50" : "text-forest-950",
+              "text-3xl font-bold leading-[1.16] tracking-tight sm:text-4xl lg:text-[2.6rem]",
+              dark ? "text-white" : "text-ink",
             )}
           >
             {title}
@@ -85,7 +70,7 @@ export function PageHeader({
             <p
               className={cn(
                 "mt-3 max-w-2xl text-sm leading-relaxed sm:text-[15px]",
-                dark ? "text-cream-100/60" : "text-muted",
+                dark ? "text-white/70" : "text-muted",
               )}
             >
               {description}

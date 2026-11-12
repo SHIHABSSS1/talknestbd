@@ -18,19 +18,19 @@ import { YouTubeIcon } from "@/components/layout/SocialLinks";
 import { Button } from "@/components/ui/Button";
 
 export function VideoGallery() {
-  const [category, setCategory] = useState("সব");
+  const [category, setCategory] = useState("All");
   const [active, setActive] = useState<TalkVideo>(
     allVideos.find((video) => video.featured) ?? allVideos[0],
   );
   const [player, setPlayer] = useState<TalkVideo | null>(null);
 
   const categories = useMemo(
-    () => ["সব", ...Array.from(new Set(allVideos.map((video) => video.category)))],
+    () => ["All", ...Array.from(new Set(allVideos.map((video) => video.category)))],
     [],
   );
   const filtered = useMemo(
     () =>
-      category === "সব"
+      category === "All"
         ? allVideos
         : allVideos.filter((video) => video.category === category),
     [category],
@@ -72,7 +72,7 @@ export function VideoGallery() {
               </span>
               <span className="inline-flex items-center gap-1.5 text-[9px] text-cream-100/45">
                 <span className="h-1.5 w-1.5 rounded-full bg-clay-400" />
-                প্রতি বৃহস্পতিবার নতুন এপিসোড
+                New episode every Thursday
               </span>
             </div>
 
@@ -80,7 +80,7 @@ export function VideoGallery() {
               type="button"
               onClick={() => play(active)}
               className="group relative mt-4 block w-full overflow-hidden rounded-[1.5rem] border border-white/10 text-left"
-              aria-label={`${active.title} ভিডিও চালান`}
+              aria-label={`Play ${active.title}`}
             >
               <div className="aspect-video w-full">
                 <img
@@ -120,7 +120,7 @@ export function VideoGallery() {
                   <p className="text-[11px] font-semibold text-cream-50">{active.host}</p>
                   <p className="flex items-center gap-2 text-[9px] text-cream-100/40">
                     <span className="flex items-center gap-1">
-                      <Eye size={10} /> {active.views} ভিউ
+                      <Eye size={10} /> {active.views} views
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock3 size={10} /> {active.duration}
@@ -135,7 +135,7 @@ export function VideoGallery() {
                   className="inline-flex h-9 items-center gap-1.5 rounded-full bg-gold-500 px-4 text-[11px] font-semibold text-forest-950 transition-colors hover:bg-gold-400"
                 >
                   <Play size={13} className="fill-forest-950" />
-                  ইউটিউবে দেখুন
+                  Watch on YouTube
                 </button>
                 <a
                   href={siteConfig.youtube}
@@ -144,7 +144,7 @@ export function VideoGallery() {
                   className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/15 px-4 text-[11px] font-semibold text-cream-100 transition-colors hover:border-gold-400 hover:text-gold-300"
                 >
                   <YouTubeIcon size={14} />
-                  সাবস্ক্রাইব
+                  Subscribe
                 </a>
               </div>
             </div>
@@ -153,10 +153,10 @@ export function VideoGallery() {
           <div className="border-t border-white/10 p-4 sm:p-6 lg:border-l lg:border-t-0">
             <div className="flex items-center justify-between gap-3">
               <h3 className="font-display text-base font-bold text-cream-50">
-                এপিসোড কিউ
+                Episode queue
               </h3>
               <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[8px] font-medium text-cream-100/50">
-                {toBn(allVideos.length)}টি এপিসোড
+                {toBn(allVideos.length)} episodes
               </span>
             </div>
             <div className="no-scrollbar mt-3 max-h-[430px] space-y-1.5 overflow-y-auto pr-1">
@@ -209,7 +209,7 @@ export function VideoGallery() {
               All Episodes
             </span>
             <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-              সব পডকাস্ট ও ভিডিও
+              All podcasts & videos
             </h2>
           </div>
           <div className="no-scrollbar flex max-w-full gap-1.5 overflow-x-auto pb-1">
@@ -281,7 +281,7 @@ export function VideoGallery() {
 
         <div className="mt-6 flex flex-col items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-100/50 px-5 py-4 sm:flex-row">
           <p className="text-center text-xs text-forest-800/70 sm:text-left">
-            নতুন এপিসোড মিস করতে না চাইলে YouTube চ্যানেলটি সাবস্ক্রাইব করুন।
+            Subscribe to our YouTube channel so you never miss a new episode.
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <a
@@ -291,10 +291,10 @@ export function VideoGallery() {
               className="inline-flex h-9 items-center gap-1.5 rounded-full bg-clay-500 px-4 text-[11px] font-semibold text-cream-50 transition-colors hover:bg-clay-600"
             >
               <YouTubeIcon size={14} />
-              YouTube চ্যানেল
+              YouTube channel
             </a>
             <Button href="/stories" variant="outline" size="sm">
-              পাঠকের গল্প
+              Reader stories
               <ArrowUpRight size={13} />
             </Button>
           </div>
@@ -305,7 +305,7 @@ export function VideoGallery() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <button
             type="button"
-            aria-label="ভিডিও বন্ধ করুন"
+            aria-label="Close video"
             onClick={() => setPlayer(null)}
             className="absolute inset-0 h-full w-full bg-forest-950/80 backdrop-blur-sm"
           />
@@ -327,7 +327,7 @@ export function VideoGallery() {
               <button
                 type="button"
                 onClick={() => setPlayer(null)}
-                aria-label="বন্ধ করুন"
+                aria-label="Close"
                 className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/15 text-cream-50 transition-colors hover:bg-white/10"
               >
                 <X size={16} />
@@ -343,7 +343,7 @@ export function VideoGallery() {
               />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-[9px] text-cream-100/45">
-              <span>হোস্ট: {player.host} · ডেমো ভিডিও, YouTube থেকে লোড হচ্ছে</span>
+              <span>Host: {player.host} · Demo video, loaded from YouTube</span>
               <Link
                 href={siteConfig.youtube}
                 target="_blank"
@@ -351,7 +351,7 @@ export function VideoGallery() {
                 className="inline-flex items-center gap-1.5 font-semibold text-gold-300 hover:text-gold-400"
               >
                 <YouTubeIcon size={12} />
-                YouTube-এ দেখুন
+                Watch on YouTube
               </Link>
             </div>
           </div>

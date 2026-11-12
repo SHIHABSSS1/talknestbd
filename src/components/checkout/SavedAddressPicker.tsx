@@ -38,7 +38,7 @@ export function SavedAddressPicker({
               {address.label}
               {address.isDefault && (
                 <span className="rounded-full bg-gold-500/20 px-1.5 py-0.5 text-[8px] text-gold-600">
-                  ডিফল্ট
+                  Default
                 </span>
               )}
             </span>
@@ -72,7 +72,7 @@ export function SavedAddressPicker({
         <span className="grid h-8 w-8 place-items-center rounded-full bg-forest-100 text-forest-700">
           <Plus size={15} />
         </span>
-        <span className="text-[11px] font-semibold">নতুন ঠিকানা যোগ করুন</span>
+        <span className="text-[11px] font-semibold">Add a new address</span>
       </button>
     </div>
   );

@@ -61,28 +61,28 @@ export function AccountOverview() {
 
   const stats = [
     {
-      label: "মোট অর্ডার",
+      label: "Total orders",
       value: toBn(orders.length),
       icon: Package,
       href: "/account/orders",
       tint: "bg-forest-100 text-forest-700",
     },
     {
-      label: "উইশলিস্টে",
+      label: "In wishlist",
       value: toBn(wishlistBooks.length),
       icon: Heart,
       href: "/wishlist",
       tint: "bg-clay-500/10 text-clay-600",
     },
     {
-      label: "সংরক্ষিত ঠিকানা",
+      label: "Saved addresses",
       value: toBn(addresses.length),
       icon: MapPin,
       href: "/account/addresses",
       tint: "bg-gold-500/15 text-gold-600",
     },
     {
-      label: "আমার অডিও",
+      label: "My audiobooks",
       value: toBn(audioCount),
       icon: Headphones,
       href: "/audio-books",
@@ -105,7 +105,7 @@ export function AccountOverview() {
             </span>
             <div>
               <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-gold-400">
-                শুভ দিন, পাঠক
+                Good day, reader
               </p>
               <h1 className="mt-1 font-display text-2xl font-bold">{profile.name}</h1>
               <p className="mt-0.5 text-[10px] text-cream-100/50">
@@ -116,11 +116,11 @@ export function AccountOverview() {
           <div className="flex flex-wrap gap-2">
             <Button href="/account/settings" variant="light" size="sm">
               <Settings size={13} />
-              প্রোফাইল সেটিংস
+              Profile settings
             </Button>
             <Button href="/books" variant="gold" size="sm">
               <Plus size={13} />
-              নতুন বই
+              New books
             </Button>
           </div>
         </div>
@@ -152,12 +152,12 @@ export function AccountOverview() {
 
       <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3">
-          <h2 className="font-display text-lg font-bold text-forest-950">সাম্প্রতিক অর্ডার</h2>
+          <h2 className="font-display text-lg font-bold text-forest-950">Recent orders</h2>
           <Link
             href="/account/orders"
             className="inline-flex items-center gap-1 text-[10px] font-semibold text-clay-600 hover:text-clay-500"
           >
-            সব দেখুন <ArrowUpRight size={12} />
+            View all <ArrowUpRight size={12} />
           </Link>
         </div>
 
@@ -178,14 +178,14 @@ export function AccountOverview() {
                     <Badge tone="forest">{order.status}</Badge>
                   </span>
                   <span className="mt-0.5 block text-[9px] text-muted">
-                    {formatOrderDate(order.createdAt)} · {toBn(order.items.length)}টি আইটেম
+                    {formatOrderDate(order.createdAt)} · {toBn(order.items.length)} items
                   </span>
                 </span>
                 <span className="text-right">
                   <span className="block text-xs font-bold text-forest-950">
                     {formatPrice(order.total)}
                   </span>
-                  <span className="block text-[9px] text-clay-600">রিসিট দেখুন →</span>
+                  <span className="block text-[9px] text-clay-600">View receipt →</span>
                 </span>
               </Link>
             ))}
@@ -193,13 +193,13 @@ export function AccountOverview() {
         ) : (
           <div className="mt-3 flex flex-col items-start justify-between gap-3 rounded-2xl border border-dashed border-forest-900/15 bg-cream-100/40 p-5 sm:flex-row sm:items-center">
             <div>
-              <p className="text-xs font-semibold text-forest-900">এখনো কোনো অর্ডার নেই</p>
+              <p className="text-xs font-semibold text-forest-900">No orders yet</p>
               <p className="mt-0.5 text-[10px] text-muted">
-                পছন্দের বই যোগ করে প্রথম অর্ডারটি সম্পন্ন করুন।
+                Add a few favourites and place your first order.
               </p>
             </div>
             <Button href="/books" size="sm">
-              বই দেখুন
+              Browse books
             </Button>
           </div>
         )}
@@ -208,9 +208,9 @@ export function AccountOverview() {
       <div className="grid gap-4 sm:grid-cols-2">
         <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-display text-base font-bold text-forest-950">উইশলিস্ট</h2>
+            <h2 className="font-display text-base font-bold text-forest-950">Wishlist</h2>
             <Link href="/wishlist" className="text-[10px] font-semibold text-clay-600">
-              সব দেখুন
+              View all
             </Link>
           </div>
           {wishlistBooks.length > 0 ? (
@@ -229,16 +229,16 @@ export function AccountOverview() {
           ) : (
             <div className="mt-3 rounded-2xl border border-dashed border-forest-900/15 p-4 text-center">
               <Heart size={17} className="mx-auto text-forest-900/25" />
-              <p className="mt-1.5 text-[10px] text-muted">পছন্দের বই হার্ট আইকনে সংরক্ষণ করুন।</p>
+              <p className="mt-1.5 text-[10px] text-muted">Tap the heart icon on any book to save it.</p>
             </div>
           )}
         </section>
 
         <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="font-display text-base font-bold text-forest-950">সংরক্ষিত ঠিকানা</h2>
+            <h2 className="font-display text-base font-bold text-forest-950">Saved addresses</h2>
             <Link href="/account/addresses" className="text-[10px] font-semibold text-clay-600">
-              ম্যানেজ করুন
+              Manage
             </Link>
           </div>
           {addresses[0] ? (
@@ -246,7 +246,7 @@ export function AccountOverview() {
               <p className="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-wider text-forest-700">
                 <MapPin size={11} />
                 {addresses[0].label}
-                {addresses[0].isDefault && <Badge tone="gold">ডিফল্ট</Badge>}
+                {addresses[0].isDefault && <Badge tone="gold">Default</Badge>}
               </p>
               <p className="mt-1.5 text-xs font-semibold text-forest-950">{addresses[0].name}</p>
               <p className="text-[9px] text-muted">{addresses[0].phone}</p>
@@ -257,7 +257,7 @@ export function AccountOverview() {
           ) : (
             <div className="mt-3 rounded-2xl border border-dashed border-forest-900/15 p-4 text-center">
               <MapPin size={17} className="mx-auto text-forest-900/25" />
-              <p className="mt-1.5 text-[10px] text-muted">চেকআউটের সময় ঠিকানা সংরক্ষণ করুন।</p>
+              <p className="mt-1.5 text-[10px] text-muted">Save an address during checkout.</p>
             </div>
           )}
         </section>

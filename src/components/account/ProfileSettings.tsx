@@ -51,10 +51,10 @@ export function ProfileSettings() {
 
   const save = () => {
     const next: Record<string, string> = {};
-    if (!profile.name.trim()) next.name = "নাম লিখুন";
-    if (!/^\S+@\S+\.\S+$/.test(profile.email)) next.email = "সঠিক ইমেইল দিন";
+    if (!profile.name.trim()) next.name = "Enter your name";
+    if (!/^\S+@\S+\.\S+$/.test(profile.email)) next.email = "Enter a valid email address";
     if (profile.phone.replace(/\D/g, "").length < 11) {
-      next.phone = "১১ ডিজিটের মোবাইল নম্বর দিন";
+      next.phone = "Enter an 11-digit mobile number";
     }
     if (Object.keys(next).length > 0) {
       setErrors(next);
@@ -67,7 +67,7 @@ export function ProfileSettings() {
     } catch {
       // ignore
     }
-    notify("প্রোফাইল ও সেটিংস সংরক্ষণ হয়েছে");
+    notify("Profile and settings saved");
   };
 
   const inputClass =
@@ -76,9 +76,9 @@ export function ProfileSettings() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="font-display text-xl font-bold text-forest-950">প্রোফাইল ও সেটিংস</h1>
+        <h1 className="font-display text-xl font-bold text-forest-950">Profile and settings</h1>
         <p className="mt-0.5 text-[10px] text-muted">
-          আপনার তথ্য, যোগাযোগের নম্বর ও নোটিফিকেশন পছন্দ আপডেট করুন।
+          Update your details, contact number and notification preferences.
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export function ProfileSettings() {
             <p className="text-sm font-semibold text-forest-950">{profile.name}</p>
             <p className="text-[10px] text-muted">{profile.email}</p>
             <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-forest-100 px-2 py-0.5 text-[8px] font-semibold text-forest-700">
-              ডেমো অ্যাকাউন্ট
+              Demo account
             </span>
           </div>
         </div>
@@ -99,7 +99,7 @@ export function ProfileSettings() {
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="block">
             <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
-              <UserRound size={12} /> পুরো নাম
+              <UserRound size={12} /> Full name
             </span>
             <input
               value={profile.name}
@@ -111,7 +111,7 @@ export function ProfileSettings() {
 
           <label className="block">
             <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
-              <Mail size={12} /> ইমেইল
+              <Mail size={12} /> Email
             </span>
             <input
               type="email"
@@ -124,7 +124,7 @@ export function ProfileSettings() {
 
           <label className="block">
             <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
-              <Phone size={12} /> মোবাইল নম্বর
+              <Phone size={12} /> Mobile number
             </span>
             <input
               value={profile.phone}
@@ -136,12 +136,12 @@ export function ProfileSettings() {
 
           <label className="block">
             <span className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
-              <MapPin size={12} /> শহর
+              <MapPin size={12} /> City
             </span>
             <input
               value={profile.city}
               onChange={(event) => setProfile({ ...profile, city: event.target.value })}
-              placeholder="যেমন: ঢাকা"
+              placeholder="For example: Dhaka"
               className={inputClass}
             />
           </label>
@@ -151,14 +151,14 @@ export function ProfileSettings() {
       <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
         <h2 className="flex items-center gap-2 font-display text-base font-bold text-forest-950">
           <Bell size={16} className="text-forest-600" />
-          নোটিফিকেশন পছন্দ
+          Notification preferences
         </h2>
         <div className="mt-3 space-y-1">
           {[
-            { key: "newsletter" as const, title: "সাপ্তাহিক নিউজলেটার", detail: "নতুন বই, লেখকের গল্প ও অফারের খবর" },
-            { key: "orderUpdates" as const, title: "অর্ডার আপডেট", detail: "অর্ডার কনফার্মেশন ও ডেলিভারি স্ট্যাটাস" },
-            { key: "audioReleases" as const, title: "নতুন অডিও বুক", detail: "নতুন অডিও এপিসোড ও ফ্রি প্রিভিউ" },
-            { key: "community" as const, title: "কমিউনিটি আয়োজন", detail: "কুইজ, আড্ডা ও পাঠক ইভেন্টের আমন্ত্রণ" },
+            { key: "newsletter" as const, title: "Weekly newsletter", detail: "New books, author stories and offers" },
+            { key: "orderUpdates" as const, title: "Order updates", detail: "Order confirmation and delivery status" },
+            { key: "audioReleases" as const, title: "New audiobooks", detail: "New audio releases and free previews" },
+            { key: "community" as const, title: "Community events", detail: "Invitations to quizzes, conversations and reader events" },
           ].map((item) => (
             <label
               key={item.key}
@@ -184,25 +184,25 @@ export function ProfileSettings() {
       <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4 sm:p-5">
         <h2 className="flex items-center gap-2 font-display text-base font-bold text-forest-950">
           <Lock size={16} className="text-forest-600" />
-          নিরাপত্তা
+          Security
         </h2>
         <p className="mt-1 text-[10px] leading-relaxed text-muted">
-          এটি একটি ফ্রন্টএন্ড ডেমো অ্যাকাউন্ট — এখানে কোনো আসল পাসওয়ার্ড বা
-          লগইন তথ্য সংরক্ষিত হয় না। ভবিষ্যতে পেমেন্ট ও অর্ডার সিস্টেমের সঙ্গে
-          নিরাপদ অথেন্টিকেশন যুক্ত হবে।
+          This is a front-end demo account. No real password or login details
+          are stored. Secure authentication will be added with the live payment
+          and order system in the future.
         </p>
         <Button href="/login" variant="outline" size="sm" className="mt-3">
-          লগইন পেজ দেখুন
+          View login page
         </Button>
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3">
         <p className="text-[9px] text-muted">
-          পরিবর্তনগুলো শুধু এই ব্রাউজারে সংরক্ষিত হবে।
+          Changes are saved only in this browser.
         </p>
         <Button type="button" size="sm" onClick={save}>
           <Save size={13} />
-          সেটিংস সংরক্ষণ করুন
+          Save settings
         </Button>
       </div>
     </div>

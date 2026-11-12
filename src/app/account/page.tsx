@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AccountOverview } from "@/components/account/AccountOverview";
 
 export const metadata: Metadata = {
-  title: "ড্যাশবোর্ড",
+  title: "Dashboard",
 };
 
 export default function AccountPage() {

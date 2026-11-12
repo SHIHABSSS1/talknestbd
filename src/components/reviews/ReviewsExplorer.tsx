@@ -16,17 +16,17 @@ import { books } from "@/data/books";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
-const filters = ["সব", "৫ তারা", "৪ তারা", "৩ তারা"] as const;
+const filters = ["All", "5 stars", "4 stars", "3 stars"] as const;
 
 export function ReviewsExplorer() {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("সব");
+  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [rating, setRating] = useState(5);
   const [form, setForm] = useState({ name: "", location: "", bookSlug: books[0]?.slug ?? "", text: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
   const filtered = useMemo(() => {
-    if (filter === "সব") return reviews;
+    if (filter === "All") return reviews;
     const value = Number(filter.charAt(0));
     return reviews.filter((review) => review.rating === value);
   }, [filter]);
@@ -39,9 +39,9 @@ export function ReviewsExplorer() {
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next: Record<string, string> = {};
-    if (form.name.trim().length < 3) next.name = "আপনার নাম লিখুন";
-    if (form.location.trim().length < 2) next.location = "এলাকা বা শহর লিখুন";
-    if (form.text.trim().length < 12) next.text = "অন্তত ১২ অক্ষরের রিভিউ লিখুন";
+    if (form.name.trim().length < 3) next.name = "Please enter your name";
+    if (form.location.trim().length < 2) next.location = "Enter your area or city";
+    if (form.text.trim().length < 12) next.text = "Write at least 12 characters";
     if (Object.keys(next).length > 0) {
       setErrors(next);
       return;
@@ -69,7 +69,7 @@ export function ReviewsExplorer() {
                   ))}
                 </span>
                 <p className="mt-1 text-[10px] text-muted">
-                  {toBn(1240)}+ ভেরিফায়েড রিভিউ
+                  {toBn(1240)}+ verified reviews
                 </p>
               </div>
             </div>
@@ -92,18 +92,18 @@ export function ReviewsExplorer() {
                 Reader Love
               </p>
               <p className="mt-1.5 font-display text-xl font-bold leading-snug">
-                পাঠকের ভালোবাসাই আমাদের সবচেয়ে বড় পরিচয়
+                Your love as a reader is our greatest reward
               </p>
               <p className="mt-1.5 text-[10px] leading-relaxed text-cream-100/50">
-                বই, ডেলিভারি আর সেবা — আপনার অভিজ্ঞতাই আমাদের পরের পদক্ষেপ ঠিক করে।
+                Books, delivery and service — your experience shapes what we do next.
               </p>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2 text-[9px]">
               <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1">
-                {toBn(98)}% রিকমেন্ড
+                {toBn(98)}% recommend
               </span>
               <span className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1">
-                {toBn(48)} ঘণ্টায় ডেলিভারি
+                {toBn(48)}-hour delivery
               </span>
             </div>
           </div>
@@ -111,8 +111,8 @@ export function ReviewsExplorer() {
 
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="font-display text-xl font-bold text-forest-950">পাঠকদের রিভিউ</h2>
-            <p className="mt-0.5 text-[10px] text-muted">বাছাই করা অভিজ্ঞতা ও বইয়ের মতামত</p>
+            <h2 className="font-display text-xl font-bold text-forest-950">Reader reviews</h2>
+            <p className="mt-0.5 text-[10px] text-muted">Curated experiences and opinions on our books</p>
           </div>
           <div className="no-scrollbar flex gap-1.5 overflow-x-auto">
             {filters.map((item) => (
@@ -175,14 +175,14 @@ export function ReviewsExplorer() {
         {filtered.length === 0 && (
           <div className="mt-4 rounded-3xl border border-dashed border-forest-900/15 bg-cream-100/40 px-6 py-12 text-center">
             <Star size={24} className="mx-auto text-gold-500/40" />
-            <p className="mt-2 text-sm font-semibold text-forest-900">এই রেটিংয়ের রিভিউ এখনো নেই</p>
-            <p className="mt-1 text-[10px] text-muted">নিচের ফর্ম থেকে প্রথম রিভিউটি লিখতে পারেন।</p>
+            <p className="mt-2 text-sm font-semibold text-forest-900">No reviews with this rating yet</p>
+            <p className="mt-1 text-[10px] text-muted">Be the first to write one using the form below.</p>
           </div>
         )}
 
         <div className="mt-5 flex items-center gap-2 rounded-2xl border border-forest-900/8 bg-cream-100/50 px-4 py-3 text-[10px] text-muted">
           <ThumbsUp size={13} className="text-forest-600" />
-          প্রতিটি রিভিউ প্রকাশের আগে যাচাই করা হয়। অপমানজনক বা বিজ্ঞাপনী কনটেন্ট প্রকাশ করা হয় না।
+          Every review is checked before publishing. Insulting or promotional content is not published.
         </div>
       </div>
 
@@ -194,8 +194,8 @@ export function ReviewsExplorer() {
                 <PenLine size={16} />
               </span>
               <div>
-                <h2 className="font-display text-base font-bold text-forest-950">আপনার রিভিউ লিখুন</h2>
-                <p className="text-[9px] text-muted">আপনার অভিজ্ঞতা অন্য পাঠককে সাহায্য করবে</p>
+                <h2 className="font-display text-base font-bold text-forest-950">Write your review</h2>
+                <p className="text-[9px] text-muted">Your experience will help other readers</p>
               </div>
             </div>
           </div>
@@ -205,10 +205,10 @@ export function ReviewsExplorer() {
               <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-forest-100 text-forest-700">
                 <CheckCircle2 size={22} />
               </span>
-              <h3 className="mt-3 font-display text-lg font-bold text-forest-950">ধন্যবাদ, রিভিউ জমা হয়েছে</h3>
+              <h3 className="mt-3 font-display text-lg font-bold text-forest-950">Thank you — your review has been submitted</h3>
               <p className="mt-1.5 text-[10px] leading-relaxed text-muted">
-                যাচাইয়ের পর রিভিউটি প্রকাশ করা হবে। ডেমো সাইটে এটি শুধু দেখানো হচ্ছে,
-                কোথাও সংরক্ষণ হয়নি।
+                The review will be published after verification. On this demo site
+                it is only shown here and is not stored anywhere.
               </p>
               <button
                 type="button"
@@ -219,20 +219,20 @@ export function ReviewsExplorer() {
                 }}
                 className="mt-3 text-[10px] font-semibold text-clay-600 hover:text-clay-500"
               >
-                আরেকটি রিভিউ লিখুন
+                Write another review
               </button>
             </div>
           ) : (
             <form onSubmit={submit} noValidate className="space-y-3 p-5">
               <div>
-                <span className="mb-1 block text-[10px] font-semibold text-forest-900">রেটিং দিন</span>
+                <span className="mb-1 block text-[10px] font-semibold text-forest-900">Your rating</span>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((value) => (
                     <button
                       key={value}
                       type="button"
                       onClick={() => setRating(value)}
-                      aria-label={`${value} তারা`}
+                      aria-label={`${value} stars`}
                       className="p-0.5"
                     >
                       <Star
@@ -245,19 +245,19 @@ export function ReviewsExplorer() {
               </div>
 
               <label className="block">
-                <span className="mb-1 block text-[10px] font-semibold text-forest-900">আপনার নাম</span>
-                <input value={form.name} onChange={(event) => update({ name: event.target.value })} placeholder="নাম" className={cn(inputClass, errors.name && "border-clay-500/70")} />
+                <span className="mb-1 block text-[10px] font-semibold text-forest-900">Your name</span>
+                <input value={form.name} onChange={(event) => update({ name: event.target.value })} placeholder="Name" className={cn(inputClass, errors.name && "border-clay-500/70")} />
                 {errors.name && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.name}</span>}
               </label>
 
               <div className="grid grid-cols-2 gap-2.5">
                 <label className="block">
-                  <span className="mb-1 block text-[10px] font-semibold text-forest-900">এলাকা</span>
-                  <input value={form.location} onChange={(event) => update({ location: event.target.value })} placeholder="ঢাকা" className={cn(inputClass, errors.location && "border-clay-500/70")} />
+                  <span className="mb-1 block text-[10px] font-semibold text-forest-900">Area</span>
+                  <input value={form.location} onChange={(event) => update({ location: event.target.value })} placeholder="Dhaka" className={cn(inputClass, errors.location && "border-clay-500/70")} />
                   {errors.location && <span className="mt-0.5 block text-[9px] text-clay-600">{errors.location}</span>}
                 </label>
                 <label className="block">
-                  <span className="mb-1 block text-[10px] font-semibold text-forest-900">বই</span>
+                  <span className="mb-1 block text-[10px] font-semibold text-forest-900">Book</span>
                   <select value={form.bookSlug} onChange={(event) => update({ bookSlug: event.target.value })} className={inputClass}>
                     {books.slice(0, 20).map((book) => (
                       <option key={book.slug} value={book.slug}>{book.title}</option>
@@ -267,12 +267,12 @@ export function ReviewsExplorer() {
               </div>
 
               <label className="block">
-                <span className="mb-1 block text-[10px] font-semibold text-forest-900">আপনার মতামত</span>
+                <span className="mb-1 block text-[10px] font-semibold text-forest-900">Your thoughts</span>
                 <textarea
                   value={form.text}
                   onChange={(event) => update({ text: event.target.value })}
                   rows={4}
-                  placeholder="বইটি কেমন লেগেছে? ডেলিভারি ও প্যাকেজিং কেমন ছিল?"
+                  placeholder="How did you like the book? How was the delivery and packaging?"
                   className={cn(
                     "w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3 py-2.5 text-[12px] leading-relaxed text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25",
                     errors.text && "border-clay-500/70",
@@ -282,9 +282,9 @@ export function ReviewsExplorer() {
               </label>
 
               <Button type="submit" size="sm" className="w-full">
-                <Send size={13} /> রিভিউ জমা দিন
+                <Send size={13} /> Submit review
               </Button>
-              <p className="text-center text-[8px] text-muted">ডেমো ফর্ম · কোনো তথ্য সার্ভারে যায় না</p>
+              <p className="text-center text-[8px] text-muted">Demo form · no data is sent to a server</p>
             </form>
           )}
         </div>

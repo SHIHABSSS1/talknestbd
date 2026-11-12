@@ -20,23 +20,23 @@ import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
 const typeMeta: Record<StoryType, { label: string; icon: typeof Mic; short: string }> = {
-  voice: { label: "ভয়েস স্টোরি", icon: Mic, short: "ভয়েস" },
-  text: { label: "লেখা", icon: PenLine, short: "লেখা" },
-  pdf: { label: "PDF ডায়েরি", icon: FileText, short: "PDF" },
+  voice: { label: "Voice story", icon: Mic, short: "Voice" },
+  text: { label: "Written", icon: PenLine, short: "Written" },
+  pdf: { label: "PDF diary", icon: FileText, short: "PDF" },
 };
 
-const filters = ["সব", "ভয়েস", "লেখা", "PDF"] as const;
+const filters = ["All", "Voice", "Written", "PDF"] as const;
 
 const storyAudio = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
 export function StoriesWall() {
-  const [filter, setFilter] = useState<(typeof filters)[number]>("সব");
+  const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [active, setActive] = useState<Story | null>(null);
   const [playing, setPlaying] = useState(false);
 
   const filtered = useMemo(() => {
-    if (filter === "সব") return stories;
+    if (filter === "All") return stories;
     return stories.filter((story) => typeMeta[story.type].short === filter);
   }, [filter]);
 
@@ -49,7 +49,7 @@ export function StoriesWall() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
-            গল্পের ধরন
+            Story type
           </p>
           <div className="flex gap-1.5">
             {filters.map((item) => (
@@ -71,7 +71,7 @@ export function StoriesWall() {
         </div>
         <Button href="/stories/share" size="sm">
           <Mic size={13} />
-          গল্প শেয়ার করুন
+          Share your story
         </Button>
       </div>
 
@@ -117,7 +117,7 @@ export function StoriesWall() {
                   {story.excerpt}
                 </p>
                 <span className="mt-3 inline-flex items-center gap-1 text-[9px] font-semibold text-clay-600">
-                  {story.type === "voice" ? "গল্পটি শুনুন" : story.type === "pdf" ? "ডায়েরি দেখুন" : "গল্পটি পড়ুন"}
+                  {story.type === "voice" ? "Listen to this story" : story.type === "pdf" ? "View diary" : "Read story"}
                   <ArrowUpRight size={11} />
                 </span>
               </button>
@@ -154,7 +154,7 @@ export function StoriesWall() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <button
             type="button"
-            aria-label="বন্ধ করুন"
+            aria-label="Close"
             onClick={() => {
               setActive(null);
               setPlaying(false);
@@ -189,7 +189,7 @@ export function StoriesWall() {
                   setActive(null);
                   setPlaying(false);
                 }}
-                aria-label="বন্ধ করুন"
+                aria-label="Close"
                 className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-forest-900/10 text-forest-800 hover:bg-cream-100"
               >
                 <X size={15} />
@@ -204,14 +204,14 @@ export function StoriesWall() {
                       type="button"
                       onClick={() => setPlaying((value) => !value)}
                       className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gold-500 text-forest-950"
-                      aria-label={playing ? "পজ করুন" : "প্লে করুন"}
+                      aria-label={playing ? "Pause" : "Play"}
                     >
                       {playing ? <Pause size={17} className="fill-forest-950" /> : <Play size={17} className="ml-0.5 fill-forest-950" />}
                     </button>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-semibold">ভয়েস স্টোরি · ডেমো অডিও</p>
+                      <p className="text-[10px] font-semibold">Voice story · Demo audio</p>
                       <p className="text-[8px] text-cream-100/45">
-                        {active.duration ?? "০৩:৪৮"} · SoundHelix ডেমো ট্র্যাক
+                        {active.duration ?? "03:48"} · SoundHelix demo track
                       </p>
                       <div className="mt-2 flex h-5 items-center gap-[2px]">
                         {[40, 70, 50, 85, 55, 75, 45, 90, 60, 70, 48, 82, 44, 65, 38, 78].map((height, index) => (
@@ -226,7 +226,7 @@ export function StoriesWall() {
                   </div>
                   {playing && (
                     <audio autoPlay controls src={storyAudio} className="mt-3 h-8 w-full">
-                      আপনার ব্রাউজার অডিও সমর্থন করছে না।
+                      Your browser does not support audio playback.
                     </audio>
                   )}
                 </div>
@@ -235,7 +235,7 @@ export function StoriesWall() {
               {active.type === "pdf" && (
                 <div className="mb-3 flex items-center gap-2 rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2.5 text-[9px] text-clay-600">
                   <FileText size={13} />
-                  ডেমো PDF ডায়েরি — নিচের লেখাটি ডায়েরির প্রথম অংশ
+                  Demo PDF diary — the text below is the first part of the diary
                 </div>
               )}
 
@@ -243,9 +243,9 @@ export function StoriesWall() {
                 {active.excerpt}
               </p>
               <p className="mt-2 text-[12px] leading-[1.9] text-forest-900/65">
-                গল্পটির বাকি অংশ পাঠক কমিউনিটির সঙ্গে ভাগ করে নেওয়ার জন্য প্রস্তুত
-                করা হচ্ছে। TalkNest-এ প্রকাশিত গল্পগুলো পাঠকের নিজের অভিজ্ঞতা থেকে
-                নেওয়া — সত্য ঘটনা ও কল্পনার মিশেলে।
+                The rest of this story is being prepared to share with the reader
+                community. Stories published on TalkNest come from readers&apos; own
+                experiences — a mix of true events and imagination.
               </p>
 
               <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-forest-900/8 pt-3">
@@ -258,13 +258,13 @@ export function StoriesWall() {
                   )}
                 >
                   <Heart size={12} className={liked[active.id] ? "fill-clay-500 text-clay-500" : ""} />
-                  {toBn(active.likes + (liked[active.id] ? 1 : 0))} জন ভালোবেসেছেন
+                  {toBn(active.likes + (liked[active.id] ? 1 : 0))} readers loved this
                 </button>
                 <Link
                   href="/stories/share"
                   className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-forest-800 hover:text-clay-600"
                 >
-                  <Share2 size={12} /> আপনার গল্পও শেয়ার করুন
+                  <Share2 size={12} /> Share your story too
                 </Link>
               </div>
             </div>

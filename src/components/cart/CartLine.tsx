@@ -53,10 +53,10 @@ export function CartLine({
           <div className="min-w-0">
             <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted">
               {item.kind === "book"
-                ? "বই"
+                ? "Book"
                 : item.kind === "audio"
-                  ? "অডিও বুক"
-                  : "সুন্নাহ সামগ্রী"}
+                  ? "Audiobook"
+                  : "Sunnah item"}
             </span>
             <Link href={href} className="mt-0.5 block">
               <h3 className="line-clamp-2 font-display text-sm font-semibold leading-snug text-forest-950 transition-colors hover:text-forest-600 sm:text-base">
@@ -72,7 +72,7 @@ export function CartLine({
           <button
             type="button"
             onClick={onRemove}
-            aria-label={`${item.title} কার্ট থেকে সরান`}
+            aria-label={`${item.title} — remove from cart`}
             className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-forest-800/50 transition-colors hover:bg-clay-500/10 hover:text-clay-500"
           >
             <Trash2 size={15} />
@@ -84,7 +84,7 @@ export function CartLine({
             <button
               type="button"
               onClick={() => onQuantity(item.quantity - 1)}
-              aria-label="পরিমাণ কমান"
+              aria-label="Decrease quantity"
               className="grid h-9 w-8 place-items-center text-forest-800 transition-colors hover:text-clay-500"
             >
               <Minus size={13} />
@@ -95,7 +95,7 @@ export function CartLine({
             <button
               type="button"
               onClick={() => onQuantity(item.quantity + 1)}
-              aria-label="পরিমাণ বাড়ান"
+              aria-label="Increase quantity"
               className="grid h-9 w-8 place-items-center text-forest-800 transition-colors hover:text-clay-500"
             >
               <Plus size={13} />
@@ -108,7 +108,7 @@ export function CartLine({
             </p>
             {item.quantity > 1 && (
               <p className="text-[9px] text-muted">
-                প্রতি কপি {formatPrice(item.price)}
+                Each {formatPrice(item.price)}
               </p>
             )}
           </div>

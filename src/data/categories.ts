@@ -3,51 +3,57 @@ import type { Category, CategorySlug } from "@/lib/types";
 export const categories: Category[] = [
   {
     slug: "uponnash",
-    name: "উপন্যাস",
-    englishName: "Novels",
-    description: "নতুন আবেশ, পুরনো স্মৃতি আর অচেনা জগতের গল্প — বাছাই করা উপন্যাসের সংগ্রহ।",
+    name: "Novels",
+    englishName: "Fiction",
+    description:
+      "New voices, old memories and unfamiliar worlds — a curated shelf of novels worth staying up for.",
     primary: true,
-    accent: "#1b5b45",
+    accent: "#BACDFF",
   },
   {
     slug: "sahitto",
-    name: "সাহিত্য",
-    englishName: "Literature",
-    description: "কবিতা, ছোটগল্প, প্রবন্ধ আর ভালো লাগার নিরন্তর খোঁজ।",
+    name: "Literature",
+    englishName: "Essays & Poetry",
+    description:
+      "Poetry, short stories and essays for readers who like to take their time.",
     primary: true,
-    accent: "#9a4830",
+    accent: "#96DB9D",
   },
   {
     slug: "islamic-itihas",
-    name: "ইসলামিক ইতিহাস",
-    englishName: "Islamic History",
-    description: "ইসলামের সোনালি অধ্যায়, সিরাত ও ইতিহাসের বিশ্বস্ত বই।",
+    name: "Islamic History",
+    englishName: "Seerah & History",
+    description:
+      "Trusted books on the life of the Prophet, Islamic civilisation and the people who shaped it.",
     primary: true,
-    accent: "#2c6b61",
+    accent: "#96CADB",
   },
   {
     slug: "jiboni",
-    name: "জীবনী",
-    englishName: "Biographies",
-    description: "যাদের জীবন আমাদের সাহস দেয় — মনীষী, যোদ্ধা ও স্বপ্নদ্রষ্টাদের কাহিনি।",
+    name: "Biographies",
+    englishName: "Real Lives",
+    description:
+      "Stories of thinkers, athletes and everyday heroes who give us the courage to keep going.",
     primary: true,
-    accent: "#8a6a2f",
+    accent: "#E1C0FF",
   },
   {
     slug: "student",
-    name: "স্টুডেন্ট বুকস",
-    englishName: "Student Books",
-    description: "একাডেমিক গাইড, রেফারেন্স ও দক্ষতা বাড়ানোর বই এক জায়গায়।",
+    name: "Student Books",
+    englishName: "Study Guides",
+    description:
+      "Academic guides, references and skill-building books in one place.",
     primary: false,
-    accent: "#3b5f8a",
+    accent: "#FF9900",
   },
   {
     slug: "international",
-    name: "আন্তর্জাতিক",
-    englishName: "International",
-    description: "বিশ্বজুড়ে পাঠকপ্রিয় বইয়ের বাংলা ও ইংরেজি সংস্করণ।",
+    name: "International",
+    englishName: "World Literature",
+    description:
+      "Global bestsellers and world classics in reader-friendly English editions.",
     primary: false,
-    accent: "#6a4b7a",
+    accent: "#37AAF7",
   },
 ];
 
@@ -58,5 +64,5 @@ export function getCategory(slug: string): Category | undefined {
 }
 
 export function categoryLabel(slug: CategorySlug): string {
-  return getCategory(slug)?.name ?? "বই";
+  return getCategory(slug)?.name ?? "Books";
 }

@@ -8,8 +8,8 @@ import { Container } from "@/components/ui/Container";
 import { toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "লেখক",
-  description: "TalkNest BD-এর সঙ্গে যুক্ত বাংলাদেশের প্রিয় লেখকদের পরিচিতি ও বইয়ের সংগ্রহ।",
+  title: "Authors",
+  description: "Meet Bangladesh's favourite writers published with TalkNest BD and explore their books.",
 };
 
 export default function AuthorsPage() {
@@ -17,9 +17,9 @@ export default function AuthorsPage() {
     <>
       <PageHeader
         eyebrow="Our Authors"
-        title="যাদের কলমে বাঁচে গল্প"
-        description="লেখকের পরিচিতি, ভাবনা আর বইয়ের সংগ্রহ — এক জায়গায়।"
-        crumbs={[{ label: "লেখক" }]}
+        title="The writers who keep stories alive"
+        description="Author profiles, thoughts and book collections — all in one place."
+        crumbs={[{ label: "Authors" }]}
       />
 
       <section className="py-8 sm:py-12">
@@ -62,7 +62,7 @@ export default function AuthorsPage() {
                       {author.bio}
                     </p>
                     <p className="mt-3 text-[10px] font-semibold text-forest-700">
-                      {toBn(authorBooks.length)}টি বই · লেখক প্রোফাইল
+                      {toBn(authorBooks.length)} books · Author profile
                     </p>
                   </div>
                 </Link>
@@ -78,10 +78,10 @@ export default function AuthorsPage() {
                 </span>
                 <Quote size={28} className="mt-3 text-gold-400/45" />
                 <blockquote className="mt-2 font-display text-xl font-medium leading-relaxed sm:text-2xl">
-                  “গল্প সেই জানালা, যা দিয়ে বাইরের আলো ঢোকে, আবার ভেতরের অন্ধকারও
-                  দেখা যায়।”
+                  &ldquo;A story is a window that lets outside light in — and also
+                  lets you see the dark inside.&rdquo;
                 </blockquote>
-                <p className="mt-3 text-[11px] text-cream-100/50">— রাফিদা নূর</p>
+                <p className="mt-3 text-[11px] text-cream-100/50">— Rafida Noor</p>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {authors.slice(0, 9).map((author) => (

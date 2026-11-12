@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { toBn } from "@/lib/utils";
+import { formatCount } from "@/lib/utils";
 
 export function Rating({
   value,
@@ -11,15 +11,15 @@ export function Rating({
   className?: string;
 }) {
   return (
-    <div className={`flex items-center gap-1.5 text-xs ${className}`}>
+    <div className={`flex items-center gap-1 text-xs ${className}`}>
       <Star
-        size={13}
-        className="fill-gold-500 text-gold-500"
+        size={12}
+        className="fill-sale text-sale"
         aria-hidden="true"
       />
-      <span className="font-semibold text-forest-950">{toBn(value.toFixed(1))}</span>
+      <span className="font-medium text-body">{value.toFixed(1)}</span>
       {typeof count === "number" && (
-        <span className="text-muted">({toBn(count)})</span>
+        <span className="text-muted">({formatCount(count)})</span>
       )}
     </div>
   );

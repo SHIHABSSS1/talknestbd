@@ -3,12 +3,12 @@ import { HeartHandshake, MessageSquareHeart, Star } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { ReviewsExplorer } from "@/components/reviews/ReviewsExplorer";
-import { toBn } from "@/lib/utils";
+import { formatCount } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "কাস্টমার রিভিউ",
+  title: "Customer Reviews",
   description:
-    "TalkNest BD পাঠকদের সত্যিকারের অভিজ্ঞতা — বই, ডেলিভারি, প্যাকেজিং ও সেবার রিভিউ পড়ুন অথবা নিজের মতামত জানান।",
+    "Real experiences from TalkNest BD readers — read reviews of books, delivery, packaging and service, or share your own.",
 };
 
 export default function ReviewsPage() {
@@ -16,20 +16,20 @@ export default function ReviewsPage() {
     <>
       <PageHeader
         eyebrow="Reader Reviews"
-        title="পাঠকদের কথা, আমাদের অঙ্গীকার"
-        description="প্রতিটি রিভিউ আমাদের শেখায়, প্রতিটি মতামত পরের বইটি আরও ভালো করে। বই কেনার আগে অন্য পাঠকের অভিজ্ঞতা জেনে নিন, আবার নিজের অনুভূতিও শেয়ার করুন।"
-        crumbs={[{ label: "কাস্টমার রিভিউ" }]}
+        title="Reader voices, our promise"
+        description="Every review teaches us something, and every opinion helps the next reader. Learn from other readers before you buy, then share how your own experience went."
+        crumbs={[{ label: "Customer Reviews" }]}
       >
         <div className="flex flex-wrap gap-2 text-[10px]">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
             <Star size={11} className="fill-gold-500 text-gold-500" />
-            {toBn(1240)}+ ভেরিফায়েড রিভিউ
+            {formatCount(1240)}+ verified reviews
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            <HeartHandshake size={11} /> গড় রেটিং ৪.৯
+            <HeartHandshake size={11} /> 4.9 average rating
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            <MessageSquareHeart size={11} /> ১০০% পাঠকের মতামত
+            <MessageSquareHeart size={11} /> 100% reader opinions
           </span>
         </div>
       </PageHeader>

@@ -3,8 +3,8 @@ import { Container } from "@/components/ui/Container";
 import { LoginForm } from "@/components/auth/LoginForm";
 
 export const metadata: Metadata = {
-  title: "লগইন",
-  description: "TalkNest BD অ্যাকাউন্টে লগইন করুন — অর্ডার, উইশলিস্ট ও অডিও লাইব্রেরি।",
+  title: "Log In",
+  description: "Log in to your TalkNest BD account — orders, wishlist and audio library.",
 };
 
 export default function LoginPage() {

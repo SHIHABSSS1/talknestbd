@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function SectionHeader({
@@ -7,7 +7,7 @@ export function SectionHeader({
   title,
   description,
   href,
-  linkLabel = "সব দেখুন",
+  linkLabel = "View all",
   align = "left",
   light = false,
   className,
@@ -24,7 +24,7 @@ export function SectionHeader({
   return (
     <div
       className={cn(
-        "mb-7 flex flex-wrap items-end justify-between gap-4 sm:mb-9",
+        "mb-6 flex flex-wrap items-end justify-between gap-4 sm:mb-7",
         align === "center" && "flex-col items-center text-center",
         className,
       )}
@@ -33,32 +33,41 @@ export function SectionHeader({
         {eyebrow && (
           <span
             className={cn(
-              "inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em]",
-              light ? "text-gold-300" : "text-clay-500",
+              "mb-1.5 block text-[11px] font-medium uppercase tracking-[0.08em]",
+              light ? "text-brand-200" : "text-brand-600",
             )}
           >
-            <span
-              className={cn(
-                "h-px w-6",
-                light ? "bg-gold-400/70" : "bg-clay-500/60",
-              )}
-            />
             {eyebrow}
           </span>
         )}
-        <h2
+        <div
           className={cn(
-            "mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl lg:text-[2rem]",
-            light ? "text-cream-50" : "text-forest-950",
+            "flex items-center gap-2.5",
+            align === "center" && "justify-center",
           )}
         >
-          {title}
-        </h2>
+          <span
+            aria-hidden="true"
+            className={cn(
+              "block h-5 w-1 shrink-0 rounded-full",
+              light ? "bg-sale" : "bg-brand-500",
+            )}
+          />
+          <h2
+            className={cn(
+              "text-[22px] font-bold leading-tight sm:text-2xl",
+              light ? "text-white" : "text-ink",
+            )}
+          >
+            {title}
+          </h2>
+        </div>
         {description && (
           <p
             className={cn(
-              "mt-2 text-sm leading-relaxed sm:text-[15px]",
-              light ? "text-cream-100/65" : "text-muted",
+              "mt-2 text-[13px] leading-relaxed sm:text-sm",
+              align === "center" && "mx-auto",
+              light ? "text-white/65" : "text-muted",
             )}
           >
             {description}
@@ -69,16 +78,16 @@ export function SectionHeader({
         <Link
           href={href}
           className={cn(
-            "group inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-xs font-semibold transition-colors sm:text-sm",
+            "group inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors",
             light
-              ? "border-white/20 text-cream-100 hover:border-gold-400 hover:text-gold-300"
-              : "border-forest-900/15 text-forest-800 hover:border-forest-900 hover:bg-forest-900 hover:text-cream-50",
+              ? "text-white/80 hover:text-white"
+              : "text-brand-600 hover:text-brand-700",
           )}
         >
           {linkLabel}
-          <ArrowUpRight
+          <ArrowRight
             size={15}
-            className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            className="transition-transform duration-200 group-hover:translate-x-0.5"
           />
         </Link>
       )}

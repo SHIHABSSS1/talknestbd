@@ -3,8 +3,8 @@ import { termsDocument } from "@/data/legal";
 import { LegalDocument } from "@/components/legal/LegalDocument";
 
 export const metadata: Metadata = {
-  title: "শর্তাবলি",
-  description: "TalkNest BD-এর অর্ডার, পেমেন্ট, ডেলিভারি ও ব্যবহারের শর্তাবলি।",
+  title: "Terms of Use",
+  description: "TalkNest BD terms for orders, payments, delivery and use of the site.",
 };
 
 export default function TermsPage() {

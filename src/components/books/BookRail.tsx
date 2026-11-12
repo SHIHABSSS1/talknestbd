@@ -26,8 +26,8 @@ export function BookRail({
   return (
     <section
       className={cn(
-        "py-9 sm:py-12",
-        tone === "soft" && "bg-cream-100/60",
+        "border-b border-line py-8 sm:py-10",
+        tone === "soft" ? "bg-canvas" : "bg-white",
         className,
       )}
     >

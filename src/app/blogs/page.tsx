@@ -8,9 +8,9 @@ import { BlogCard } from "@/components/blog/BlogCard";
 import { NewsletterForm } from "@/components/layout/NewsletterForm";
 
 export const metadata: Metadata = {
-  title: "ব্লগ",
+  title: "Blog",
   description:
-    "বই পড়ার অভ্যাস, ইসলামিক ইতিহাস, অডিও বুক, লেখক সাক্ষাৎকার ও পরিবারের পাঠচর্চা — TalkNest BD ব্লগ।",
+    "Reading habits, Islamic history, audiobooks, author interviews and family reading — the TalkNest BD blog.",
 };
 
 export default function BlogsPage() {
@@ -20,19 +20,19 @@ export default function BlogsPage() {
     <>
       <PageHeader
         eyebrow="TalkNest Blog"
-        title="বই, লেখক আর পাঠের গল্প"
-        description="পাঠক জীবন, বইয়ের তালিকা, লেখক সাক্ষাৎকার আর TalkNest সেবার খুঁটিনাটি — নিয়মিত পড়ুন আমাদের ব্লগে।"
-        crumbs={[{ label: "ব্লগ" }]}
+        title="Stories of books, writers and readers"
+        description="Reader life, reading lists, author interviews and a closer look at TalkNest services — read our blog for fresh stories."
+        crumbs={[{ label: "Blog" }]}
       >
         <div className="flex flex-wrap gap-2 text-[10px]">
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            {blogPosts.length}টি লেখা
+            {blogPosts.length} articles
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            সপ্তাহে নতুন লেখা
+            New stories weekly
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            লেখক ও পাঠকের আড্ডা
+            Writers &amp; readers
           </span>
         </div>
       </PageHeader>
@@ -89,7 +89,7 @@ export default function BlogsPage() {
                 href={`/blogs/${featured.slug}`}
                 className="mt-5 inline-flex w-fit items-center gap-1.5 rounded-full bg-forest-900 px-4 py-2 text-[11px] font-semibold text-cream-50 transition-colors hover:bg-forest-700"
               >
-                লেখাটি পড়ুন
+                Read the story
                 <ArrowRight size={13} />
               </Link>
             </div>
@@ -102,14 +102,14 @@ export default function BlogsPage() {
                 More Stories
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-                আরও পাঠচর্চা
+                More to read
               </h2>
             </div>
             <Link
               href="/stories"
               className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-forest-800 hover:text-clay-500"
             >
-              পাঠকের গল্প পড়ুন
+              Explore reader stories
               <ArrowRight size={12} />
             </Link>
           </div>
@@ -133,11 +133,11 @@ export default function BlogsPage() {
                   Newsletter
                 </span>
                 <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
-                  নতুন লেখা সবার আগে পড়ুন
+                  Be first to read new stories
                 </h2>
                 <p className="mt-2 max-w-md text-[11px] leading-relaxed text-cream-100/55">
-                  সপ্তাহে একবার — নতুন বই, ব্লগ, লেখক সাক্ষাৎকার আর পাঠক কমিউনিটির
-                  খবর সরাসরি আপনার ইনবক্সে।
+                  Once a week — new books, blog posts, author interviews and
+                  community news straight to your inbox.
                 </p>
               </div>
               <NewsletterForm />

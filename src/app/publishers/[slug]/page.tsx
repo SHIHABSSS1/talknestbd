@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const publisher = getPublisher(slug);
-  if (!publisher) return { title: "প্রকাশনী" };
+  if (!publisher) return { title: "Publishers" };
   return { title: publisher.name, description: publisher.description };
 }
 
@@ -39,7 +39,7 @@ export default async function PublisherDetailPage({
         <Container className="py-6 sm:py-10">
           <Breadcrumb
             items={[
-              { label: "প্রকাশনী", href: "/publishers" },
+              { label: "Publishers", href: "/publishers" },
               { label: publisher.name },
             ]}
           />
@@ -55,11 +55,11 @@ export default async function PublisherDetailPage({
             <div>
               <div className="flex flex-wrap items-center gap-2 text-[10px]">
                 <span className="rounded-full bg-forest-900 px-3 py-1 font-semibold text-cream-50">
-                  প্রকাশনী
+                  Publisher
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1 text-forest-800">
                   <Building2 size={11} />
-                  প্রতিষ্ঠা {publisher.established}
+                  Est. {publisher.established}
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1 text-forest-800">
                   <MapPin size={11} />
@@ -77,10 +77,10 @@ export default async function PublisherDetailPage({
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 text-[10px] font-semibold text-forest-800">
-                  {toBn(publisherBooks.length)}টি বই
+                  {toBn(publisherBooks.length)} books
                 </span>
                 <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 text-[10px] font-semibold text-forest-800">
-                  ১০০% অরিজিনাল
+                  100% original
                 </span>
               </div>
             </div>
@@ -96,16 +96,16 @@ export default async function PublisherDetailPage({
                 Books by {publisher.name}
               </span>
               <h2 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-                প্রকাশনীর বই
+                Books from this publisher
               </h2>
             </div>
-            <span className="text-xs text-muted">{toBn(publisherBooks.length)}টি বই</span>
+            <span className="text-xs text-muted">{toBn(publisherBooks.length)} books</span>
           </div>
           {publisherBooks.length > 0 ? (
             <BookGrid books={publisherBooks} columns="four" />
           ) : (
             <p className="rounded-2xl bg-cream-100 p-8 text-center text-sm text-muted">
-              এই প্রকাশনীর বই খুব শিগগিরই যোগ হচ্ছে।
+              This publisher&apos;s books are coming soon.
             </p>
           )}
         </Container>

@@ -4,8 +4,8 @@ import { Container } from "@/components/ui/Container";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 
 export const metadata: Metadata = {
-  title: "চেকআউট",
-  description: "TalkNest BD-তে আপনার অর্ডারের ঠিকানা, ডেলিভারি ও পেমেন্ট পদ্ধতি বেছে নিন।",
+  title: "Checkout",
+  description: "Choose your delivery address, shipping method and payment option at TalkNest BD.",
 };
 
 export default function CheckoutPage() {
@@ -13,9 +13,9 @@ export default function CheckoutPage() {
     <>
       <PageHeader
         eyebrow="Secure Checkout"
-        title="অর্ডার সম্পন্ন করুন"
-        description="ঠিকানা, ডেলিভারি ও পেমেন্ট পদ্ধতি বেছে নিন। এটি একটি ডেমো চেকআউট — কোনো আসল পেমেন্ট নেওয়া হয় না।"
-        crumbs={[{ label: "কার্ট", href: "/cart" }, { label: "চেকআউট" }]}
+        title="Complete your order"
+        description="Choose an address, delivery method and payment option. This is a demo checkout — no real payment is taken."
+        crumbs={[{ label: "Cart", href: "/cart" }, { label: "Checkout" }]}
       />
       <section className="py-8 sm:py-10">
         <Container>

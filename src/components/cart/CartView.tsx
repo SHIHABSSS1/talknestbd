@@ -52,13 +52,13 @@ export function CartView() {
     return (
       <EmptyState
         icon={<ShoppingBag size={24} />}
-        title="আপনার কার্ট এখন খালি"
-        description="পছন্দের বই বা সুন্নাহ সামগ্রী যোগ করে কেনাকাটা শুরু করুন। পড়া শেষে বই ফেরত দিলে ৫০% টাকা ফেরত পাবেন।"
+        title="Your cart is empty"
+        description="Add books or Sunnah items you love to start shopping. Return a book after reading and get 50% of the purchase price back."
         action={
           <div className="flex flex-wrap justify-center gap-3">
-            <Button href="/books">বই ঘুরে দেখুন</Button>
+            <Button href="/books">Browse books</Button>
             <Button href="/sunnah-items" variant="outline">
-              সুন্নাহ সামগ্রী
+              Sunnah items
             </Button>
           </div>
         }
@@ -78,16 +78,16 @@ export function CartView() {
           <div className="flex items-center justify-between gap-3 border-b border-forest-900/8 px-4 py-4 sm:px-5">
             <div className="flex items-center gap-2.5">
               <h2 className="font-display text-lg font-bold text-forest-950">
-                আপনার কার্ট
+                Your cart
               </h2>
-              <Badge tone="forest">{toBn(items.length)}টি আইটেম</Badge>
+              <Badge tone="forest">{toBn(items.length)} items</Badge>
             </div>
             <button
               type="button"
               onClick={clearCart}
               className="text-[11px] font-medium text-clay-600 transition-colors hover:text-clay-500"
             >
-              সব সরান
+              Clear all
             </button>
           </div>
 
@@ -109,10 +109,10 @@ export function CartView() {
               <Truck size={16} className="text-gold-600" />
               {remainingForFree > 0 ? (
                 <>
-                  আরও <strong className="text-clay-600">{formatPrice(remainingForFree)}</strong> যোগ করলেই ফ্রি ডেলিভারি
+                  Add <strong className="text-clay-600">{formatPrice(remainingForFree)}</strong> more for free delivery
                 </>
               ) : (
-                "আপনি ফ্রি ডেলিভারি পাচ্ছেন!"
+                "You've unlocked free delivery!"
               )}
             </span>
             <span className="shrink-0 text-[10px] font-semibold text-forest-800">
@@ -129,9 +129,9 @@ export function CartView() {
 
         <div className="mt-4 grid gap-2 sm:grid-cols-3">
           {[
-            { icon: ShieldCheck, text: "১০০% অরিজিনাল বই" },
-            { icon: RotateCcw, text: "৫০% বাইব্যাক সুবিধা" },
-            { icon: Gift, text: "সুন্দর প্যাকেজিং" },
+            { icon: ShieldCheck, text: "100% original books" },
+            { icon: RotateCcw, text: "50% buyback" },
+            { icon: Gift, text: "Beautiful packaging" },
           ].map((item) => (
             <div
               key={item.text}
@@ -148,28 +148,28 @@ export function CartView() {
           className="mt-5 inline-flex items-center gap-1.5 text-xs font-semibold text-forest-800 transition-colors hover:text-clay-500"
         >
           <ArrowRight size={13} className="rotate-180" />
-          আরও বই দেখুন
+          View more books
         </Link>
       </div>
 
       <aside className="lg:sticky lg:top-32">
         <div className="overflow-hidden rounded-3xl border border-forest-900/10 bg-cream-50 shadow-[0_24px_60px_-46px_rgba(10,33,24,0.5)]">
           <div className="bg-forest-950 px-5 py-4 text-cream-50">
-            <h2 className="font-display text-lg font-bold">অর্ডার সারাংশ</h2>
+            <h2 className="font-display text-lg font-bold">Order summary</h2>
             <p className="mt-0.5 text-[10px] text-cream-100/50">
-              মূল্য ভ্যাটসহ, ডেলিভারি চার্জ আলাদা
+              Prices include VAT; delivery is calculated separately
             </p>
           </div>
           <div className="space-y-2.5 px-5 py-4 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-muted">সাবটোটাল ({toBn(items.length)} আইটেম)</span>
+              <span className="text-muted">Subtotal ({toBn(items.length)} items)</span>
               <span className="font-semibold text-forest-950">{formatPrice(cartTotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted">ডেলিভারি চার্জ</span>
+              <span className="text-muted">Delivery</span>
               <span className="font-semibold text-forest-950">
                 {delivery === 0 ? (
-                  <span className="text-forest-600">ফ্রি</span>
+                  <span className="text-forest-600">Free</span>
                 ) : (
                   formatPrice(delivery)
                 )}
@@ -177,7 +177,7 @@ export function CartView() {
             </div>
             <div className="border-t border-dashed border-forest-900/15 pt-3">
               <div className="flex items-end justify-between">
-                <span className="text-sm font-semibold text-forest-950">সর্বমোট</span>
+                <span className="text-sm font-semibold text-forest-950">Total</span>
                 <span className="font-display text-2xl font-bold text-forest-950">
                   {formatPrice(total)}
                 </span>
@@ -187,12 +187,12 @@ export function CartView() {
 
           <div className="px-5 pb-5">
             <Button href="/checkout" className="w-full" size="lg">
-              চেকআউটে যান
+              Proceed to checkout
               <ArrowRight size={16} />
             </Button>
             <p className="mt-3 text-center text-[9px] leading-relaxed text-muted">
-              অর্ডার কনফার্ম করার আগে ঠিকানা ও পেমেন্ট পদ্ধতি
-              বেছে নিতে পারবেন।
+              You can choose your address and payment method before confirming
+              your order.
             </p>
           </div>
         </div>
@@ -200,15 +200,15 @@ export function CartView() {
         <div className="mt-3 rounded-2xl border border-forest-900/8 bg-forest-50/60 p-4">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
             <RotateCcw size={13} className="text-forest-600" />
-            বই ফেরত দিলে ৫০% ফেরত
+            Get 50% back when you return a book
           </p>
           <p className="mt-1 text-[10px] leading-relaxed text-muted">
-            বই পড়া শেষে ভালো অবস্থায় আমাদের কাছে ফেরত দিলে কেনা মূল্যের ৫০%
-            ফেরত পাবেন। বিস্তারিত জানতে{" "}
+            Return the book to us in good condition after reading and get 50% of
+            the purchase price back.{" "}
             <Link href="/buyback" className="font-semibold text-clay-600">
-              এখানে ক্লিক করুন
+              Learn more
             </Link>
-            ।
+            .
           </p>
         </div>
       </aside>

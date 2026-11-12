@@ -7,81 +7,67 @@ import {
   ChevronLeft,
   ChevronRight,
   Headphones,
-  Mic,
+  LayoutGrid,
+  Repeat2,
   Sparkles,
   Star,
+  Truck,
 } from "lucide-react";
 import { books } from "@/data/books";
+import { categoryLinks } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
+import { BookCover } from "@/components/books/BookCover";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
-import { BookCover } from "@/components/books/BookCover";
-import { cn } from "@/lib/utils";
 
 const slides = [
   {
-    eyebrow: "বাংলাদেশের প্রিয় বইয়ের নীড়",
-    title: "পাতা উল্টালেই খুলে যায়",
-    highlight: "নতুন এক দুনিয়া।",
+    eyebrow: "The TalkNest Bookstore",
+    title: "Stories that stay",
+    highlight: "with you.",
     description:
-      "উপন্যাস থেকে ইসলামিক ইতিহাস, অডিও বুক থেকে পুরাতন বই — TalkNest BD-তে খুঁজে নিন আপনার পরের প্রিয় বইটি। পড়া শেষে বই ফেরত দিলে ফিরে পান মূল্যের ৫০%।",
-    primary: { label: "বই ঘুরে দেখুন", href: "/books" },
-    secondary: { label: "অডিও শুনুন", href: "/audio-books" },
-    icon: Sparkles,
-    coverOne: "neel-megh",
-    coverTwo: "the-alchemist",
-    badgeValue: "৫০%",
-    badgeLabel: "বই ফেরতের নিশ্চয়তা",
-    image:
-      "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1100&q=80",
-    imageAlt: "বইয়ের তাকে সাজানো বই",
-    imageEyebrow: "Reader's Choice",
-    imageCaption: "পাঠকের ভালোবাসায় সাজানো প্রতিটি তাক",
+      "Discover bestsellers, new voices, Islamic history and thoughtful non-fiction — curated for readers in Bangladesh.",
+    primary: { label: "Shop all books", href: "/books" },
+    secondary: { label: "Browse categories", href: "/categories" },
+    note: "Free delivery on orders over ৳999",
+    covers: ["neel-megh", "atomic-habits", "the-alchemist"],
+    badge: "Reader favourites",
+    badgeValue: "1,200+",
+    badgeLabel: "curated books",
   },
   {
     eyebrow: "TalkNest Audio Library",
-    title: "চোখ ব্যস্ত থাকুক,",
-    highlight: "গল্প শুনুন কানে।",
+    title: "A good story",
+    highlight: "for every commute.",
     description:
-      "দেশের জনপ্রিয় বাচকদের কণ্ঠে উপন্যাস, সিরাত ও নন-ফিকশন। ভ্রমণে, রান্নাঘরে বা ঘুমের আগে — শুনে নিন আপনার প্রিয় বই।",
-    primary: { label: "অডিও লাইব্রেরি", href: "/audio-books" },
-    secondary: { label: "সব বই দেখুন", href: "/books" },
-    icon: Headphones,
-    coverOne: "moner-gohine",
-    coverTwo: "rasuler-jiboni",
-    badgeValue: "৫টি",
-    badgeLabel: "জনপ্রিয় অডিও বই",
-    image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1100&q=80",
-    imageAlt: "হেডফোন পড়ে বই শোনার অনুভূতি",
-    imageEyebrow: "Listen Anywhere",
-    imageCaption: "আপনার গল্পের জগৎ, এখন কানে",
+      "Listen to bestselling novels, thoughtful non-fiction and the Seerah, narrated by voices you will want to spend hours with.",
+    primary: { label: "Explore audiobooks", href: "/audio-books" },
+    secondary: { label: "See audio favourites", href: "/best-sellers" },
+    note: "First chapters are free",
+    covers: ["moner-gohine", "rasuler-jiboni", "safolotar-30-siri"],
+    badge: "Listen anywhere",
+    badgeValue: "4",
+    badgeLabel: "featured audiobooks",
   },
   {
-    eyebrow: "Share to My Heart",
-    title: "আপনার গল্প,",
-    highlight: "সবার হৃদয়ে।",
+    eyebrow: "Read. Return. Repeat.",
+    title: "Finished a book?",
+    highlight: "Get 50% back.",
     description:
-      "জীবনের ছোট ছোট স্মৃতি, অনুভূতি আর গল্প শেয়ার করুন — লিখে, নিজের কণ্ঠে ভয়েস রেকর্ড করে কিংবা PDF আপলোড করে। পাঠকেরা হবেন আপনার গল্পের অংশ।",
-    primary: { label: "গল্প শেয়ার করুন", href: "/stories/share" },
-    secondary: { label: "সব গল্প পড়ুন", href: "/stories" },
-    icon: Mic,
-    coverOne: "valo-thakar-50-upay",
-    coverTwo: "safolotar-30-siri",
-    badgeValue: "২১০+",
-    badgeLabel: "এই মাসের শেয়ার করা গল্প",
-    image:
-      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1100&q=80",
-    imageAlt: "বন্ধুদের সঙ্গে বই ও গল্পের আড্ডা",
-    imageEyebrow: "Our Community",
-    imageCaption: "প্রতিটি মানুষের ভেতরে একটি গল্প থাকে",
+      "Buy from TalkNest, read at your own pace and return the book in good condition. We will give you half the purchase price back.",
+    primary: { label: "How buyback works", href: "/buyback" },
+    secondary: { label: "Shop used books", href: "/used-books" },
+    note: "A simpler, more sustainable reading habit",
+    covers: ["sahityer-rangin-pata", "deep-work", "the-prophet"],
+    badge: "Readers' buyback",
+    badgeValue: "50%",
+    badgeLabel: "cash back",
   },
 ];
 
 export function Hero() {
   const [active, setActive] = useState(0);
-
   const slide = slides[active];
-  const Icon = slide.icon;
 
   const goTo = useCallback((index: number) => {
     setActive((index + slides.length) % slides.length);
@@ -96,193 +82,248 @@ export function Hero() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const coverOne = useMemo(
-    () => books.find((book) => book.slug === slide.coverOne) ?? books[0],
-    [slide.coverOne],
-  );
-  const coverTwo = useMemo(
-    () => books.find((book) => book.slug === slide.coverTwo) ?? books[1],
-    [slide.coverTwo],
+  const featuredCovers = useMemo(
+    () =>
+      slide.covers
+        .map((slug) => books.find((book) => book.slug === slug))
+        .filter((book): book is NonNullable<typeof book> => Boolean(book)),
+    [slide.covers],
   );
 
   return (
     <section
       aria-roledescription="carousel"
-      aria-label="TalkNest BD ফিচার্ড"
-      className="relative overflow-hidden hero-mesh text-cream-50"
+      aria-label="Featured books and offers"
+      className="bg-brand-50/60 py-4 sm:py-5"
     >
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 paper-texture opacity-[0.14]" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-32 -top-40 h-[34rem] w-[34rem] rounded-full border border-gold-400/15"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full border border-gold-400/10"
-      />
-
-      <Container className="relative grid gap-12 py-12 sm:py-16 lg:grid-cols-[1.04fr_0.96fr] lg:items-center lg:gap-8 lg:py-20">
-        <div className="relative z-10">
-          <div key={`content-${active}`} className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-gold-400/25 bg-white/5 px-3.5 py-1.5 text-[10px] font-semibold tracking-wide text-gold-300 sm:text-[11px]">
-              <Icon size={13} />
-              {slide.eyebrow}
-            </span>
-
-            <h1 className="mt-5 max-w-[22ch] font-display text-[2.15rem] font-bold leading-[1.22] tracking-tight sm:text-5xl lg:text-[3.55rem] lg:leading-[1.18]">
-              {slide.title} <span className="text-gold-300">{slide.highlight}</span>
-            </h1>
-
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-cream-100/70 sm:text-base">
-              {slide.description}
-            </p>
-
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button href={slide.primary.href} variant="gold" size="lg">
-                {slide.primary.label}
-                <ArrowRight size={17} />
-              </Button>
-              <Button href={slide.secondary.href} variant="light" size="lg">
-                <Headphones size={18} />
-                {slide.secondary.label}
-              </Button>
+      <Container>
+        <div className="grid gap-3 lg:grid-cols-[204px_minmax(0,1fr)_272px] xl:grid-cols-[220px_minmax(0,1fr)_300px]">
+          <aside className="hidden overflow-hidden rounded-[8px] border border-line bg-white lg:block">
+            <div className="flex items-center gap-2 border-b border-line px-4 py-3.5">
+              <LayoutGrid size={16} className="text-brand-600" />
+              <h2 className="text-[13px] font-bold text-ink">Shop by category</h2>
             </div>
-          </div>
-
-          <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4 border-t border-white/10 pt-6">
-            <div>
-              <p className="font-display text-xl font-bold text-cream-50 sm:text-2xl">১,২০০+</p>
-              <p className="mt-0.5 text-[10px] uppercase tracking-wider text-cream-100/45 sm:text-[11px]">
-                বাছাই করা বই
-              </p>
-            </div>
-            <span className="h-8 w-px bg-white/10" />
-            <div>
-              <p className="font-display text-xl font-bold text-cream-50 sm:text-2xl">১০ হাজার+</p>
-              <p className="mt-0.5 text-[10px] uppercase tracking-wider text-cream-100/45 sm:text-[11px]">
-                সুখী পাঠক
-              </p>
-            </div>
-            <span className="hidden h-8 w-px bg-white/10 sm:block" />
-            <div className="flex items-center gap-2">
-              <span className="flex gap-0.5 text-gold-400">
-                {[0, 1, 2, 3, 4].map((star) => (
-                  <Star key={star} size={13} className="fill-gold-400" />
-                ))}
-              </span>
-              <p className="text-[11px] text-cream-100/55">৪.৯ পাঠক রেটিং</p>
-            </div>
-          </div>
-
-          <div className="mt-7 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => goTo(active - 1)}
-              aria-label="আগের স্লাইড"
-              className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-cream-100/70 transition-colors hover:border-gold-400 hover:text-gold-300"
-            >
-              <ChevronLeft size={15} />
-            </button>
-            <div className="flex items-center gap-1.5" role="tablist" aria-label="স্লাইড নির্বাচন">
-              {slides.map((item, index) => (
-                <button
-                  key={item.eyebrow}
-                  type="button"
-                  role="tab"
-                  aria-selected={active === index}
-                  aria-label={`${index + 1} নম্বর স্লাইড: ${item.title}`}
-                  onClick={() => goTo(index)}
-                  className={cn(
-                    "h-1.5 rounded-full transition-all duration-300",
-                    active === index
-                      ? "w-7 bg-gold-400"
-                      : "w-1.5 bg-white/25 hover:bg-white/40",
-                  )}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => goTo(active + 1)}
-              aria-label="পরের স্লাইড"
-              className="grid h-8 w-8 place-items-center rounded-full border border-white/15 text-cream-100/70 transition-colors hover:border-gold-400 hover:text-gold-300"
-            >
-              <ChevronRight size={15} />
-            </button>
-            <span className="ml-1 text-[10px] tabular-nums text-cream-100/40">
-              ০{active + 1} / ০{slides.length}
-            </span>
-          </div>
-        </div>
-
-        <div className="relative z-10 mx-auto w-full max-w-[520px] lg:max-w-none">
-          <div className="relative mx-auto w-[76%] sm:w-[70%] lg:w-[78%]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[2.25rem] rounded-tl-[8rem] border border-white/15">
-              {slides.map((item, index) => (
-                <img
-                  key={item.eyebrow}
-                  src={item.image}
-                  alt={item.imageAlt}
-                  className={cn(
-                    "absolute inset-0 h-full w-full object-cover transition-opacity duration-700",
-                    active === index ? "opacity-100" : "opacity-0",
-                  )}
-                  loading={index === 0 ? "eager" : "lazy"}
-                />
-              ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-forest-950/85 via-forest-950/10 to-transparent" />
-              <div key={`caption-${active}`} className="absolute inset-x-0 bottom-0 animate-fade-up p-5 sm:p-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-300">
-                  {slide.imageEyebrow}
-                </p>
-                <p className="mt-1.5 font-display text-lg font-semibold leading-snug text-cream-50 sm:text-xl">
-                  {slide.imageCaption}
-                </p>
-              </div>
-            </div>
-
-            <div key={`cover-one-${active}`} className="absolute -left-6 bottom-4 w-[34%] animate-fade-up sm:-left-10 sm:bottom-8 sm:w-[36%]">
-              <div className="animate-float">
-                <div className="aspect-[3/4] -rotate-6">
-                  <BookCover book={coverOne} size="sm" />
-                </div>
-              </div>
-            </div>
-
-            <div key={`cover-two-${active}`} className="absolute -right-2 top-10 w-[30%] animate-fade-up sm:-right-5 sm:top-12 sm:w-[32%]">
-              <div className="animate-float [animation-delay:1.2s]">
-                <div className="aspect-[3/4] rotate-6">
-                  <BookCover book={coverTwo} size="sm" />
-                </div>
-              </div>
-            </div>
-
-            <div
-              key={`badge-${active}`}
-              className="absolute -right-1 bottom-6 animate-fade-up rounded-2xl border border-gold-400/20 bg-forest-950/90 px-3.5 py-3 shadow-xl backdrop-blur sm:-right-4 sm:bottom-10 sm:px-4"
-            >
-              <p className="font-display text-2xl font-bold text-gold-300 sm:text-3xl">
-                {slide.badgeValue}
-              </p>
-              <p className="mt-0.5 text-[9px] font-medium text-cream-100/60 sm:text-[10px]">
-                {slide.badgeLabel}
-              </p>
-            </div>
-          </div>
-
-          <div className="mx-auto mt-5 flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] text-cream-100/65 backdrop-blur sm:text-[11px]">
-            <span className="flex -space-x-2">
-              {["রা", "সা", "তা"].map((initial, index) => (
-                <span
-                  key={initial}
-                  className="grid h-6 w-6 place-items-center rounded-full border-2 border-forest-950 text-[8px] font-bold text-forest-950"
-                  style={{ backgroundColor: ["#c8a24a", "#b95e3d", "#559876"][index] }}
+            <nav aria-label="Shop by category" className="py-1">
+              {categoryLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center justify-between px-4 py-[9px] text-[12px] font-medium text-body transition-colors hover:bg-brand-50 hover:text-brand-700"
                 >
-                  {initial}
-                </span>
+                  {link.label}
+                  <ChevronRight size={12} className="text-muted" />
+                </Link>
               ))}
-            </span>
-            <span>আজ ৩২ জন নতুন বই অর্ডার করেছেন</span>
+              <Link
+                href="/best-sellers"
+                className="flex items-center justify-between px-4 py-[9px] text-[12px] font-medium text-body transition-colors hover:bg-brand-50 hover:text-brand-700"
+              >
+                Best Sellers
+                <ChevronRight size={12} className="text-muted" />
+              </Link>
+              <Link
+                href="/new-books"
+                className="flex items-center justify-between px-4 py-[9px] text-[12px] font-medium text-body transition-colors hover:bg-brand-50 hover:text-brand-700"
+              >
+                New Arrivals
+                <ChevronRight size={12} className="text-muted" />
+              </Link>
+            </nav>
+            <div className="border-t border-line p-3">
+              <Link
+                href="/categories"
+                className="flex h-9 items-center justify-center gap-1.5 rounded-[4px] bg-brand-50 text-[11px] font-medium text-brand-700 transition-colors hover:bg-brand-100"
+              >
+                View all categories
+                <ArrowRight size={12} />
+              </Link>
+            </div>
+          </aside>
+
+          <div className="hero-mesh relative min-h-[390px] overflow-hidden rounded-[8px] text-white sm:min-h-[430px]">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-27 -top-35 h-96 w-96 rounded-full border border-white/10"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-40 right-20 h-80 w-80 rounded-full border border-white/10"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 opacity-[0.12] paper-texture"
+            />
+
+            <div className="relative grid h-full min-h-[390px] gap-5 p-6 sm:min-h-[430px] sm:p-8 lg:grid-cols-[1.13fr_0.87fr] lg:items-center lg:p-10">
+              <div key={`hero-copy-${active}`} className="animate-fade-up">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-medium text-white/85 backdrop-blur">
+                  <Sparkles size={11} className="text-brand-200" />
+                  {slide.eyebrow}
+                </span>
+                <h1 className="mt-4 max-w-[13ch] text-[32px] font-bold leading-[1.08] sm:text-[40px] lg:text-[44px] xl:text-[50px]">
+                  {slide.title}{" "}
+                  <span className="text-brand-200">{slide.highlight}</span>
+                </h1>
+                <p className="mt-3 max-w-md text-[13px] leading-relaxed text-white/70 sm:text-sm">
+                  {slide.description}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-2.5">
+                  <Button href={slide.primary.href} variant="gold" size="md">
+                    {slide.primary.label}
+                    <ArrowRight size={15} />
+                  </Button>
+                  <Button href={slide.secondary.href} variant="light" size="md">
+                    {slide.secondary.label}
+                  </Button>
+                </div>
+                <p className="mt-3 flex items-center gap-1.5 text-[10px] text-white/55">
+                  <Truck size={12} />
+                  {slide.note}
+                </p>
+              </div>
+
+              <div className="relative hidden min-h-[270px] lg:block" aria-hidden="true">
+                <div className="absolute left-[28%] top-1/2 w-[41%] -translate-y-1/2 rotate-[-8deg]">
+                  {featuredCovers[0] && (
+                    <div className="aspect-[3/4]">
+                      <BookCover book={featuredCovers[0]} size="sm" />
+                    </div>
+                  )}
+                </div>
+                <div className="absolute left-[1%] top-[12%] w-[33%] -translate-y-0 rotate-[7deg] opacity-95">
+                  {featuredCovers[1] && (
+                    <div className="aspect-[3/4]">
+                      <BookCover book={featuredCovers[1]} size="sm" />
+                    </div>
+                  )}
+                </div>
+                <div className="absolute bottom-[4%] right-[4%] w-[32%] rotate-[5deg] opacity-95">
+                  {featuredCovers[2] && (
+                    <div className="aspect-[3/4]">
+                      <BookCover book={featuredCovers[2]} size="sm" />
+                    </div>
+                  )}
+                </div>
+                <div className="absolute bottom-0 left-[16%] border border-white/20 bg-brand-950/75 px-3 py-2 backdrop-blur">
+                  <p className="text-xl font-bold leading-none text-white">
+                    {slide.badgeValue}
+                  </p>
+                  <p className="mt-1 text-[9px] text-white/60">{slide.badgeLabel}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute inset-x-6 bottom-5 flex items-center gap-3 sm:inset-x-8 lg:inset-x-10">
+              <button
+                type="button"
+                onClick={() => goTo(active - 1)}
+                aria-label="Previous slide"
+                className="grid h-7 w-7 place-items-center rounded-full border border-white/25 text-white/70 transition-colors hover:border-white hover:text-white"
+              >
+                <ChevronLeft size={13} />
+              </button>
+              <div className="flex items-center gap-1.5" role="tablist" aria-label="Choose a slide">
+                {slides.map((item, index) => (
+                  <button
+                    key={item.eyebrow}
+                    type="button"
+                    role="tab"
+                    aria-selected={active === index}
+                    aria-label={`Slide ${index + 1}: ${item.title}`}
+                    onClick={() => goTo(index)}
+                    className={cn(
+                      "h-1 rounded-full transition-all duration-300",
+                      active === index ? "w-6 bg-white" : "w-1.5 bg-white/30 hover:bg-white/55",
+                    )}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => goTo(active + 1)}
+                aria-label="Next slide"
+                className="grid h-7 w-7 place-items-center rounded-full border border-white/25 text-white/70 transition-colors hover:border-white hover:text-white"
+              >
+                <ChevronRight size={13} />
+              </button>
+              <span className="ml-1 text-[10px] tabular-nums text-white/45">
+                0{active + 1} / 0{slides.length}
+              </span>
+              <span className="ml-auto hidden items-center gap-1.5 text-[10px] text-white/55 sm:flex">
+                <Star size={11} className="fill-sale text-sale" />
+                4.9 reader rating
+              </span>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <Link
+              href="/buyback"
+              className="group relative flex min-h-[170px] flex-col justify-between overflow-hidden rounded-[8px] border border-[#ffd08a] bg-[#fff5e6] p-5 transition-colors hover:border-sale sm:min-h-[200px]"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute -right-9 -top-9 h-32 w-32 rounded-full border border-sale/15"
+              />
+              <div className="relative flex items-start justify-between gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-[4px] bg-sale text-ink">
+                  <Repeat2 size={18} />
+                </span>
+                <span className="rounded-full bg-white/70 px-2.5 py-1 text-[9px] font-medium text-body">
+                  50% cash back
+                </span>
+              </div>
+              <div className="relative mt-4">
+                <h2 className="max-w-[15ch] text-xl font-bold leading-tight text-ink">
+                  Read it. Return it. Get 50% back.
+                </h2>
+                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-sale">
+                  Learn about buyback
+                  <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/free-order"
+              className="group relative flex min-h-[170px] flex-col justify-between overflow-hidden rounded-[8px] bg-brand-600 p-5 text-white transition-colors hover:bg-brand-700 sm:min-h-[200px]"
+            >
+              <div
+                aria-hidden="true"
+                className="absolute -bottom-14 -right-10 h-40 w-40 rounded-full border border-white/10"
+              />
+              <div className="relative flex items-start justify-between gap-3">
+                <span className="grid h-9 w-9 place-items-center rounded-[4px] bg-white/15 text-white">
+                  <Truck size={19} />
+                </span>
+                <span className="rounded-full bg-white/15 px-2.5 py-1 text-[9px] font-medium text-white/90">
+                  Bangladesh-wide
+                </span>
+              </div>
+              <div className="relative mt-4">
+                <h2 className="max-w-[15ch] text-xl font-bold leading-tight">
+                  Free delivery over ৳999.
+                </h2>
+                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-brand-200">
+                  See delivery details
+                  <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </Link>
+
+            <Link
+              href="/audio-books"
+              className="group hidden min-h-[92px] items-center gap-3 rounded-[8px] border border-line bg-white p-4 transition-colors hover:border-brand-300 lg:flex"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[4px] bg-brand-50 text-brand-600">
+                <Headphones size={18} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[12px] font-bold text-ink">Listen on the go</p>
+                <p className="mt-0.5 text-[10px] text-muted">Audiobooks from ৳99</p>
+              </div>
+              <ChevronRight size={14} className="ml-auto shrink-0 text-muted" />
+            </Link>
           </div>
         </div>
       </Container>

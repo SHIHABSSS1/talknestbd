@@ -20,34 +20,34 @@ import { freeDeliveryBooks } from "@/data/books";
 import { formatPrice, siteConfig, toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "ফ্রি ডেলিভারি",
+  title: "Free Delivery",
   description:
-    "৳৯৯৯ ও তার বেশি অর্ডারে সারা বাংলাদেশে ফ্রি ডেলিভারি। নির্বাচিত বইয়ে সবসময় ফ্রি ডেলিভারি — TalkNest BD।",
+    "Free delivery across Bangladesh on orders of ৳999 or more. Selected books always ship free — TalkNest BD.",
 };
 
 const steps = [
   {
     icon: ShoppingBag,
-    title: "বই বেছে নিন",
-    text: `কার্টে ${formatPrice(siteConfig.freeDeliveryThreshold)} বা তার বেশি মূল্যের বই যোগ করুন।`,
+    title: "Pick your books",
+    text: `Add books worth ${formatPrice(siteConfig.freeDeliveryThreshold)} or more to your cart.`,
   },
   {
     icon: Gift,
-    title: "ফ্রি ডেলিভারি স্বয়ংক্রিয়",
-    text: "চেকআউটে ডেলিভারি চার্জ স্বয়ংক্রিয়ভাবে ৳০ হয়ে যাবে — কোনো কুপন কোড লাগবে না।",
+    title: "Free delivery applies automatically",
+    text: "The delivery charge drops to ৳0 at checkout — no coupon code needed.",
   },
   {
     icon: Truck,
-    title: "ঘরে পৌঁছে যাবে",
-    text: "ঢাকায় ২–৪ ও ঢাকার বাইরে ৩–৭ কর্মদিবসের মধ্যে বই পৌঁছে যাবে।",
+    title: "Delivered to your door",
+    text: "Books arrive in 2–4 days inside Dhaka and 3–7 business days outside Dhaka.",
   },
 ];
 
 const zones = [
-  { zone: "ঢাকা সিটি", time: "২–৪ কর্মদিবস", charge: 60 },
-  { zone: "ঢাকা জেলার বাইরে", time: "৩–৭ কর্মদিবস", charge: 120 },
-  { zone: "চট্টগ্রাম, সিলেট, রাজশাহী", time: "৩–৭ কর্মদিবস", charge: 120 },
-  { zone: "দুর্গম ও পার্বত্য এলাকা", time: "৫–১০ কর্মদিবস", charge: 150 },
+  { zone: "Dhaka city", time: "2–4 business days", charge: 60 },
+  { zone: "Outside Dhaka district", time: "3–7 business days", charge: 120 },
+  { zone: "Chattogram, Sylhet, Rajshahi", time: "3–7 business days", charge: 120 },
+  { zone: "Remote and hill areas", time: "5–10 business days", charge: 150 },
 ];
 
 export default function FreeOrderPage() {
@@ -55,20 +55,20 @@ export default function FreeOrderPage() {
     <>
       <PageHeader
         eyebrow="Free Delivery"
-        title="৳৯৯৯+ অর্ডারে সারা দেশে ফ্রি ডেলিভারি"
-        description="বইয়ের দামেই ডেলিভারি ফ্রি — আলাদা করে চার্জের চিন্তা নেই। নির্দিষ্ট কিছু বইয়ে আবার সবসময় ফ্রি ডেলিভারি সুবিধা থাকছে।"
+        title="Free delivery nationwide on orders of ৳999+"
+        description="Delivery is free with your books — no extra charge to worry about. And selected titles always ship free."
         tone="dark"
-        crumbs={[{ label: "ফ্রি ডেলিভারি" }]}
+        crumbs={[{ label: "Free Delivery" }]}
       >
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            কোড ছাড়াই স্বয়ংক্রিয়
+            Automatic, no code needed
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            সারাদেশে প্রযোজ্য
+            Available nationwide
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            নির্বাচিত বইয়ে সবসময় ফ্রি
+            Always free on selected books
           </span>
         </div>
       </PageHeader>
@@ -84,45 +84,45 @@ export default function FreeOrderPage() {
                   <Truck size={12} /> Free Delivery
                 </span>
                 <h2 className="mt-4 max-w-xl font-display text-2xl font-bold leading-snug text-forest-950 sm:text-3xl">
-                  আপনার কার্টে {formatPrice(siteConfig.freeDeliveryThreshold)} হলে ডেলিভারি একদম ফ্রি
+                  Fill your cart to {formatPrice(siteConfig.freeDeliveryThreshold)} and delivery is on us
                 </h2>
                 <p className="mt-2 max-w-xl text-xs leading-relaxed text-forest-800/65 sm:text-[13px]">
-                  কার্টের মোট মূল্য {formatPrice(siteConfig.freeDeliveryThreshold)} বা তার
-                  বেশি হলেই ডেলিভারি চার্জ স্বয়ংক্রিয়ভাবে বাদ যাবে। একটি বইয়ের দাম
-                  কম হলেও প্রিয় বই কিনুন আর উপহারের জন্য বেছে নিন।
+                  When your cart total reaches {formatPrice(siteConfig.freeDeliveryThreshold)} or
+                  more, the delivery charge is removed automatically. Even one book is
+                  worth it — treat yourself or pick one as a gift.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Button href="/books" size="sm">
-                    বই ঘুরে দেখুন
+                    Browse books
                     <ArrowRight size={13} />
                   </Button>
                   <Button href="/cart" variant="outline" size="sm">
-                    কার্টে যান
+                    Go to cart
                   </Button>
                 </div>
               </div>
               <div className="rounded-2xl border border-forest-900/10 bg-cream-50/90 p-5">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-                  threshold
+                  Order threshold
                 </p>
                 <div className="mt-1 flex items-end gap-2">
                   <p className="font-display text-5xl font-bold leading-none text-forest-950">
                     {formatPrice(siteConfig.freeDeliveryThreshold)}
                   </p>
-                  <span className="pb-1 text-[11px] text-muted">বা তার বেশি</span>
+                  <span className="pb-1 text-[11px] text-muted">or more</span>
                 </div>
                 <div className="mt-3 space-y-2 border-t border-dashed border-forest-900/15 pt-3 text-[10px]">
                   <p className="flex items-center justify-between gap-2">
-                    <span className="text-muted">সাধারণ ডেলিভারি চার্জ</span>
+                    <span className="text-muted">Standard delivery charge</span>
                     <span className="font-semibold text-forest-900">{formatPrice(60)}</span>
                   </p>
                   <p className="flex items-center justify-between gap-2">
-                    <span className="text-muted">থ্রেশহোল্ডের পর</span>
-                    <span className="font-semibold text-forest-600">৳০ (ফ্রি)</span>
+                    <span className="text-muted">With free delivery</span>
+                    <span className="font-semibold text-forest-600">৳0 (free)</span>
                   </p>
                 </div>
                 <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-forest-100/70 px-2.5 py-2 text-[9px] text-forest-800">
-                  <BadgeCheck size={11} /> ডেমো সাইটে চার্জটি শুধু হিসাবের জন্য দেখানো হয়
+                  <BadgeCheck size={11} /> On this demo site, the charge is shown for illustration only
                 </p>
               </div>
             </div>
@@ -150,14 +150,14 @@ export default function FreeOrderPage() {
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-forest-900/8 bg-cream-100/50 px-5 py-4">
                 <div>
                   <h2 className="font-display text-lg font-bold text-forest-950">
-                    নির্বাচিত ফ্রি-ডেলিভারি বই
+                    Selected free-delivery books
                   </h2>
                   <p className="mt-0.5 text-[10px] text-muted">
-                    কার্টে যোগ করলেই এই বইগুলোর ডেলিভারি সম্পূর্ণ ফ্রি।
+                    Add any of these to your cart and their delivery is completely free.
                   </p>
                 </div>
                 <Link href="/books" className="text-[10px] font-semibold text-clay-600 hover:text-clay-500">
-                  সব বই →
+                  All books →
                 </Link>
               </div>
               <div className="p-4 sm:p-5">
@@ -169,7 +169,7 @@ export default function FreeOrderPage() {
               <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-5">
                 <h2 className="flex items-center gap-2 font-display text-base font-bold text-forest-950">
                   <MapPin size={16} className="text-forest-600" />
-                  ডেলিভারি চার্জ ও সময়
+                  Delivery charges and times
                 </h2>
                 <div className="mt-3 divide-y divide-forest-900/8">
                   {zones.map((zone) => (
@@ -188,21 +188,21 @@ export default function FreeOrderPage() {
                   ))}
                 </div>
                 <p className="mt-2 rounded-lg bg-gold-500/10 px-2.5 py-2 text-[9px] leading-relaxed text-forest-800/70">
-                  উৎসব বা ঈদের সময় কুরিয়ার চাপে ডেলিভারি ১–২ দিন বাড়তে পারে।
+                  During festivals or Eid, courier volumes may add 1–2 days to delivery.
                 </p>
               </section>
 
               <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-5">
                 <h2 className="flex items-center gap-2 font-display text-base font-bold text-forest-950">
                   <PackageCheck size={16} className="text-forest-600" />
-                  যা মনে রাখবেন
+                  Good to know
                 </h2>
                 <ul className="mt-3 space-y-2">
                   {[
-                    "ফ্রি ডেলিভারি কার্টের মোট মূল্যের উপর নির্ভর করে",
-                    "একাধিক বই একসঙ্গে কিনলে দ্রুত থ্রেশহোল্ডে পৌঁছাবেন",
-                    "এক্সপ্রেস ডেলিভারি চাইলে আলাদা চার্জ প্রযোজ্য",
-                    "রিটার্নের ক্ষেত্রে ডেলিভারি চার্জ ফেরত হয় না",
+                    "Free delivery depends on your cart total",
+                    "Buying several books together gets you to the threshold faster",
+                    "Express delivery carries an extra charge",
+                    "Delivery charges are not refunded on returns",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2 text-[10px] leading-relaxed text-forest-800/75">
                       <CheckCircle2 size={12} className="mt-0.5 shrink-0 text-forest-500" />
@@ -214,13 +214,13 @@ export default function FreeOrderPage() {
 
               <section className="rounded-3xl bg-forest-950 p-5 text-cream-50">
                 <Banknote size={20} className="text-gold-400" />
-                <h2 className="mt-2 font-display text-base font-bold">পেমেন্ট নিয়ে চিন্তা নেই</h2>
+                <h2 className="mt-2 font-display text-base font-bold">No worries about payment</h2>
                 <p className="mt-1 text-[10px] leading-relaxed text-cream-100/55">
-                  ক্যাশ অন ডেলিভারি, বিকাশ ও নগদ — পছন্দের পদ্ধতিতে পেমেন্ট করুন।
-                  ডেমো সাইটে কোনো আসল টাকা কাটা হয় না।
+                  Cash on delivery, bKash and Nagad — pay the way you prefer. No real
+                  money is charged on this demo site.
                 </p>
                 <Button href="/checkout" variant="gold" size="sm" className="mt-3">
-                  চেকআউট দেখুন
+                  View checkout
                 </Button>
               </section>
             </div>
@@ -228,12 +228,12 @@ export default function FreeOrderPage() {
 
           <div className="mt-8 flex flex-col items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-100/50 px-5 py-4 sm:flex-row">
             <p className="text-center text-[11px] text-forest-800/70 sm:text-left">
-              ডেলিভারি সংক্রান্ত প্রশ্ন? আমাদের টিম সকাল ১০টা – রাত ৮টা পর্যন্ত পাশে আছে।
+              Questions about delivery? Our team is here from 10:00 AM to 8:00 PM.
             </p>
             <div className="flex flex-wrap gap-2">
-              <Button href="/contact" variant="primary" size="sm">যোগাযোগ</Button>
+              <Button href="/contact" variant="primary" size="sm">Contact</Button>
               <Button href={siteConfig.whatsapp} target="_blank" rel="noopener noreferrer" variant="outline" size="sm">
-                হোয়াটসঅ্যাপ
+                WhatsApp
               </Button>
             </div>
           </div>

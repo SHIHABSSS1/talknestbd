@@ -38,7 +38,7 @@ export interface Order {
   address: AddressFormValues;
   note?: string;
   paymentNumber?: string;
-  status: "কনফার্মড" | "প্রসেসিং" | "ডেলিভারিতে";
+  status: "Confirmed" | "Processing" | "Out for delivery";
 }
 
 export interface Profile {
@@ -49,15 +49,15 @@ export interface Profile {
 }
 
 export const paymentLabels: Record<PaymentMethod, string> = {
-  cod: "ক্যাশ অন ডেলিভারি",
-  bkash: "বিকাশ",
-  nagad: "নগদ",
+  cod: "Cash on Delivery",
+  bkash: "bKash",
+  nagad: "Nagad",
 };
 
 export const deliveryLabels: Record<DeliveryMethod, string> = {
-  standard: "স্ট্যান্ডার্ড ডেলিভারি",
-  express: "এক্সপ্রেস ডেলিভারি",
-  pickup: "নিজে সংগ্রহ",
+  standard: "Standard delivery",
+  express: "Express delivery",
+  pickup: "Store pickup",
 };
 
 const ORDERS_KEY = "talknestbd-orders-v1";
@@ -65,10 +65,10 @@ const ADDRESS_KEY = "talknestbd-addresses-v1";
 const PROFILE_KEY = "talknestbd-profile-v1";
 
 export const defaultProfile: Profile = {
-  name: "তানহা রহমান",
+  name: "Tanha Rahman",
   email: "tanha@example.com",
   phone: "+880 1712-000000",
-  city: "ঢাকা",
+  city: "Dhaka",
 };
 
 function read<T>(key: string, fallback: T): T {
@@ -163,7 +163,7 @@ export function generateOrderId(): string {
 
 export function formatOrderDate(iso: string): string {
   try {
-    return new Intl.DateTimeFormat("bn-BD", {
+    return new Intl.DateTimeFormat("en-GB", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -171,6 +171,6 @@ export function formatOrderDate(iso: string): string {
       minute: "2-digit",
     }).format(new Date(iso));
   } catch {
-    return new Date(iso).toLocaleDateString("bn-BD");
+    return new Date(iso).toLocaleDateString("en-GB");
   }
 }

@@ -18,82 +18,82 @@ export interface LegalDocumentData {
 export const termsDocument: LegalDocumentData = {
   slug: "terms",
   eyebrow: "Terms & Conditions",
-  title: "শর্তাবলি ও ব্যবহার নীতি",
+  title: "Terms of Use",
   description:
-    "TalkNest BD ব্যবহার করার আগে অর্ডার, পেমেন্ট, ডেলিভারি ও রিটার্ন সংক্রান্ত শর্তগুলো পড়ে নিন।",
-  lastUpdated: "১ নভেম্বর ২০২৬",
+    "Read the terms covering orders, payments, delivery and returns before using TalkNest BD.",
+  lastUpdated: "1 November 2026",
   intro:
-    "TalkNest BD-এর ওয়েবসাইট ও সেবা ব্যবহার করার মাধ্যমে আপনি এই শর্তাবলিতে সম্মত হচ্ছেন। কোনো শর্ত আপনার জন্য গ্রহণযোগ্য না হলে সাইটটি ব্যবহার করা থেকে বিরত থাকুন।",
+    "By using the TalkNest BD website and services, you agree to these terms. If any part is not acceptable to you, please do not use the site.",
   sections: [
     {
       id: "account",
-      title: "১. অ্যাকাউন্ট ও তথ্য",
+      title: "1. Accounts and information",
       paragraphs: [
-        "অর্ডার করতে প্রাপকের নাম, মোবাইল নম্বর ও ডেলিভারি ঠিকানা দেওয়া প্রয়োজন। সঠিক তথ্য না দেওয়ার কারণে ডেলিভারি ব্যর্থ হলে TalkNest BD দায়ী থাকবে না।",
-        "বর্তমানে ওয়েবসাইটটি একটি ফ্রন্টএন্ড ডেমো। অ্যাকাউন্ট, অর্ডার ও ঠিকানার তথ্য শুধু আপনার ব্রাউজারের লোকাল স্টোরেজে সংরক্ষিত হয়, কোনো সার্ভারে পাঠানো হয় না।",
+        "To place an order, you need to provide a recipient name, mobile number and delivery address. TalkNest BD is not responsible for failed deliveries caused by incorrect information.",
+        "This website is currently a front-end demo. Account, order and address information is stored only in your browser's local storage and is not sent to any server.",
       ],
     },
     {
       id: "orders",
-      title: "২. অর্ডার ও কনফার্মেশন",
+      title: "2. Orders and confirmation",
       bullets: [
-        "অর্ডার প্লেস করার পর আমাদের টিম ২৪ ঘণ্টার মধ্যে ফোনে কনফার্ম করবে।",
-        "স্টক শেষ হলে বা মূল্য ভুল হলে আমরা অর্ডার বাতিল বা সমন্বয়ের অধিকার রাখি।",
-        "একই সময়ে একাধিক অর্ডার করলে আমরা সেগুলো একত্রে প্রসেস করতে পারি।",
+        "After you place an order, our team will confirm it by phone within 24 hours.",
+        "We reserve the right to cancel or adjust an order if stock runs out or a price is listed incorrectly.",
+        "If you place multiple orders at the same time, we may process them together.",
       ],
     },
     {
       id: "pricing",
-      title: "৩. মূল্য ও পেমেন্ট",
+      title: "3. Pricing and payment",
       paragraphs: [
-        "সব মূল্য বাংলাদেশি টাকায় (৳) উল্লেখ করা হয় এবং প্রয়োজনে পরিবর্তনযোগ্য। অর্ডার কনফার্মের সময় যে মূল্য নিশ্চিত করা হয়, সেটিই প্রযোজ্য হবে।",
-        "ডেমো সাইটে কোনো আসল পেমেন্ট নেওয়া হয় না। ভবিষ্যতে ক্যাশ অন ডেলিভারি, বিকাশ ও নগদসহ অন্যান্য পেমেন্ট পদ্ধতি চালু হবে।",
+        "All prices are shown in Bangladeshi taka (৳) and may change when necessary. The price confirmed at the time of order confirmation is the price that applies.",
+        "No real payment is taken on this demo site. Cash on delivery, bKash, Nagad and other payment methods will be introduced with the live service in the future.",
       ],
     },
     {
       id: "delivery",
-      title: "৪. ডেলিভারি",
+      title: "4. Delivery",
       paragraphs: [
-        "৳৯৯৯ ও তার বেশি অর্ডারে স্ট্যান্ডার্ড ডেলিভারি ফ্রি। এর কম অর্ডারে ডেলিভারি চার্জ প্রযোজ্য। এক্সপ্রেস ডেলিভারির জন্য অতিরিক্ত চার্জ থাকতে পারে।",
-        "ঢাকার ভেতরে সাধারণত ২–৪ কর্মদিবস এবং ঢাকার বাইরে ৩–৭ কর্মদিবস সময় লাগতে পারে। আবহাওয়া, ছুটির দিন বা কুরিয়ার জটিলতায় সময় কিছুটা বাড়তে পারে।",
+        "Standard delivery is free on orders of ৳999 or more. A delivery charge applies below that amount. Express delivery may carry an additional charge.",
+        "Delivery usually takes 2–4 working days inside Dhaka and 3–7 working days elsewhere in Bangladesh. Weather, holidays or courier delays may extend that window.",
       ],
     },
     {
       id: "returns",
-      title: "৫. রিটার্ন ও বিনিময়",
+      title: "5. Returns and exchanges",
       paragraphs: [
-        "বই হাতে পাওয়ার ৭ দিনের মধ্যে ছাপা ত্রুটি, ভুল বই বা ক্ষতিগ্রস্ত বইয়ের জন্য রিটার্ন বা বিনিময়ের আবেদন করা যাবে। বিস্তারিত নিয়ম রিটার্ন পলিসি পেজে দেওয়া আছে।",
-        "ব্যক্তিগত ব্যবহারের কারণে বইয়ের ক্ষতি হলে বা ব্যবহারযোগ্যতা কমে গেলে রিটার্ন গ্রহণ করা হয় না।",
+        "You can request a return or exchange within seven days of receiving a book if it has a printing fault, is the wrong title or arrived damaged. Full rules are available on the Return Policy page.",
+        "We do not accept returns for books damaged through personal use or no longer in a resaleable condition.",
       ],
     },
     {
       id: "buyback",
-      title: "৬. ৫০% বই ফেরত (বাইব্যাক)",
+      title: "6. 50% book buyback",
       paragraphs: [
-        "TalkNest BD থেকে কেনা নির্দিষ্ট বই ভালো অবস্থায় ফেরত দিলে কেনা মূল্যের ৫০% ফেরত দেওয়া হয়। বইয়ের অবস্থা যাচাই করে চূড়ান্ত মূল্য নিশ্চিত করা হয়।",
-        "বাইব্যাক একটি স্বেচ্ছাধীন সুবিধা; এর শর্ত ও সময়সীমা পরিবর্তন হতে পারে।",
+        "Selected books bought from TalkNest BD can be returned in good condition for 50% of the purchase price. The final amount is confirmed after we inspect the book.",
+        "Buyback is an optional service, and its terms and time limits may change.",
       ],
     },
     {
       id: "content",
-      title: "৭. কনটেন্ট ও মেধাস্বত্ব",
+      title: "7. Content and intellectual property",
       paragraphs: [
-        "এই সাইটের লেখা, ডিজাইন, লোগো ও ছবি TalkNest BD-এর সম্পত্তি, অথবা সংশ্লিষ্ট লেখক/প্রকাশকের অনুমোদিত উপকরণ। অনুমতি ছাড়া বাণিজ্যিক ব্যবহার নিষিদ্ধ।",
-        "পাঠকের শেয়ার করা গল্পের দায়িত্ব শেয়ারকারীর। আপত্তিকর, বিভ্রান্তিকর বা অন্যের মেধাস্বত্ব লঙ্ঘনকারী কনটেন্ট সরানো হতে পারে।",
+        "The text, design, logo and images on this site belong to TalkNest BD or are used with permission from the relevant author or publisher. Commercial use without permission is prohibited.",
+        "Readers are responsible for the stories they share. We may remove content that is offensive, misleading or infringes someone else's intellectual property.",
       ],
     },
     {
       id: "changes",
-      title: "৮. শর্ত পরিবর্তন",
+      title: "8. Changes to these terms",
       paragraphs: [
-        "TalkNest BD সময় সময় এই শর্তাবলি পরিবর্তন করতে পারে। পরিবর্তিত শর্ত এই পেজে প্রকাশের পর থেকে কার্যকর হবে। গুরুত্বপূর্ণ পরিবর্তনের ক্ষেত্রে সাইটে জানানো হবে।",
+        "TalkNest BD may update these terms from time to time. Changes take effect when they are published on this page. Important updates will be announced on the site.",
       ],
     },
     {
       id: "contact",
-      title: "৯. যোগাযোগ",
+      title: "9. Contact",
       paragraphs: [
-        "শর্তাবলি নিয়ে প্রশ্ন থাকলে hello@talknestbd.com-এ ইমেইল করুন অথবা +880 1712-345678 নম্বরে কল করুন।",
+        "If you have a question about these terms, email hello@talknestbd.com or call +880 1712-345678.",
       ],
     },
   ],
@@ -102,75 +102,75 @@ export const termsDocument: LegalDocumentData = {
 export const privacyDocument: LegalDocumentData = {
   slug: "privacy",
   eyebrow: "Privacy Policy",
-  title: "প্রাইভেসি পলিসি",
+  title: "Privacy Policy",
   description:
-    "আপনার তথ্য কীভাবে সংগ্রহ, ব্যবহার ও সংরক্ষণ করা হয় — সেই সম্পর্কে স্পষ্ট ধারণা দিন।",
-  lastUpdated: "১ নভেম্বর ২০২৬",
+    "A clear explanation of what information we collect, how we use it and where it is stored.",
+  lastUpdated: "1 November 2026",
   intro:
-    "TalkNest BD পাঠকের প্রাইভেসিকে গুরুত্ব দেয়। এই ডেমো সাইটে দেওয়া তথ্য শুধু আপনার ব্রাউজারে সংরক্ষিত হয়; আমরা কোনো গোপন সার্ভারে পাঠক তথ্য পাঠাই না।",
+    "TalkNest BD takes reader privacy seriously. On this demo site, the information you enter is stored only in your browser; we do not send reader data to a hidden server.",
   sections: [
     {
       id: "collect",
-      title: "১. আমরা কী তথ্য সংগ্রহ করি",
+      title: "1. What information we collect",
       bullets: [
-        "অর্ডারের জন্য নাম, মোবাইল নম্বর, ইমেইল ও ডেলিভারি ঠিকানা।",
-        "আপনার কার্ট, উইশলিস্ট, অর্ডার ইতিহাস ও প্রোফাইল সেটিংস।",
-        "কুইজ, রিভিউ, গল্প শেয়ার বা যোগাযোগ ফর্মে আপনি যে তথ্য দেন।",
+        "Name, mobile number, email and delivery address for orders.",
+        "Your cart, wishlist, order history and profile settings.",
+        "Information you provide in quizzes, reviews, story submissions or contact forms.",
       ],
     },
     {
       id: "use",
-      title: "২. তথ্য কীভাবে ব্যবহার করা হয়",
+      title: "2. How we use information",
       paragraphs: [
-        "অর্ডার প্রসেস, ডেলিভারি নিশ্চিত করা, গ্রাহক সহায়তা দেওয়া এবং আপনার পছন্দ অনুযায়ী বইয়ের সুপারিশ করতে তথ্য ব্যবহার করা হয়।",
-        "আপনি সম্মতি দিলে নতুন বই, অফার ও কমিউনিটি আয়োজনের খবর নিউজলেটারে পাঠানো হতে পারে। যেকোনো সময় সেটিংস থেকে এটি বন্ধ করা যাবে।",
+        "We use information to process orders, confirm delivery, provide customer support and recommend books that match your interests.",
+        "With your consent, we may send news about new books, offers and community events by newsletter. You can turn this off in settings at any time.",
       ],
     },
     {
       id: "storage",
-      title: "৩. তথ্য কোথায় সংরক্ষিত হয়",
+      title: "3. Where information is stored",
       paragraphs: [
-        "এই ডেমো ওয়েবসাইটের কার্ট, উইশলিস্ট, অর্ডার, ঠিকানা ও প্রোফাইল ব্রাউজারের লোকাল স্টোরেজে সংরক্ষিত থাকে। ব্রাউজার ডেটা মুছে ফেললে সেই তথ্যও মুছে যাবে।",
-        "ভবিষ্যতে আসল সার্ভিস চালু হলে নিরাপদ সার্ভারে তথ্য সংরক্ষণ করা হবে এবং এই নীতিমালা হালনাগাদ করা হবে।",
+        "On this demo website, your cart, wishlist, orders, addresses and profile are stored in your browser's local storage. Clearing your browser data will also remove that information.",
+        "If a live service launches in the future, information will be stored on secure servers and this policy will be updated.",
       ],
     },
     {
       id: "sharing",
-      title: "৪. তথ্য কার সঙ্গে শেয়ার করা হয়",
+      title: "4. Who we share information with",
       paragraphs: [
-        "ডেলিভারি সম্পন্ন করতে কুরিয়ার বা ডেলিভারি পার্টনারের সঙ্গে শুধু প্রয়োজনীয় নাম, ফোন ও ঠিকানা শেয়ার করা হতে পারে।",
-        "আইনি বাধ্যবাধকতা ছাড়া আমরা কোনো তৃতীয় পক্ষের কাছে পাঠকের ব্যক্তিগত তথ্য বিক্রি করি না।",
+        "To complete a delivery, we may share only the necessary name, phone number and address with a courier or delivery partner.",
+        "We do not sell readers' personal information to third parties, except where required by law.",
       ],
     },
     {
       id: "cookies",
-      title: "৫. কুকিজ ও লোকাল স্টোরেজ",
+      title: "5. Cookies and local storage",
       paragraphs: [
-        "সাইটের কার্যকারিতা ধরে রাখতে এবং পছন্দ মনে রাখতে কুকিজ বা লোকাল স্টোরেজ ব্যবহার করা হয়। ব্রাউজার সেটিংস থেকে আপনি এগুলো নিয়ন্ত্রণ করতে পারেন।",
+        "Cookies or local storage are used to keep the site working and to remember your preferences. You can control these through your browser settings.",
       ],
     },
     {
       id: "rights",
-      title: "৬. আপনার অধিকার",
+      title: "6. Your rights",
       bullets: [
-        "আপনার সংরক্ষিত তথ্য দেখা ও সংশোধন করার অধিকার।",
-        "অ্যাকাউন্ট ও ঠিকানা সংক্রান্ত তথ্য মুছে ফেলার অনুরোধ।",
-        "মার্কেটিং যোগাযোগ বন্ধ করার অধিকার।",
-        "তথ্য ব্যবহার সম্পর্কে প্রশ্ন করার অধিকার।",
+        "The right to view and correct the information we hold about you.",
+        "The right to request deletion of account and address information.",
+        "The right to stop marketing communications.",
+        "The right to ask questions about how your information is used.",
       ],
     },
     {
       id: "security",
-      title: "৭. নিরাপত্তা",
+      title: "7. Security",
       paragraphs: [
-        "আমরা যুক্তিসঙ্গত প্রযুক্তিগত ও সাংগঠনিক ব্যবস্থা গ্রহণ করি। তবে ইন্টারনেটে কোনো পদ্ধতিই ১০০% নিরাপদ নয়; তাই সংবেদনশীল তথ্য শেয়ার করার সময় সতর্ক থাকুন।",
+        "We take reasonable technical and organisational measures to protect information. However, no internet method is 100% secure, so please be careful when sharing sensitive information.",
       ],
     },
     {
       id: "contact",
-      title: "৮. যোগাযোগ",
+      title: "8. Contact",
       paragraphs: [
-        "প্রাইভেসি সংক্রান্ত প্রশ্ন বা অনুরোধের জন্য hello@talknestbd.com-এ ইমেইল করুন অথবা +880 1712-345678 নম্বরে যোগাযোগ করুন।",
+        "For privacy questions or requests, email hello@talknestbd.com or contact +880 1712-345678.",
       ],
     },
   ],
@@ -179,70 +179,70 @@ export const privacyDocument: LegalDocumentData = {
 export const returnDocument: LegalDocumentData = {
   slug: "return-policy",
   eyebrow: "Return & Refund",
-  title: "রিটার্ন ও রিফান্ড পলিসি",
+  title: "Return & Refund Policy",
   description:
-    "বই হাতে পাওয়ার পর রিটার্ন, বিনিময়, রিফান্ড এবং ৫০% বাইব্যাক সুবিধার সম্পূর্ণ নিয়ম।",
-  lastUpdated: "১ নভেম্বর ২০২৬",
+    "The complete rules for returns, exchanges, refunds and the 50% buyback offer after you receive a book.",
+  lastUpdated: "1 November 2026",
   intro:
-    "আমরা চাই প্রতিটি পাঠক সন্তুষ্ট মনে বইটি হাতে পান। ছাপা ত্রুটি, ভুল বই বা পরিবহনে ক্ষতির ক্ষেত্রে ৭ দিনের মধ্যে রিটার্ন বা বিনিময়ের সুযোগ রয়েছে।",
+    "We want every reader to receive a book they are happy with. If a book has a printing fault, is the wrong title or was damaged in transit, you can request a return or exchange within seven days.",
   sections: [
     {
       id: "window",
-      title: "১. রিটার্নের সময়সীমা",
+      title: "1. Return window",
       paragraphs: [
-        "বই ডেলিভারি পাওয়ার ৭ দিনের মধ্যে রিটার্ন বা বিনিময়ের আবেদন করতে হবে। ৭ দিন পর সাধারণত রিটার্ন গ্রহণ করা হয় না, তবে বিশেষ পরিস্থিতিতে সহায়তা করা হতে পারে।",
+        "A return or exchange must be requested within seven days of delivery. We generally cannot accept returns after seven days, though we may help in exceptional circumstances.",
       ],
     },
     {
       id: "eligible",
-      title: "২. কোন ক্ষেত্রে রিটার্ন গ্রহণযোগ্য",
+      title: "2. When a return is accepted",
       bullets: [
-        "ছাপা ত্রুটি, অসম্পূর্ণ পাতা বা ভাঙা বাঁধাই।",
-        "আপনি যে বই অর্ডার করেছেন তার থেকে ভিন্ন বই বা ভিন্ন সংস্করণ।",
-        "পরিবহনে বই ভিজে যাওয়া, ছিঁড়ে যাওয়া বা 심하게 ক্ষতিগ্রস্ত হওয়া।",
+        "Printing faults, missing pages or a broken binding.",
+        "A different book or edition from the one you ordered.",
+        "Water damage, tears or serious damage during transit.",
       ],
     },
     {
       id: "not-eligible",
-      title: "৩. কোন ক্ষেত্রে রিটার্ন গ্রহণযোগ্য নয়",
+      title: "3. When a return is not accepted",
       bullets: [
-        "বই ব্যবহার করা, দাগ পড়া বা পৃষ্ঠা ভাঁজ করা হয়েছে।",
-        "স্টিকার, উপহার বা অতিরিক্ত উপকরণ অপসারণ করা হয়েছে।",
-        "শুধু পছন্দ না হওয়ার কারণে ব্যবহারযোগ্য অবস্থায় থাকা বই ফেরত চাওয়া (বাইব্যাক সুবিধা প্রযোজ্য হতে পারে)।",
-        "অর্ডারের ৭ দিনের বেশি সময় পার হয়ে যাওয়া।",
+        "The book has been used, marked or has folded pages.",
+        "Stickers, gifts or extra materials have been removed.",
+        "A resaleable book is returned simply because you changed your mind (the buyback service may apply).",
+        "More than seven days have passed since the order.",
       ],
     },
     {
       id: "process",
-      title: "৪. রিটার্নের প্রক্রিয়া",
+      title: "4. How to return a book",
       bullets: [
-        "ওয়েবসাইটের যোগাযোগ ফর্ম, হোয়াটসঅ্যাপ বা ফোনে অর্ডার নম্বরসহ জানান।",
-        "বইয়ের ছবি ও সমস্যার বিবরণ পাঠান।",
-        "আমাদের টিম যাচাই করে রিটার্ন অনুমোদন বা সমাধান জানাবে।",
-        "অনুমোদিত হলে বইটি নির্দিষ্ট ঠিকানায় পাঠাতে হবে; ডেলিভারি ভুল বা ত্রুটিপূর্ণ হলে আমরা সংগ্রহ করতে পারি।",
+        "Contact us through the website form, WhatsApp or phone with your order number.",
+        "Send photos of the book and a description of the problem.",
+        "Our team will review the request and confirm a return or another solution.",
+        "If approved, send the book to the address we provide. If the delivery was wrong or faulty, we may arrange collection.",
       ],
     },
     {
       id: "refund",
-      title: "৫. রিফান্ড",
+      title: "5. Refunds",
       paragraphs: [
-        "রিটার্ন অনুমোদিত হলে বইটি আমাদের কাছে পৌঁছানোর পর ৩–৭ কর্মদিবসের মধ্যে রিফান্ড প্রসেস করা হবে। পেমেন্ট পদ্ধতি অনুযায়ী বিকাশ, নগদ বা ব্যাংক ট্রান্সফারে টাকা ফেরত দেওয়া হবে।",
-        "ডেমো সাইটে কোনো আসল অর্থ লেনদেন হয় না; ভবিষ্যতে আসল সার্ভিস চালু হলে এই নিয়ম প্রযোজ্য হবে।",
+        "Once an approved return reaches us, we process the refund within 3–7 working days. The money is returned through bKash, Nagad or a bank transfer, depending on the original payment method.",
+        "No real money changes hands on this demo site; these rules will apply when the live service launches.",
       ],
     },
     {
       id: "buyback",
-      title: "৬. ৫০% বাইব্যাক",
+      title: "6. 50% buyback",
       paragraphs: [
-        "TalkNest BD থেকে কেনা বই পড়া শেষে ভালো অবস্থায় ফেরত দিলে কেনা মূল্যের ৫০% পর্যন্ত ফেরত পাওয়া যায়। বইয়ের অবস্থা, বাজারচলতি চাহিদা ও প্রকাশনীর শর্ত অনুযায়ী চূড়ান্ত মূল্য নির্ধারিত হয়।",
-        "বাইব্যাকের জন্য অর্ডার নম্বর বা ক্রয়ের প্রমাণ থাকা প্রয়োজন। পাঠ্যপুস্তক, পুরনো সংস্করণ বা ক্ষতিগ্রস্ত বই বাইব্যাকের আওতায় নাও পড়তে পারে।",
+        "Books bought from TalkNest BD can be returned in good condition after reading for up to 50% of the purchase price. The final amount depends on condition, current demand and the publisher's terms.",
+        "You will need the order number or proof of purchase. Textbooks, older editions and damaged books may not qualify for buyback.",
       ],
     },
     {
       id: "contact",
-      title: "৭. সহায়তা",
+      title: "7. Support",
       paragraphs: [
-        "রিটার্ন সংক্রান্ত যেকোনো প্রশ্নে hello@talknestbd.com-এ ইমেইল করুন, +880 1712-345678 নম্বরে কল করুন অথবা হোয়াটসঅ্যাপে মেসেজ পাঠান। সেবার সময়: শনি–বৃহস্পতি, সকাল ১০টা – রাত ৮টা।",
+        "For any return question, email hello@talknestbd.com, call +880 1712-345678 or send a WhatsApp message. Support hours: Saturday–Thursday, 10am–8pm.",
       ],
     },
   ],

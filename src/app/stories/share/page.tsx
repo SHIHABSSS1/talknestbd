@@ -5,9 +5,9 @@ import { Container } from "@/components/ui/Container";
 import { StoryShareForm } from "@/components/stories/StoryShareForm";
 
 export const metadata: Metadata = {
-  title: "গল্প শেয়ার করুন",
+  title: "Share Your Story",
   description:
-    "TalkNest-এর ‘Share to My Heart’ সেকশনে নিজের গল্প লিখে, ভয়েস রেকর্ড করে বা PDF ডায়েরি আপলোড করে শেয়ার করুন।",
+    "Share your story in TalkNest's Share to My Heart section — write it, record a voice note or upload a PDF diary.",
 };
 
 export default function StorySharePage() {
@@ -15,12 +15,12 @@ export default function StorySharePage() {
     <>
       <PageHeader
         eyebrow="Share to My Heart"
-        title="আপনার গল্পটা বলে ফেলুন"
-        description="লেখা, কণ্ঠ বা ডায়েরি — যে মাধ্যমেই হোক, আপনার গল্পটা আমাদের কাছে পৌঁছে দিন। সম্পাদকীয় টিম যাচাই করে এটি পাঠক কমিউনিটির সঙ্গে শেয়ার করবে।"
-        crumbs={[{ label: "হৃদয়ের গল্প", href: "/stories" }, { label: "গল্প শেয়ার" }]}
+        title="Tell us your story"
+        description="Written, recorded or uploaded — however you want to tell it, send your story our way. Our editorial team will review it and share it with the reader community."
+        crumbs={[{ label: "Reader Stories", href: "/stories" }, { label: "Share a Story" }]}
       >
         <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 text-[10px] font-medium text-forest-800">
-          <Mic size={12} /> ভয়েস · লেখা · PDF
+          <Mic size={12} /> Voice · Written · PDF
         </span>
       </PageHeader>
 

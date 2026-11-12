@@ -42,7 +42,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
               {formatPrice(book.oldPrice)}
             </span>
             <span className="mb-1 rounded-full bg-clay-500/10 px-2.5 py-1 text-[10px] font-semibold text-clay-600">
-              {toBn(Math.round(((book.oldPrice - book.price) / book.oldPrice) * 100))}% ছাড়
+              {toBn(Math.round(((book.oldPrice - book.price) / book.oldPrice) * 100))}% off
             </span>
           </>
         )}
@@ -51,10 +51,10 @@ export function BookPurchasePanel({ book }: { book: Book }) {
       <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
         <span className="inline-flex items-center gap-1.5 font-medium text-forest-600">
           <Check size={13} />
-          স্টকে আছে ({toBn(book.stock)} কপি)
+          In stock ({toBn(book.stock)} copies)
         </span>
         <span className="text-muted">·</span>
-        <span className="text-muted">অর্ডার কনফার্মেশন সাথে সাথে</span>
+        <span className="text-muted">Instant order confirmation</span>
       </div>
 
       <div className="mt-5 flex flex-wrap gap-3">
@@ -62,7 +62,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            aria-label="পরিমাণ কমান"
+            aria-label="Decrease quantity"
             className="grid h-12 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
           >
             <Minus size={15} />
@@ -73,7 +73,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.min(book.stock, value + 1))}
-            aria-label="পরিমাণ বাড়ান"
+            aria-label="Increase quantity"
             className="grid h-12 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
           >
             <Plus size={15} />
@@ -86,7 +86,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-forest-900 px-5 text-sm font-semibold text-cream-50 transition-colors hover:bg-forest-700 sm:flex-none"
         >
           <ShoppingBag size={17} />
-          কার্টে যোগ করুন
+          Add to cart
         </button>
 
         <button
@@ -97,13 +97,13 @@ export function BookPurchasePanel({ book }: { book: Book }) {
           }}
           className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-gold-500 px-6 text-sm font-semibold text-forest-950 transition-colors hover:bg-gold-400 sm:flex-none"
         >
-          এখনই কিনুন
+          Buy now
         </button>
 
         <button
           type="button"
           onClick={() => toggleWishlist(book.slug)}
-          aria-label={wished ? "উইশলিস্ট থেকে সরান" : "উইশলিস্টে যোগ করুন"}
+          aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
           aria-pressed={wished}
           className={cn(
             "grid h-12 w-12 place-items-center rounded-full border transition-colors",
@@ -119,15 +119,15 @@ export function BookPurchasePanel({ book }: { book: Book }) {
       <div className="mt-5 grid gap-2 sm:grid-cols-3">
         <div className="flex items-center gap-2 rounded-xl border border-forest-900/8 bg-cream-50 px-3 py-2.5 text-[10px] text-forest-800">
           <Truck size={15} className="shrink-0 text-forest-600" />
-          ৳৯৯৯+ অর্ডারে ফ্রি ডেলিভারি
+          ৳999+ orders ship free
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-forest-900/8 bg-cream-50 px-3 py-2.5 text-[10px] text-forest-800">
           <RotateCcw size={15} className="shrink-0 text-clay-500" />
-          পড়া শেষে ৫০% ফেরত
+          50% back after you read
         </div>
         <div className="flex items-center gap-2 rounded-xl border border-forest-900/8 bg-cream-50 px-3 py-2.5 text-[10px] text-forest-800">
           <ShieldCheck size={15} className="shrink-0 text-forest-600" />
-          ১০০% অরিজিনাল বই
+          100% original books
         </div>
       </div>
     </div>

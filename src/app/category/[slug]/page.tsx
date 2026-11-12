@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const category = getCategory(slug);
-  if (!category) return { title: "ক্যাটাগরি" };
+  if (!category) return { title: "Category" };
   return {
     title: category.name,
     description: category.description,
@@ -42,7 +42,7 @@ export default async function CategoryPage({
         eyebrow={category.englishName}
         title={category.name}
         description={category.description}
-        crumbs={[{ label: "ক্যাটাগরি", href: "/categories" }, { label: category.name }]}
+        crumbs={[{ label: "Categories", href: "/categories" }, { label: category.name }]}
       >
         <div className="no-scrollbar flex gap-2 overflow-x-auto">
           {categories.map((item) => (
@@ -64,13 +64,13 @@ export default async function CategoryPage({
       <section className="py-8 sm:py-12">
         <Container>
           <p className="mb-6 text-xs text-muted">
-            {categoryBooks.length}টি বই পাওয়া গেছে
+            {categoryBooks.length} books found
           </p>
           {categoryBooks.length > 0 ? (
             <BookGrid books={categoryBooks} columns="five" />
           ) : (
-            <p className="rounded-2xl bg-cream-100 p-8 text-center text-sm text-muted">
-              এই ক্যাটাগরিতে খুব শিগগিরই নতুন বই যোগ হবে।
+            <p className="rounded-[8px] border border-line bg-white p-8 text-center text-sm text-muted">
+              New books will be added to this category soon.
             </p>
           )}
         </Container>

@@ -14,9 +14,9 @@ import { formatPrice, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
 const conditions = [
-  { key: "like-new", label: "প্রায় নতুন", rate: 50, note: "পাতা, বাঁধাই ও কভার অক্ষত" },
-  { key: "good", label: "ভালো", rate: 45, note: "স্বাভাবিক ব্যবহারের ছাপ" },
-  { key: "fair", label: "পাঠযোগ্য", rate: 35, note: "দাগ বা ভাঁজ থাকতে পারে" },
+  { key: "like-new", label: "Like new", rate: 50, note: "Pages, binding and cover intact" },
+  { key: "good", label: "Good", rate: 45, note: "Normal signs of use" },
+  { key: "fair", label: "Fair", rate: 35, note: "May have marks or creases" },
 ] as const;
 
 export function BuybackCalculator() {
@@ -41,8 +41,8 @@ export function BuybackCalculator() {
             <Calculator size={16} />
           </span>
           <div>
-            <h2 className="font-display text-lg font-bold text-forest-950">বাইব্যাক ক্যালকুলেটর</h2>
-            <p className="text-[9px] text-muted">বইয়ের অবস্থা অনুযায়ী আনুমানিক ফেরত মূল্য দেখুন</p>
+            <h2 className="font-display text-lg font-bold text-forest-950">Buyback Calculator</h2>
+            <p className="text-[9px] text-muted">See an estimated buyback value based on the book&apos;s condition</p>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@ export function BuybackCalculator() {
       <div className="p-5 sm:p-6">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">বই বেছে নিন</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Choose a book</span>
             <select
               value={bookSlug}
               onChange={(event) => {
@@ -70,24 +70,24 @@ export function BuybackCalculator() {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">কেনা মূল্য (৳)</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Purchase price (৳)</span>
             <input
               value={purchasePrice}
               onChange={(event) => setPurchasePrice(event.target.value)}
               inputMode="numeric"
-              placeholder="যেমন: ৩৮০"
+              placeholder="e.g. 380"
               className="h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
             />
             {selectedBook && (
               <span className="mt-1 block text-[9px] text-muted">
-                {selectedBook.title}-এর বর্তমান মূল্য {formatPrice(selectedBook.price)}
+                Current price of {selectedBook.title}: {formatPrice(selectedBook.price)}
               </span>
             )}
           </label>
         </div>
 
         <div className="mt-3">
-          <span className="mb-1.5 block text-[11px] font-semibold text-forest-900">বইয়ের অবস্থা</span>
+          <span className="mb-1.5 block text-[11px] font-semibold text-forest-900">Book condition</span>
           <div className="grid gap-2 sm:grid-cols-3">
             {conditions.map((entry) => (
               <button
@@ -118,13 +118,13 @@ export function BuybackCalculator() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.16em] text-gold-400">
-                <Banknote size={12} /> আনুমানিক ফেরত
+                <Banknote size={12} /> Estimated buyback
               </p>
               <p className="mt-1 font-display text-3xl font-bold">
-                {eligible ? formatPrice(amount) : "৳০"}
+                {eligible ? formatPrice(amount) : "৳0"}
               </p>
               <p className="mt-0.5 text-[9px] text-cream-100/45">
-                {formatPrice(price)} × {toBn(percent)}% · চূড়ান্ত মূল্য বই যাচাইয়ের পর
+                {formatPrice(price)} × {toBn(percent)}% · final value after inspecting the book
               </p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-400/25 bg-gold-500/10 px-3 py-1.5 text-[9px] font-semibold text-gold-300">
@@ -136,25 +136,25 @@ export function BuybackCalculator() {
 
         <div className="mt-3 flex items-start gap-2 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
           <Info size={12} className="mt-0.5 shrink-0 text-gold-600" />
-          এটি শুধু আনুমানিক হিসাব। বই হাতে পাওয়ার পর অবস্থা যাচাই করে চূড়ান্ত মূল্য
-          নিশ্চিত করা হয়। পাঠ্যপুস্তক ও পুরনো সংস্করণ বাইব্যাকের আওতায় নাও পড়তে পারে।
+          This is only an estimate. The final value is confirmed after we receive
+          and inspect the book. Textbooks and older editions may not be eligible for buyback.
         </div>
 
         {submitted ? (
           <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-forest-500/20 bg-forest-100/60 px-3.5 py-3">
             <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-forest-600" />
             <div>
-              <p className="text-[11px] font-semibold text-forest-900">আবেদনটি ডেমো হিসেবে প্রস্তুত হয়েছে</p>
+              <p className="text-[11px] font-semibold text-forest-900">Your request is ready as a demo</p>
               <p className="mt-0.5 text-[9px] leading-relaxed text-muted">
-                আসল বাইব্যাকের জন্য অর্ডার নম্বর ও বইয়ের ছবিসহ হোয়াটসঅ্যাপে যোগাযোগ করুন।
+                For a real buyback, contact us on WhatsApp with your order number and photos of the book.
               </p>
             </div>
           </div>
         ) : (
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[9px] text-muted">সর্বোচ্চ ৳২০,০০০ কেনা মূল্যের বই পর্যন্ত হিসাব করা যায়।</p>
+            <p className="text-[9px] text-muted">Works for books with a purchase price up to ৳20,000.</p>
             <Button type="button" size="sm" disabled={!eligible} onClick={() => setSubmitted(true)}>
-              বাইব্যাক আবেদন করুন
+              Request buyback
               <ArrowRight size={13} />
             </Button>
           </div>

@@ -4,77 +4,75 @@ import { Container } from "@/components/ui/Container";
 
 export function FreeOrderWholesale() {
   return (
-    <section className="py-9 sm:py-12">
+    <section className="bg-white py-8 sm:py-10">
       <Container>
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 lg:grid-cols-2">
           <Link
             href="/free-order"
-            className="group relative overflow-hidden rounded-[1.75rem] border border-gold-500/25 bg-cream-200 px-6 py-7 sm:px-8"
+            className="group relative overflow-hidden rounded-[8px] border border-brand-200 bg-brand-50 px-5 py-6 transition-colors hover:border-brand-400 sm:px-7"
           >
             <div
               aria-hidden="true"
-              className="absolute -right-10 -top-12 h-40 w-40 rounded-full border border-forest-900/10"
+              className="absolute -right-10 -top-12 h-40 w-40 rounded-full border border-brand-200"
             />
-            <div
-              aria-hidden="true"
-              className="absolute -bottom-16 right-12 h-40 w-40 rounded-full bg-gold-400/20 blur-2xl"
-            />
-            <div className="relative flex items-start justify-between gap-5">
+            <div className="relative flex items-start justify-between gap-4">
               <div className="max-w-sm">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-950 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-gold-300">
-                  <Truck size={12} />
-                  Free Order
+                <span className="inline-flex items-center gap-1.5 rounded-[3px] bg-brand-600 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white">
+                  <Truck size={11} />
+                  Free delivery
                 </span>
-                <h2 className="mt-4 font-display text-2xl font-bold leading-snug text-forest-950 sm:text-[1.75rem]">
-                  ৳৯৯৯+ অর্ডারে সারা দেশে ফ্রি ডেলিভারি
+                <h2 className="mt-3 text-xl font-bold leading-snug text-ink sm:text-2xl">
+                  Free delivery on orders over ৳999
                 </h2>
-                <p className="mt-2 text-xs leading-relaxed text-forest-800/70 sm:text-[13px]">
-                  ঘরে বসে বইয়ের অর্ডার করুন। নির্দিষ্ট বইয়ে ফ্রি ডেলিভারি
-                  সুবিধা তো থাকছেই।
+                <p className="mt-2 text-[12px] leading-relaxed text-body sm:text-[13px]">
+                  Books delivered to your door anywhere in Bangladesh — and
+                  selected titles ship free at any order value.
                 </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold text-clay-600">
-                  ফ্রি অর্ডার করুন
-                  <ArrowUpRight size={14} />
+                <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-brand-700">
+                  Order with free delivery
+                  <ArrowUpRight
+                    size={13}
+                    className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
                 </span>
               </div>
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-forest-950 text-gold-300 sm:h-16 sm:w-16">
-                <Truck size={27} strokeWidth={1.5} />
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[4px] bg-brand-600 text-white sm:h-14 sm:w-14">
+                <Truck size={24} strokeWidth={1.6} />
               </span>
             </div>
           </Link>
 
           <Link
             href="/wholesale"
-            className="group relative overflow-hidden rounded-[1.75rem] bg-forest-900 px-6 py-7 text-cream-50 sm:px-8"
+            className="group relative overflow-hidden rounded-[8px] border border-[#ffd08a] bg-[#fff5e6] px-5 py-6 transition-colors hover:border-sale sm:px-7"
           >
             <div
               aria-hidden="true"
-              className="absolute -right-10 -top-12 h-40 w-40 rounded-full border border-white/10"
+              className="absolute -right-10 -top-12 h-40 w-40 rounded-full border border-sale/15"
             />
-            <div
-              aria-hidden="true"
-              className="absolute -bottom-16 right-12 h-40 w-40 rounded-full bg-gold-400/10 blur-2xl"
-            />
-            <div className="relative flex items-start justify-between gap-5">
+            <div className="relative flex items-start justify-between gap-4">
               <div className="max-w-sm">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-gold-300">
-                  <Store size={12} />
+                <span className="inline-flex items-center gap-1.5 rounded-[3px] bg-sale px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-ink">
+                  <Store size={11} />
                   Wholesale
                 </span>
-                <h2 className="mt-4 font-display text-2xl font-bold leading-snug sm:text-[1.75rem]">
-                  লাইব্রেরি বা ব্যবসার জন্য পাইকারি দাম
+                <h2 className="mt-3 text-xl font-bold leading-snug text-ink sm:text-2xl">
+                  Better prices for libraries and shops
                 </h2>
-                <p className="mt-2 text-xs leading-relaxed text-cream-100/60 sm:text-[13px]">
-                  ১০ কপি থেকে অর্ডারে বিশেষ কমিশন, দ্রুত ডেলিভারি আর ডেডিকেটেড
-                  সাপোর্ট।
+                <p className="mt-2 text-[12px] leading-relaxed text-body sm:text-[13px]">
+                  Order 10 copies or more for special commission, priority
+                  dispatch and a dedicated account manager.
                 </p>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold text-gold-300">
-                  পাইকারি অর্ডার করুন
-                  <ArrowUpRight size={14} />
+                <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-brand-700">
+                  Request wholesale pricing
+                  <ArrowUpRight
+                    size={13}
+                    className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
                 </span>
               </div>
-              <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white/10 text-gold-300 sm:h-16 sm:w-16">
-                <Store size={27} strokeWidth={1.5} />
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[4px] bg-sale text-ink sm:h-14 sm:w-14">
+                <Store size={24} strokeWidth={1.6} />
               </span>
             </div>
           </Link>

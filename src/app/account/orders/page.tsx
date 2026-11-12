@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AccountOrders } from "@/components/account/AccountOrders";
 
 export const metadata: Metadata = {
-  title: "আমার অর্ডার",
+  title: "My Orders",
 };
 
 export default function AccountOrdersPage() {
