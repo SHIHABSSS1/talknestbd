@@ -5,6 +5,7 @@ import { books } from "@/data/books";
 import { formatCount, initials } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
 
 export function AuthorsSpotlight() {
   return (
@@ -16,6 +17,7 @@ export function AuthorsSpotlight() {
           description="Get closer to the writers, thinkers and storytellers shaping what Bangladesh reads."
           href="/authors"
           linkLabel="All authors"
+          className="mb-6 sm:mb-7"
         />
 
         <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6">
@@ -57,6 +59,12 @@ export function AuthorsSpotlight() {
             );
           })}
         </div>
+
+        <ViewAllRow
+          href="/authors"
+          label="All authors"
+          count={`${featuredAuthors.length} featured`}
+        />
       </Container>
     </section>
   );

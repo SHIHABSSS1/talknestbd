@@ -4,6 +4,7 @@ import { reviews } from "@/data/reviews";
 import { formatCount } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
 
 export function ReviewsWall() {
   return (
@@ -82,6 +83,12 @@ export function ReviewsWall() {
             </article>
           ))}
         </div>
+
+        <ViewAllRow
+          href="/reviews"
+          label="All reviews"
+          count={`${reviews.length} recent`}
+        />
       </Container>
     </section>
   );

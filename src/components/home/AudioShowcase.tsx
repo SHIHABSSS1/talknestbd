@@ -4,6 +4,7 @@ import { getBooksByCollection } from "@/data/books";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
 import { BookCover } from "@/components/books/BookCover";
 
 const waveform = [30, 62, 42, 84, 52, 72, 36, 90, 58, 74, 44, 66, 34, 78, 48, 86, 40, 60];
@@ -120,6 +121,13 @@ export function AudioShowcase() {
             ))}
           </div>
         </div>
+
+        <ViewAllRow
+          light
+          href="/audio-books"
+          label="All audiobooks"
+          count={`${audioBooks.length} titles`}
+        />
       </Container>
     </section>
   );

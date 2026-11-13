@@ -147,10 +147,17 @@ export function Hero() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center justify-between px-4 py-[8px] text-[12px] font-medium text-body transition-colors hover:bg-brand-50 hover:text-brand-700"
+                  className="group flex items-center justify-between gap-2 px-4 py-[8px] text-[12px] font-medium text-body transition-colors hover:bg-brand-50 hover:text-brand-700"
                 >
-                  {link.label}
-                  <ChevronRight size={12} className="text-muted" />
+                  <span className="flex min-w-0 items-center gap-2">
+                    {link.icon && (
+                      <span className="grid h-6 w-6 shrink-0 place-items-center rounded-[5px] bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
+                        <link.icon size={12} strokeWidth={1.9} />
+                      </span>
+                    )}
+                    <span className="truncate">{link.label}</span>
+                  </span>
+                  <ChevronRight size={12} className="shrink-0 text-muted" />
                 </Link>
               ))}
               <Link

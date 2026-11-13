@@ -29,6 +29,8 @@ export function StoryCommunity() {
               eyebrow="Reader stories"
               title="Your story belongs here"
               description="Share a memory, a turning point or a small everyday joy — write it, record it in your voice or upload a PDF diary."
+              href="/stories"
+              linkLabel="All stories"
               className="mb-4"
             />
 

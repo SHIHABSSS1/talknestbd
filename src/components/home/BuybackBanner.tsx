@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Banknote, CheckCircle2, Repeat2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 const steps = [
   {
@@ -47,30 +48,21 @@ export function BuybackBanner() {
                   cash back
                 </span>
               </div>
-              <div className="lg:hidden">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-200">
-                  TalkNest Buyback
-                </p>
-                <p className="mt-1 text-lg font-bold leading-snug">
-                  Finished a book? Return it.
-                </p>
-              </div>
             </div>
 
             <div>
-              <p className="hidden items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-200 lg:flex">
-                <Repeat2 size={13} />
-                TalkNest Buyback
-              </p>
-              <h2 className="mt-2 max-w-2xl text-2xl font-bold leading-snug sm:text-[30px]">
-                Finished a book? Return it and get{" "}
-                <span className="text-sale">50% back.</span>
-              </h2>
-              <p className="mt-2.5 max-w-2xl text-[13px] leading-relaxed text-white/70 sm:text-sm">
-                Buy any book from TalkNest, read it at your own pace, then send
-                it back in readable condition. We will refund half the purchase
-                price — simple, transparent and hassle-free.
-              </p>
+              <SectionTitle
+                light
+                size="lg"
+                eyebrow="TalkNest Buyback"
+                title={
+                  <>
+                    Finished a book? Return it and get{" "}
+                    <span className="text-sale">50% back.</span>
+                  </>
+                }
+                description="Buy any book from TalkNest, read it at your own pace, then send it back in readable condition. We will refund half the purchase price — simple, transparent and hassle-free."
+              />
 
               <div className="mt-5 grid gap-2.5 sm:grid-cols-3">
                 {steps.map((step, index) => {

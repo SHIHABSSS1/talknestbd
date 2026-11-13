@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Recycle, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Recycle } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 export function UsedBooksBanner() {
   return (
@@ -30,19 +31,17 @@ export function UsedBooksBanner() {
           </div>
 
           <div className="relative p-5 sm:p-8 lg:p-10">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-600">
-              <Sparkles size={12} />
-              Pre-loved books
-            </span>
-            <h2 className="mt-2.5 max-w-md text-2xl font-bold leading-snug text-ink sm:text-[30px]">
-              A book&apos;s second life, at{" "}
-              <span className="text-brand-600">half the price.</span>
-            </h2>
-            <p className="mt-2.5 max-w-md text-[13px] leading-relaxed text-body sm:text-sm">
-              Sell the books you have finished and buy another reader&apos;s
-              favourites for less. Every exchange keeps a good story in
-              circulation.
-            </p>
+            <SectionTitle
+              size="lg"
+              eyebrow="Pre-loved books"
+              title={
+                <>
+                  A book&apos;s second life, at{" "}
+                  <span className="text-brand-600">half the price.</span>
+                </>
+              }
+              description="Sell the books you have finished and buy another reader's favourites for less. Every exchange keeps a good story in circulation."
+            />
 
             <div className="mt-4 flex flex-wrap gap-2">
               <Button href="/used-books" variant="primary">

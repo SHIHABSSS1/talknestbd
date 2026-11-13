@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight, CircleHelp, Play, Trophy } from "lucide-react
 import { videos, quizQuestions } from "@/data/community";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 export function VideoQuizSection() {
   const feature = videos[0];
@@ -76,16 +77,12 @@ export function VideoQuizSection() {
               </div>
 
               <div className="mt-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-brand-600">
-                  Today&apos;s question
-                </p>
-                <h2 className="mt-1.5 text-2xl font-bold leading-snug text-ink sm:text-[26px]">
-                  How well do you know your books?
-                </h2>
-                <p className="mt-2 text-[13px] leading-relaxed text-body">
-                  Test yourself on books, authors and literary history. Answer
-                  correctly and unlock discounts and small reader rewards.
-                </p>
+                <SectionTitle
+                  size="lg"
+                  eyebrow={"Today's question"}
+                  title="How well do you know your books?"
+                  description="Test yourself on books, authors and literary history. Answer correctly and unlock discounts and small reader rewards."
+                />
 
                 <div className="mt-4 rounded-[8px] border border-brand-200 bg-white p-3.5">
                   <p className="text-[12px] font-medium text-ink">

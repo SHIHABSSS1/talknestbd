@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
+  ChevronRight,
   Heart,
   MapPin,
   Menu,
+  Package,
   Phone,
   RotateCcw,
   ShoppingBag,
@@ -272,13 +274,18 @@ export function Header() {
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="block px-3 py-2.5 transition-colors hover:bg-brand-50"
+                        className="group/item flex items-center gap-3 rounded-[6px] px-2 py-2 transition-colors hover:bg-brand-50"
                       >
-                        <span className="block text-[13px] font-medium text-ink">
-                          {link.label}
+                        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[6px] bg-brand-50 text-brand-600 transition-colors group-hover/item:bg-brand-600 group-hover/item:text-white">
+                          {link.icon && <link.icon size={15} strokeWidth={1.8} />}
                         </span>
-                        <span className="block text-[11px] text-muted">
-                          {link.description}
+                        <span className="min-w-0">
+                          <span className="block text-[13px] font-medium text-ink">
+                            {link.label}
+                          </span>
+                          <span className="block truncate text-[11px] text-muted">
+                            {link.description}
+                          </span>
                         </span>
                       </Link>
                     ))}
@@ -347,7 +354,7 @@ export function Header() {
             onClick={() => setMenuOpen(false)}
             className="absolute inset-0 h-full w-full bg-ink/50 backdrop-blur-sm"
           />
-          <aside className="absolute inset-y-0 left-0 flex w-[88%] max-w-sm flex-col bg-white shadow-2xl">
+          <aside className="absolute inset-y-0 left-0 flex w-[90%] max-w-sm flex-col bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-line px-5 py-4">
               <Logo />
               <button
@@ -363,61 +370,148 @@ export function Header() {
             <div className="flex-1 overflow-y-auto px-5 py-5">
               <SearchForm />
 
+              <div className="mt-4 grid grid-cols-4 gap-2">
+                {[
+                  { label: "Login", href: "/login", icon: User },
+                  { label: "Orders", href: "/account/orders", icon: Package },
+                  { label: "Wishlist", href: "/wishlist", icon: Heart },
+                  { label: "Cart", href: "/cart", icon: ShoppingBag },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="group flex flex-col items-center gap-1.5 rounded-[10px] border border-line bg-canvas py-2.5 text-[10px] font-medium text-body transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                    >
+                      <span className="relative grid h-8 w-8 place-items-center rounded-full bg-white text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
+                        <Icon size={15} />
+                        {item.href === "/cart" && hydrated && cartCount > 0 && (
+                          <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-sale px-1 text-[8px] font-bold text-white">
+                            {cartCount}
+                          </span>
+                        )}
+                      </span>
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+
               <div className="mt-6">
-                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted">
+                <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
+                  <span aria-hidden="true" className="h-[3px] w-4 rounded-full bg-brand-500" />
                   Shop by category
                 </p>
-                <div className="mt-2 grid grid-cols-2 gap-2">
+                <div className="mt-3 space-y-2">
                   {categoryLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className="border border-line bg-canvas px-3 py-2.5 text-xs font-medium text-ink transition-colors hover:border-brand-300 hover:bg-brand-50"
+                      className="group flex items-center gap-3 rounded-[10px] border border-line bg-white px-3 py-2.5 transition-colors hover:border-brand-300 hover:bg-brand-50/70"
                     >
-                      {link.label}
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
+                        {link.icon && <link.icon size={16} strokeWidth={1.8} />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[13px] font-semibold leading-snug text-ink">
+                          {link.label}
+                        </span>
+                        {link.description && (
+                          <span className="mt-0.5 block truncate text-[11px] leading-snug text-muted">
+                            {link.description}
+                          </span>
+                        )}
+                      </span>
+                      <ChevronRight
+                        size={15}
+                        className="shrink-0 text-muted/50 transition-colors group-hover:text-brand-600"
+                      />
                     </Link>
                   ))}
                 </div>
+                <Link
+                  href="/categories"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-2.5 flex h-10 items-center justify-center gap-1.5 rounded-[8px] bg-brand-50 text-[11px] font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+                >
+                  View all categories
+                  <ChevronRight size={13} />
+                </Link>
               </div>
 
-              <nav className="mt-6 space-y-0.5">
-                {mainNav.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className={cn(
-                      "flex items-center justify-between px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-brand-50 hover:text-brand-700",
-                      isActive(link.href) && "bg-brand-50 text-brand-700",
-                    )}
-                  >
-                    {link.label}
-                    <span aria-hidden="true">→</span>
-                  </Link>
-                ))}
+              <nav className="mt-6" aria-label="Browse">
+                <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
+                  <span aria-hidden="true" className="h-[3px] w-4 rounded-full bg-brand-500" />
+                  Browse
+                </p>
+                <div className="mt-3 space-y-1">
+                  {mainNav.map((link) => {
+                    const Icon = link.icon;
+                    const active = isActive(link.href);
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-[13px] font-medium transition-colors",
+                          active
+                            ? "bg-brand-600 text-white"
+                            : "text-ink hover:bg-brand-50 hover:text-brand-700",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "grid h-8 w-8 shrink-0 place-items-center rounded-[8px]",
+                            active
+                              ? "bg-white/15 text-white"
+                              : "bg-brand-50 text-brand-600",
+                          )}
+                        >
+                          {Icon && <Icon size={15} strokeWidth={1.9} />}
+                        </span>
+                        {link.label}
+                        <ChevronRight
+                          size={15}
+                          className={cn(
+                            "ml-auto shrink-0",
+                            active ? "text-white/70" : "text-muted/50",
+                          )}
+                        />
+                      </Link>
+                    );
+                  })}
+                </div>
               </nav>
 
               <div className="mt-6 border-t border-line pt-5">
-                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted">
+                <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
+                  <span aria-hidden="true" className="h-[3px] w-4 rounded-full bg-brand-500" />
                   More from TalkNest
                 </p>
-                <div className="mt-2 grid grid-cols-2 gap-2">
+                <div className="mt-3 grid grid-cols-2 gap-2">
                   {moreLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-2 border border-line bg-white px-3 py-2.5 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:bg-brand-50"
+                      className="group flex items-center gap-2 rounded-[10px] border border-line bg-canvas px-2.5 py-2.5 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:bg-brand-50"
                     >
-                      {link.icon && <link.icon size={14} className="shrink-0 text-brand-600" />}
-                      {link.label}
+                      {link.icon && (
+                        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-[6px] bg-white text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
+                          <link.icon size={13} />
+                        </span>
+                      )}
+                      <span className="min-w-0 truncate">{link.label}</span>
                     </Link>
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6 bg-brand-600 p-4 text-white">
+              <div className="mt-6 rounded-[10px] bg-brand-600 p-4 text-white">
                 <p className="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-white/80">
                   <Store size={12} />
                   Need help choosing a book?
@@ -434,6 +528,11 @@ export function Header() {
                   {siteConfig.phone}
                 </a>
               </div>
+
+              <p className="mt-4 flex items-center gap-1.5 text-[10px] text-muted">
+                <Truck size={12} className="text-brand-600" />
+                Free delivery on orders over ৳{siteConfig.freeDeliveryThreshold}
+              </p>
             </div>
           </aside>
         </div>

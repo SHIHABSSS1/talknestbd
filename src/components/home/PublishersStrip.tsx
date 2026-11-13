@@ -5,6 +5,7 @@ import { books } from "@/data/books";
 import { formatCount } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
 
 export function PublishersStrip() {
   return (
@@ -16,6 +17,7 @@ export function PublishersStrip() {
           description="Explore hand-picked titles from publishers known for careful editing and lasting books."
           href="/publishers"
           linkLabel="All publishers"
+          className="mb-6 sm:mb-7"
         />
 
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 lg:grid-cols-6">
@@ -51,6 +53,12 @@ export function PublishersStrip() {
             );
           })}
         </div>
+
+        <ViewAllRow
+          href="/publishers"
+          label="All publishers"
+          count={`${publishers.length} presses`}
+        />
       </Container>
     </section>
   );

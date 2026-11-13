@@ -9,6 +9,7 @@ import {
   Truck,
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 const wholesaleBenefits = [
   { icon: BadgePercent, label: "Special bulk pricing" },
@@ -21,18 +22,11 @@ export function FreeOrderWholesale() {
     <section className="border-y border-brand-100 bg-brand-50/70 py-9 sm:py-12">
       <Container>
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-600">
-              Books for organisations
-            </span>
-            <h2 className="mt-1 text-[22px] font-bold text-ink sm:text-2xl">
-              Build a better library for less
-            </h2>
-          </div>
-          <p className="max-w-lg text-[12px] leading-relaxed text-muted sm:text-[13px]">
-            Simple ordering and better prices for schools, libraries, offices,
-            bookshops and reading clubs.
-          </p>
+          <SectionTitle
+            eyebrow="Books for organisations"
+            title="Build a better library for less"
+            description="Simple ordering and better prices for schools, libraries, offices, bookshops and reading clubs."
+          />
         </div>
 
         <div className="grid gap-3 sm:gap-4 lg:grid-cols-[1.42fr_0.58fr]">

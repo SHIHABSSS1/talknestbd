@@ -21,6 +21,7 @@ import type { CategorySlug } from "@/lib/types";
 import { formatCount } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
 
 const categoryIcons: Record<CategorySlug, LucideIcon> = {
   uponnash: BookOpen,
@@ -105,6 +106,8 @@ export function CategoryShowcase() {
             );
           })}
         </Swiper>
+
+        <ViewAllRow href="/categories" label="All categories" count={`${categoryItems.length} shelves`} />
       </Container>
     </section>
   );
