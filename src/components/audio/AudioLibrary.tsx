@@ -441,16 +441,41 @@ export function AudioLibrary() {
                   {formatPrice(price)}{" "}
                   <span className="text-[10px] font-normal text-muted">/ one-time</span>
                 </p>
+
+                {/* Availability of the audiobook sits in its own row. */}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-2.5 py-1 text-[10px] font-medium text-forest-800">
+                    <Headphones size={11} className="text-forest-600" />
+                    Instant access after purchase
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-2.5 py-1 text-[10px] font-medium text-forest-800">
+                    <CheckCircle2 size={11} className="text-forest-600" />
+                    First chapter free
+                  </span>
+                </div>
               </div>
-              <div className="flex shrink-0 flex-col gap-2 sm:w-44">
-                <Button type="button" onClick={buyNow} variant="primary">
-                  <ShoppingBag size={15} />
-                  Buy & unlock
-                </Button>
-                <Button type="button" onClick={addAudioToCart} variant="outline" size="sm">
-                  Add to cart
-                </Button>
-                <p className="text-center text-[8px] text-muted">
+              {/* Add to cart and buy now always share a single row. */}
+              <div className="w-full shrink-0 sm:w-80">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    type="button"
+                    onClick={buyNow}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    <ShoppingBag size={15} />
+                    Buy &amp; unlock
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={addAudioToCart}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Add to cart
+                  </Button>
+                </div>
+                <p className="mt-2 text-center text-[9px] text-muted">
                   The audiobook unlocks automatically after checkout
                 </p>
               </div>

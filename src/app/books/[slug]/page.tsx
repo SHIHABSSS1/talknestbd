@@ -22,7 +22,7 @@ import { Rating } from "@/components/ui/Rating";
 import { BookCover } from "@/components/books/BookCover";
 import { BookPurchasePanel } from "@/components/books/BookPurchasePanel";
 import { BookDetailTabs } from "@/components/books/BookDetailTabs";
-import { BookReviews } from "@/components/books/BookReviews";
+import { BookContactDock } from "@/components/books/BookContactDock";
 import { BookRail } from "@/components/books/BookRail";
 import { discountPercent, toBn } from "@/lib/utils";
 
@@ -193,9 +193,6 @@ export default async function BookDetailPage({
 
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <Rating value={book.rating} count={book.reviewCount} />
-                <span className="text-[10px] text-muted">
-                  {toBn(book.stock)} copies in stock
-                </span>
               </div>
 
               <div className="mt-5">
@@ -285,9 +282,6 @@ export default async function BookDetailPage({
       <section className="py-8 sm:py-12">
         <Container>
           <BookDetailTabs book={book} />
-          <div className="mt-10">
-            <BookReviews book={book} />
-          </div>
         </Container>
       </section>
 
@@ -299,6 +293,8 @@ export default async function BookDetailPage({
         href="/books"
         linkLabel="All books"
       />
+
+      <BookContactDock />
     </>
   );
 }

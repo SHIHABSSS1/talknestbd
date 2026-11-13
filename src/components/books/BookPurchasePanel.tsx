@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
+  AlertCircle,
   Check,
   Heart,
   Minus,
@@ -11,6 +12,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   Truck,
+  Zap,
 } from "lucide-react";
 import type { Book } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -21,6 +23,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
   const { addItem, toggleWishlist, isWishlisted, hydrated } = useStore();
   const [quantity, setQuantity] = useState(1);
   const wished = hydrated && isWishlisted(book.slug);
+  const lowStock = book.stock <= 5;
 
   const payload = {
     slug: book.slug,
@@ -48,22 +51,23 @@ export function BookPurchasePanel({ book }: { book: Book }) {
         )}
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px]">
-        <span className="inline-flex items-center gap-1.5 font-medium text-forest-600">
-          <Check size={13} />
-          In stock ({toBn(book.stock)} copies)
+      <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-muted">
+        <span className="inline-flex items-center gap-1.5">
+          <Check size={13} className="text-forest-600" />
+          Instant order confirmation
         </span>
-        <span className="text-muted">·</span>
-        <span className="text-muted">Instant order confirmation</span>
+        <span aria-hidden="true">·</span>
+        <span>Cash on delivery available</span>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
-        <div className="inline-flex h-12 items-center rounded-full border border-forest-900/15 bg-cream-50">
+      {/* Quantity, wishlist and availability sit together in their own row. */}
+      <div className="mt-5 flex flex-wrap items-center gap-2.5 rounded-[14px] border border-forest-900/10 bg-cream-50 p-2 sm:gap-3 sm:p-2.5">
+        <div className="inline-flex h-11 items-center rounded-full border border-forest-900/12 bg-white">
           <button
             type="button"
             onClick={() => setQuantity((value) => Math.max(1, value - 1))}
             aria-label="Decrease quantity"
-            className="grid h-12 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
+            className="grid h-11 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
           >
             <Minus size={15} />
           </button>
@@ -74,7 +78,7 @@ export function BookPurchasePanel({ book }: { book: Book }) {
             type="button"
             onClick={() => setQuantity((value) => Math.min(book.stock, value + 1))}
             aria-label="Increase quantity"
-            className="grid h-12 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
+            className="grid h-11 w-10 place-items-center text-forest-800 transition-colors hover:text-clay-500"
           >
             <Plus size={15} />
           </button>
@@ -82,8 +86,40 @@ export function BookPurchasePanel({ book }: { book: Book }) {
 
         <button
           type="button"
+          onClick={() => toggleWishlist(book.slug)}
+          aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={wished}
+          className={cn(
+            "grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-colors",
+            wished
+              ? "border-clay-500/30 bg-clay-500/10 text-clay-500"
+              : "border-forest-900/12 bg-white text-forest-800 hover:border-clay-500/30 hover:text-clay-500",
+          )}
+        >
+          <Heart size={18} className={wished ? "fill-clay-500" : ""} />
+        </button>
+
+        <span
+          className={cn(
+            "ml-auto inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium",
+            lowStock
+              ? "bg-gold-500/15 text-gold-600"
+              : "bg-forest-50 text-forest-700",
+          )}
+        >
+          {lowStock ? <AlertCircle size={13} /> : <Check size={13} />}
+          {lowStock
+            ? `Only ${toBn(book.stock)} left`
+            : `In stock · ${toBn(book.stock)} copies`}
+        </span>
+      </div>
+
+      {/* Add to cart and buy now always share a single row. */}
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <button
+          type="button"
           onClick={() => addItem(payload, quantity)}
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-forest-900 px-5 text-sm font-semibold text-cream-50 transition-colors hover:bg-forest-700 sm:flex-none"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-forest-900 px-3 text-[13px] font-semibold text-cream-50 transition-colors hover:bg-forest-700 sm:px-6 sm:text-sm"
         >
           <ShoppingBag size={17} />
           Add to cart
@@ -95,24 +131,10 @@ export function BookPurchasePanel({ book }: { book: Book }) {
             addItem(payload, quantity);
             router.push("/checkout");
           }}
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-gold-500 px-6 text-sm font-semibold text-forest-950 transition-colors hover:bg-gold-400 sm:flex-none"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gold-500 px-3 text-[13px] font-semibold text-forest-950 transition-colors hover:bg-gold-400 sm:px-6 sm:text-sm"
         >
+          <Zap size={16} />
           Buy now
-        </button>
-
-        <button
-          type="button"
-          onClick={() => toggleWishlist(book.slug)}
-          aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}
-          aria-pressed={wished}
-          className={cn(
-            "grid h-12 w-12 place-items-center rounded-full border transition-colors",
-            wished
-              ? "border-clay-500/30 bg-clay-500/10 text-clay-500"
-              : "border-forest-900/15 bg-cream-50 text-forest-800 hover:border-clay-500/30 hover:text-clay-500",
-          )}
-        >
-          <Heart size={18} className={wished ? "fill-clay-500" : ""} />
         </button>
       </div>
 
