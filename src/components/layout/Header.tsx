@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   Heart,
@@ -23,6 +23,14 @@ import { Logo } from "./Logo";
 import { SearchForm } from "./SearchForm";
 import { SocialLinks } from "./SocialLinks";
 
+/**
+ * Net scroll distance the header reacts to. Both directions share the same
+ * distance so the header cannot flicker between the two states while the
+ * visitor scrolls slowly.
+ */
+const COLLAPSE_DISTANCE = 40;
+const EXPAND_DISTANCE = 40;
+
 export function Header() {
   const pathname = usePathname();
   const { cartCount, wishlist, hydrated } = useStore();
@@ -30,11 +38,19 @@ export function Header() {
   const [collapsed, setCollapsed] = useState(false);
   const [regionHeight, setRegionHeight] = useState(0);
   const regionRef = useRef<HTMLDivElement>(null);
+  const collapsedRef = useRef(false);
+
+  // Keeps the ref in sync so the scroll handler can skip redundant updates.
+  const setHeaderCollapsed = useCallback((value: boolean) => {
+    if (collapsedRef.current === value) return;
+    collapsedRef.current = value;
+    setCollapsed(value);
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
-    setCollapsed(false);
-  }, [pathname]);
+    setHeaderCollapsed(false);
+  }, [pathname, setHeaderCollapsed]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -53,33 +69,50 @@ export function Header() {
   /**
    * Keeps the logo row pinned while the search + navigation rows slide away.
    * Scrolling down collapses them, scrolling up brings them back sticky.
+   *
+   * The direction is measured against an anchor that only moves when the
+   * header changes state, so the header needs a deliberate scroll before it
+   * reacts. Without that band, slow scrolling and rubber-banding flip the
+   * header on and off over and over.
    */
   useEffect(() => {
     let frame = 0;
-    let lastY = window.scrollY;
+    let anchorY = window.scrollY;
 
     const onScroll = () => {
       if (frame) return;
       frame = window.requestAnimationFrame(() => {
         frame = 0;
         const y = window.scrollY;
-        const delta = y - lastY;
-        lastY = y;
-        if (Math.abs(delta) < 4) return;
+        const maxScroll =
+          document.documentElement.scrollHeight - window.innerHeight;
 
-        const threshold = regionHeight + 8;
-        if (y <= threshold) {
-          setCollapsed(false);
+        // Collapsing the header shortens the page. Near the bottom the
+        // browser then clamps the scroll position, which is a layout artefact
+        // rather than an upward scroll and must not re-open the header.
+        if (y >= maxScroll - 2 && y < anchorY) {
+          anchorY = y;
           return;
         }
-        if (delta < 0) {
-          setCollapsed(false);
+
+        if (y <= regionHeight + 8) {
+          // Close to the top of the page the whole header stays visible.
+          anchorY = y;
+          setHeaderCollapsed(false);
           return;
         }
-        // Never collapse while the visitor is typing in the header search.
-        const active = document.activeElement as HTMLElement | null;
-        if (active && regionRef.current?.contains(active)) return;
-        setCollapsed(true);
+
+        const distance = y - anchorY;
+        if (distance >= COLLAPSE_DISTANCE) {
+          anchorY = y;
+          // Never collapse while the visitor is typing in the header search.
+          const active = document.activeElement as HTMLElement | null;
+          if (active && regionRef.current?.contains(active)) return;
+          setHeaderCollapsed(true);
+        } else if (distance <= -EXPAND_DISTANCE) {
+          anchorY = y;
+          setHeaderCollapsed(false);
+        }
       });
     };
 
@@ -88,7 +121,7 @@ export function Header() {
       window.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [regionHeight]);
+  }, [regionHeight, setHeaderCollapsed]);
 
   // Measure the collapsible region so the collapsed header reclaims its space.
   useEffect(() => {
