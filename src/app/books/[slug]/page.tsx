@@ -22,7 +22,6 @@ import { Rating } from "@/components/ui/Rating";
 import { BookCover } from "@/components/books/BookCover";
 import { BookPurchasePanel } from "@/components/books/BookPurchasePanel";
 import { BookDetailTabs } from "@/components/books/BookDetailTabs";
-import { BookContactDock } from "@/components/books/BookContactDock";
 import { BookRail } from "@/components/books/BookRail";
 import { discountPercent, toBn } from "@/lib/utils";
 
@@ -294,7 +293,6 @@ export default async function BookDetailPage({
         linkLabel="All books"
       />
 
-      <BookContactDock />
     </>
   );
 }

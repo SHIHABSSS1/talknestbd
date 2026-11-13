@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/Header";
 import { HeaderSkeleton } from "@/components/layout/HeaderSkeleton";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { LiveChatDock } from "@/components/layout/LiveChatDock";
 import { Toast } from "@/components/layout/Toast";
 import "./globals.css";
 
@@ -81,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             <MobileBottomNav />
           </Suspense>
+          <LiveChatDock />
           <Toast />
         </StoreProvider>
       </body>

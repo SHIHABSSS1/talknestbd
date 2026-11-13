@@ -119,6 +119,10 @@ export interface SunnahItem {
   price: number;
   oldPrice?: number;
   description: string;
+  category: string;
+  stock: number;
+  highlights: string[];
+  specs: { label: string; value: string }[];
   icon: SunnahIcon;
   badge?: string;
   accent: string;

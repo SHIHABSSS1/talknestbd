@@ -24,7 +24,9 @@ export function CartLine({
       ? "/audio-books"
       : book
         ? `/books/${book.slug}`
-        : "/sunnah-items";
+        : sunnah
+          ? `/sunnah-items/${sunnah.slug}`
+          : "/sunnah-items";
 
   return (
     <article className="flex gap-3 border-b border-forest-900/8 py-4 last:border-b-0 sm:gap-4 sm:py-5">

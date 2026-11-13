@@ -53,7 +53,9 @@ export function CheckoutSummary({
                     ? "/audio-books"
                     : book
                       ? `/books/${book.slug}`
-                      : "/sunnah-items"
+                      : sunnah
+                        ? `/sunnah-items/${sunnah.slug}`
+                        : "/sunnah-items"
                 }
                 className="relative block h-14 w-10 shrink-0 overflow-hidden rounded bg-cream-100"
               >

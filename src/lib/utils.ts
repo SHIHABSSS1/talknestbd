@@ -59,6 +59,7 @@ export const siteConfig = {
   address: "12/A Bailey Road, Dhaka 1000",
   whatsapp: "https://wa.me/8801712345678",
   facebook: "https://facebook.com/talknestbd",
+  telegram: "https://t.me/talknestbd",
   youtube: "https://www.youtube.com/@talknestbd",
   freeDeliveryThreshold: 999,
   buybackRate: 50,
