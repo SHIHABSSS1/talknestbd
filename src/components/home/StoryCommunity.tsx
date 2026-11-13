@@ -24,7 +24,7 @@ export function StoryCommunity() {
     <section className="bg-white py-8 sm:py-10">
       <Container>
         <div className="grid gap-7 lg:grid-cols-[0.88fr_1.42fr] lg:gap-10">
-          <div className="lg:sticky lg:top-36 lg:self-start">
+          <div className="lg:sticky lg:top-[88px] lg:self-start">
             <SectionHeader
               eyebrow="Reader stories"
               title="Your story belongs here"

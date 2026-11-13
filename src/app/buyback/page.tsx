@@ -220,7 +220,7 @@ export default function BuybackPage() {
               </div>
             </div>
 
-            <div className="space-y-4 lg:sticky lg:top-32">
+            <div className="space-y-4 lg:sticky lg:top-[88px]">
               <BuybackCalculator />
               <div className="rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-950">

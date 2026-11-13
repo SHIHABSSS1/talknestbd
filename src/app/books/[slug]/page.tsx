@@ -77,7 +77,7 @@ export default async function BookDetailPage({
           />
 
           <div className="mt-6 grid gap-8 lg:grid-cols-[360px_1fr] lg:gap-12 xl:gap-16">
-            <div className="lg:sticky lg:top-32 lg:self-start">
+            <div className="lg:sticky lg:top-[88px] lg:self-start">
               <div className="relative mx-auto max-w-[340px] rounded-3xl bg-cream-200/80 p-5 sm:p-6">
                 <div
                   aria-hidden="true"

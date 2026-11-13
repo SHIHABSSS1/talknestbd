@@ -104,7 +104,7 @@ export default function ContactPage() {
             <ContactForm />
 
             <div className="space-y-4">
-              <section id="map" className="scroll-mt-32 overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
+              <section id="map" className="scroll-mt-[88px] overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
                 <div className="flex items-center justify-between gap-2 border-b border-forest-900/8 px-4 py-3">
                   <div>
                     <h2 className="flex items-center gap-1.5 font-display text-base font-bold text-forest-950">

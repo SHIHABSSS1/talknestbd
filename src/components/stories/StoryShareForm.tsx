@@ -377,7 +377,7 @@ export function StoryShareForm() {
         </p>
       </div>
 
-      <aside className="space-y-3 lg:sticky lg:top-32">
+      <aside className="space-y-3 lg:sticky lg:top-[88px]">
         <div className="rounded-3xl bg-forest-950 p-5 text-cream-50">
           <Sparkles size={19} className="text-gold-400" />
           <h2 className="mt-2 font-display text-lg font-bold leading-snug">Quick tips for a good story</h2>

@@ -46,7 +46,7 @@ export default function QuizPage() {
           <div className="grid gap-6 lg:grid-cols-[1fr_290px] lg:items-start">
             <QuizGame />
 
-            <aside className="space-y-3 lg:sticky lg:top-32">
+            <aside className="space-y-3 lg:sticky lg:top-[88px]">
               <div className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4">
                 <div className="flex items-center gap-2">
                   <Award size={16} className="text-gold-600" />

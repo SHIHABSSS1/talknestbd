@@ -164,7 +164,7 @@ export default async function BlogDetailPage({
               </div>
             </article>
 
-            <aside className="space-y-3 lg:sticky lg:top-32">
+            <aside className="space-y-3 lg:sticky lg:top-[88px]">
               <div className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
                   Author

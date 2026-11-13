@@ -1,4 +1,4 @@
-import { MapPin, Search, Truck, User } from "lucide-react";
+import { MapPin, Truck, User } from "lucide-react";
 import { siteConfig } from "@/lib/utils";
 import { Logo } from "./Logo";
 
@@ -28,18 +28,16 @@ export function HeaderSkeleton() {
           <div className="flex h-[64px] items-center gap-3 sm:h-[72px] sm:gap-5">
             <span className="h-10 w-10 shrink-0 rounded-[4px] border border-line lg:hidden" />
             <Logo />
-            <div className="mx-auto hidden h-11 w-full max-w-xl items-center gap-2 rounded-full border border-hairline bg-white px-4 text-muted md:flex">
-              <Search size={17} className="text-brand-600" />
-              <span className="text-xs">Search books, authors, publishers...</span>
-            </div>
-            <div className="ml-auto flex items-center gap-2 md:ml-0">
+            <div className="ml-auto flex items-center gap-2">
               <span className="grid h-10 w-10 place-items-center rounded-full bg-canvas text-muted xl:hidden">
                 <User size={18} />
               </span>
               <span className="hidden h-10 w-20 rounded-[4px] bg-brand-100 sm:block" />
             </div>
           </div>
-          <div className="pb-3 md:hidden">
+        </div>
+        <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto w-full max-w-2xl pb-3">
             <div className="h-11 rounded-full border border-hairline bg-white" />
           </div>
         </div>

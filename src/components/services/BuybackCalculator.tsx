@@ -34,7 +34,7 @@ export function BuybackCalculator() {
   const eligible = price > 0 && price <= 20000;
 
   return (
-    <div id="calculator" className="scroll-mt-32 overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
+    <div id="calculator" className="scroll-mt-[88px] overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
       <div className="border-b border-forest-900/8 bg-cream-100/50 px-5 py-4 sm:px-6">
         <div className="flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-forest-900 text-gold-300">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   Heart,
@@ -27,9 +27,13 @@ export function Header() {
   const pathname = usePathname();
   const { cartCount, wishlist, hydrated } = useStore();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [regionHeight, setRegionHeight] = useState(0);
+  const regionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMenuOpen(false);
+    setCollapsed(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -45,6 +49,57 @@ export function Header() {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [menuOpen]);
+
+  /**
+   * Keeps the logo row pinned while the search + navigation rows slide away.
+   * Scrolling down collapses them, scrolling up brings them back sticky.
+   */
+  useEffect(() => {
+    let frame = 0;
+    let lastY = window.scrollY;
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        const delta = y - lastY;
+        lastY = y;
+        if (Math.abs(delta) < 4) return;
+
+        const threshold = regionHeight + 8;
+        if (y <= threshold) {
+          setCollapsed(false);
+          return;
+        }
+        if (delta < 0) {
+          setCollapsed(false);
+          return;
+        }
+        // Never collapse while the visitor is typing in the header search.
+        const active = document.activeElement as HTMLElement | null;
+        if (active && regionRef.current?.contains(active)) return;
+        setCollapsed(true);
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [regionHeight]);
+
+  // Measure the collapsible region so the collapsed header reclaims its space.
+  useEffect(() => {
+    const element = regionRef.current;
+    if (!element) return;
+    const update = () => setRegionHeight(element.offsetHeight);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -93,7 +148,7 @@ export function Header() {
       </div>
 
       <header className="print-hide sticky top-0 z-50 border-b border-line bg-white shadow-[0_1px_0_rgba(17,24,39,0.06)]">
-        <div>
+        <div className="relative z-20 bg-white">
           <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
             <div className="flex h-[64px] items-center gap-3 sm:h-[72px] sm:gap-5">
               <button
@@ -107,11 +162,7 @@ export function Header() {
 
               <Logo />
 
-              <div className="mx-auto hidden w-full max-w-xl md:block lg:max-w-2xl">
-                <SearchForm />
-              </div>
-
-              <div className="ml-auto flex items-center gap-1 sm:gap-2 md:ml-0">
+              <div className="ml-auto flex items-center gap-1 sm:gap-2">
                 <Link
                   href="/login"
                   className="hidden items-center gap-1.5 px-2 text-xs font-medium text-body transition-colors hover:text-brand-600 xl:flex"
@@ -153,7 +204,20 @@ export function Header() {
                 </Link>
               </div>
             </div>
-            <div className="pb-3 md:hidden">
+          </div>
+        </div>
+
+        {/* Search + navigation rows: hidden while scrolling down, sticky again on scroll up. */}
+        <div
+          ref={regionRef}
+          className="relative z-10 transition-[transform,margin-bottom] duration-300 ease-out"
+          style={{
+            transform: collapsed ? "translateY(-100%)" : "translateY(0)",
+            marginBottom: collapsed ? -regionHeight : 0,
+          }}
+        >
+          <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-2xl pb-3">
               <SearchForm />
             </div>
           </div>

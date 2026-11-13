@@ -23,7 +23,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
       <section className="py-8 sm:py-10">
         <Container>
           <div className="grid gap-6 lg:grid-cols-[260px_1fr] lg:items-start">
-            <aside className="lg:sticky lg:top-32">
+            <aside className="lg:sticky lg:top-[88px]">
               <div className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-clay-500">
                   On this page
@@ -77,7 +77,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
               </div>
               <div className="space-y-7 px-5 py-6 sm:px-7 sm:py-8">
                 {document.sections.map((section, index) => (
-                  <section key={section.id} id={section.id} className="scroll-mt-32">
+                  <section key={section.id} id={section.id} className="scroll-mt-[88px]">
                     <div className="flex items-start gap-2.5">
                       <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-forest-100 font-display text-[11px] font-bold text-forest-700">
                         {String(index + 1).padStart(2, "0")}

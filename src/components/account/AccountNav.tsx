@@ -33,7 +33,7 @@ export function AccountNav() {
   }, []);
 
   return (
-    <aside className="lg:sticky lg:top-32">
+    <aside className="lg:sticky lg:top-[88px]">
       <div className="rounded-3xl border border-forest-900/8 bg-cream-50 p-4">
         <div className="flex items-center gap-3 border-b border-forest-900/8 pb-4">
           <span className="grid h-11 w-11 place-items-center rounded-full bg-forest-900 font-display text-sm font-bold text-gold-300">

@@ -104,7 +104,7 @@ export default function UsedBooksPage() {
             </div>
           </div>
 
-          <div id="market" className="scroll-mt-32">
+          <div id="market" className="scroll-mt-[88px]">
             <UsedBooksMarket />
           </div>
 
@@ -173,7 +173,7 @@ export default function UsedBooksPage() {
               </div>
             </div>
 
-            <div id="sell" className="scroll-mt-32 lg:sticky lg:top-32">
+            <div id="sell" className="scroll-mt-[88px] lg:sticky lg:top-[88px]">
               <UsedBookSellForm />
             </div>
           </div>

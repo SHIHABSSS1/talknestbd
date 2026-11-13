@@ -152,7 +152,7 @@ export function CartView() {
         </Link>
       </div>
 
-      <aside className="lg:sticky lg:top-32">
+      <aside className="lg:sticky lg:top-[88px]">
         <div className="overflow-hidden rounded-3xl border border-forest-900/10 bg-cream-50 shadow-[0_24px_60px_-46px_rgba(10,33,24,0.5)]">
           <div className="bg-forest-950 px-5 py-4 text-cream-50">
             <h2 className="font-display text-lg font-bold">Order summary</h2>

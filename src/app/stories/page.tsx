@@ -76,7 +76,7 @@ export default function StoriesPage() {
             ))}
           </div>
 
-          <div id="stories" className="mt-7 scroll-mt-32">
+          <div id="stories" className="mt-7 scroll-mt-[88px]">
             <StoriesWall />
           </div>
 

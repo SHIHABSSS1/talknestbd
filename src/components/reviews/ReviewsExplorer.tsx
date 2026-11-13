@@ -186,7 +186,7 @@ export function ReviewsExplorer() {
         </div>
       </div>
 
-      <aside id="review-form" className="scroll-mt-32 lg:sticky lg:top-32">
+      <aside id="review-form" className="scroll-mt-[88px] lg:sticky lg:top-[88px]">
         <div className="overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
           <div className="border-b border-forest-900/8 bg-cream-100/50 px-5 py-4">
             <div className="flex items-center gap-2">

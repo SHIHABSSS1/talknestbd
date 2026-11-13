@@ -441,7 +441,7 @@ export function CheckoutForm() {
           </section>
         </div>
 
-        <aside className="lg:sticky lg:top-32">
+        <aside className="lg:sticky lg:top-[88px]">
           <CheckoutSummary
             items={items}
             subtotal={cartTotal}

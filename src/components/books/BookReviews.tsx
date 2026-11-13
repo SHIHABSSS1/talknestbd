@@ -11,7 +11,7 @@ export function BookReviews({ book }: { book: Book }) {
   const total = ratingBreakdown.reduce((sum, row) => sum + row.count, 0);
 
   return (
-    <section id="book-reviews" className="scroll-mt-32">
+    <section id="book-reviews" className="scroll-mt-[88px]">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-clay-500">
