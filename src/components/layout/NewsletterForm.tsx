@@ -74,13 +74,17 @@ export function NewsletterForm() {
               spellCheck={false}
               required
               placeholder="you@example.com"
-              /* 16px on phones: iOS zooms the page when a smaller font is focused. */
-              className="h-12 w-full min-w-0 appearance-none rounded-[6px] border border-line bg-white pl-10 pr-3.5 text-[16px] text-ink shadow-[inset_0_1px_2px_rgba(17,24,39,0.04)] placeholder:text-muted/80 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:h-11 sm:text-[13px]"
+              /*
+                iOS zooms the page when a focused field uses a font smaller
+                than 16px, so every touch device gets the larger type and the
+                taller control regardless of screen width.
+              */
+              className="h-11 w-full min-w-0 appearance-none rounded-[6px] border border-line bg-white pl-10 pr-3.5 text-[13px] text-ink shadow-[inset_0_1px_2px_rgba(17,24,39,0.04)] placeholder:text-muted/80 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200 [@media(hover:none)_and_(pointer:coarse)]:h-12 [@media(hover:none)_and_(pointer:coarse)]:text-[16px]"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] bg-brand-600 px-5 text-[14px] font-semibold text-white transition-colors hover:bg-brand-700 sm:h-11 sm:w-auto sm:text-[13px]"
+            className="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700 sm:w-auto [@media(hover:none)_and_(pointer:coarse)]:h-12 [@media(hover:none)_and_(pointer:coarse)]:text-[14px]"
           >
             Join the letter
             <Send size={14} />
