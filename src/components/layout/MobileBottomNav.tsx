@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart, Home, LibraryBig, Search, ShoppingBag } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const tabs = [
@@ -16,7 +16,8 @@ const tabs = [
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { cartCount, hydrated } = useStore();
+  const { cartCount } = useStore();
+  const hydrated = useHydrated();
 
   return (
     <nav

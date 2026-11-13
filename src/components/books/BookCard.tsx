@@ -6,7 +6,7 @@ import { ArrowRight, Heart, ShoppingBag } from "lucide-react";
 import type { Book } from "@/lib/types";
 import { categoryLabel } from "@/data/categories";
 import { discountPercent, cn, formatCount } from "@/lib/utils";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { BookCover } from "./BookCover";
 import { Rating } from "@/components/ui/Rating";
 import { Price } from "@/components/ui/Price";
@@ -33,7 +33,8 @@ function coverBadge(book: Book): { label: string; className: string } | null {
 
 export function BookCard({ book, compact = false }: { book: Book; compact?: boolean }) {
   const router = useRouter();
-  const { addItem, toggleWishlist, isWishlisted, hydrated } = useStore();
+  const { addItem, toggleWishlist, isWishlisted } = useStore();
+  const hydrated = useHydrated();
   const badge = coverBadge(book);
   const wished = hydrated && isWishlisted(book.slug);
 

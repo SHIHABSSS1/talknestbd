@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 
 export type StoreKind = "book" | "sunnah" | "audio";
@@ -24,7 +25,6 @@ export interface CartItem {
 interface StoreContextValue {
   items: CartItem[];
   wishlist: string[];
-  hydrated: boolean;
   toast: string | null;
   cartCount: number;
   cartTotal: number;
@@ -40,6 +40,26 @@ interface StoreContextValue {
 const StoreContext = createContext<StoreContextValue | null>(null);
 const CART_KEY = "talknestbd-cart-v1";
 const WISH_KEY = "talknestbd-wishlist-v1";
+
+const subscribeNoop = () => () => {};
+
+/**
+ * True only once React has finished hydrating the calling tree.
+ *
+ * Reading a localStorage-backed flag from the provider is not enough here:
+ * the provider sits outside the route/header Suspense boundaries, so its
+ * effect can flip the flag before a streamed boundary hydrates, which makes
+ * the first client render disagree with the server HTML. `getServerSnapshot`
+ * keeps every consumer on `false` during hydration and switches to `true`
+ * afterwards.
+ */
+export function useHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false,
+  );
+}
 
 function readJSON<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -160,7 +180,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     () => ({
       items,
       wishlist,
-      hydrated,
       toast,
       cartCount,
       cartTotal,
@@ -175,7 +194,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     [
       items,
       wishlist,
-      hydrated,
       toast,
       cartCount,
       cartTotal,

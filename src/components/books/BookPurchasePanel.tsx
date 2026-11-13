@@ -15,12 +15,13 @@ import {
   Zap,
 } from "lucide-react";
 import type { Book } from "@/lib/types";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { cn, formatPrice, toBn } from "@/lib/utils";
 
 export function BookPurchasePanel({ book }: { book: Book }) {
   const router = useRouter();
-  const { addItem, toggleWishlist, isWishlisted, hydrated } = useStore();
+  const { addItem, toggleWishlist, isWishlisted } = useStore();
+  const hydrated = useHydrated();
   const [quantity, setQuantity] = useState(1);
   const wished = hydrated && isWishlisted(book.slug);
   const lowStock = book.stock <= 5;

@@ -13,7 +13,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { books } from "@/data/books";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import {
   formatOrderDate,
   readAddresses,
@@ -30,7 +30,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
 export function AccountOverview() {
-  const { wishlist, hydrated } = useStore();
+  const { wishlist } = useStore();
+  const hydrated = useHydrated();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [addresses, setAddresses] = useState<SavedAddress[]>([]);

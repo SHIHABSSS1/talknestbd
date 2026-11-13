@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { categoryLinks, mainNav, moreLinks } from "@/lib/navigation";
 import { siteConfig, cn } from "@/lib/utils";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { Logo } from "./Logo";
 import { SearchForm } from "./SearchForm";
 import { SocialLinks } from "./SocialLinks";
@@ -35,7 +35,8 @@ const EXPAND_DISTANCE = 40;
 
 export function Header() {
   const pathname = usePathname();
-  const { cartCount, wishlist, hydrated } = useStore();
+  const { cartCount, wishlist } = useStore();
+  const hydrated = useHydrated();
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [regionHeight, setRegionHeight] = useState(0);

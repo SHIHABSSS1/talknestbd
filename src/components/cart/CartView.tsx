@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Truck,
 } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { siteConfig, formatPrice, toBn } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -21,12 +21,12 @@ const deliveryEstimate = 60;
 export function CartView() {
   const {
     items,
-    hydrated,
     setQuantity,
     removeItem,
     cartTotal,
     clearCart,
   } = useStore();
+  const hydrated = useHydrated();
 
   if (!hydrated) {
     return (

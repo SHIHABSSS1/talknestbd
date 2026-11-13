@@ -15,7 +15,7 @@ import {
   Truck,
   Zap,
 } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { unlockAudio } from "@/lib/audio";
 import {
   readAddresses,
@@ -74,7 +74,8 @@ function addressToValues(address: SavedAddress): AddressFormValues {
 
 export function CheckoutForm() {
   const router = useRouter();
-  const { items, hydrated, cartTotal, clearCart, notify } = useStore();
+  const { items, cartTotal, clearCart, notify } = useStore();
+  const hydrated = useHydrated();
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [mode, setMode] = useState<"saved" | "new">("new");
   const [selectedId, setSelectedId] = useState<string | null>(null);

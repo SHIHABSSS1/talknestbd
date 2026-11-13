@@ -17,6 +17,13 @@ import { Logo } from "./Logo";
 import { NewsletterForm } from "./NewsletterForm";
 import { SocialLinks } from "./SocialLinks";
 
+const paymentMethods = [
+  { name: "bKash", src: "/getways/bkash.svg" },
+  { name: "Nagad", src: "/getways/nagad.svg" },
+  { name: "Rocket", src: "/getways/rocket.svg" },
+  { name: "Upay", src: "/getways/upay.svg" },
+];
+
 export function Footer() {
   return (
     <footer className="print-hide mt-12 bg-brand-950 pb-16 text-white/65 md:pb-0">
@@ -161,9 +168,33 @@ export function Footer() {
       </Container>
 
       <div className="border-t border-white/12">
-        <Container className="flex flex-col gap-4 py-5 text-[10px] sm:flex-row sm:items-center sm:justify-between sm:text-[11px]">
+        <Container className="flex flex-col items-center gap-3 py-6 sm:py-7">
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
+            Secure payment options
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+            {paymentMethods.map((method) => (
+              <img
+                key={method.name}
+                src={method.src}
+                alt={method.name}
+                width={300}
+                height={160}
+                loading="lazy"
+                className="h-9 w-auto rounded-[5px] shadow-[0_8px_20px_-12px_rgba(0,0,0,0.6)] sm:h-10"
+              />
+            ))}
+            <span className="inline-flex h-9 items-center rounded-[5px] border border-white/15 bg-white/[0.06] px-3 text-[10px] font-medium text-white/70 sm:h-10">
+              Cash on delivery
+            </span>
+          </div>
+        </Container>
+      </div>
+
+      <div className="border-t border-white/12">
+        <Container className="flex flex-col items-center justify-center gap-3 py-5 text-center text-[10px] sm:flex-row sm:gap-x-6 sm:text-[11px]">
           <p>© 2026 TalkNest BD. All rights reserved.</p>
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 sm:gap-x-6">
             <Link href="/privacy" className="transition-colors hover:text-white">
               Privacy Policy
             </Link>
@@ -176,12 +207,6 @@ export function Footer() {
             <Link href="/blogs" className="transition-colors hover:text-white">
               Blog
             </Link>
-            <span className="flex items-center gap-1.5 text-white/45">
-              Payment:
-              <span className="bg-white/10 px-2 py-1 font-medium text-white">bKash</span>
-              <span className="bg-white/10 px-2 py-1 font-medium text-white">Nagad</span>
-              <span className="bg-white/10 px-2 py-1 font-medium text-white">COD</span>
-            </span>
           </div>
         </Container>
       </div>

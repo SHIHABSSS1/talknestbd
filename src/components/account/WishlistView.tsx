@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useStore } from "@/lib/store";
+import { useStore, useHydrated } from "@/lib/store";
 import { books } from "@/data/books";
 import { formatPrice, toBn } from "@/lib/utils";
 import { BookGrid } from "@/components/books/BookGrid";
@@ -10,7 +10,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { Heart, ShoppingBag } from "lucide-react";
 
 export function WishlistView() {
-  const { wishlist, hydrated, addItem, notify } = useStore();
+  const { wishlist, addItem, notify } = useStore();
+  const hydrated = useHydrated();
   const savedBooks = books.filter((book) => wishlist.includes(book.slug));
 
   if (!hydrated) {
