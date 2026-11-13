@@ -28,7 +28,7 @@ export function NewsletterForm() {
   }
 
   return (
-    <div className="rounded-[10px] bg-white p-5 shadow-[0_18px_45px_-30px_rgba(8,42,82,0.55)] sm:p-6">
+    <div className="rounded-[10px] bg-white p-4 shadow-[0_18px_45px_-30px_rgba(8,42,82,0.55)] sm:p-6">
       <div className="flex items-center gap-2.5">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] bg-brand-50 text-brand-600">
           <Mail size={16} />
@@ -69,14 +69,18 @@ export function NewsletterForm() {
               type="email"
               inputMode="email"
               autoComplete="email"
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               required
               placeholder="you@example.com"
-              className="h-11 w-full min-w-0 rounded-[6px] border border-line bg-white pl-10 pr-3.5 text-[13px] text-ink shadow-[inset_0_1px_2px_rgba(17,24,39,0.04)] placeholder:text-muted/80 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200"
+              /* 16px on phones: iOS zooms the page when a smaller font is focused. */
+              className="h-12 w-full min-w-0 appearance-none rounded-[6px] border border-line bg-white pl-10 pr-3.5 text-[16px] text-ink shadow-[inset_0_1px_2px_rgba(17,24,39,0.04)] placeholder:text-muted/80 transition-colors focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-200 sm:h-11 sm:text-[13px]"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[6px] bg-brand-600 px-5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-700"
+            className="inline-flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-[6px] bg-brand-600 px-5 text-[14px] font-semibold text-white transition-colors hover:bg-brand-700 sm:h-11 sm:w-auto sm:text-[13px]"
           >
             Join the letter
             <Send size={14} />

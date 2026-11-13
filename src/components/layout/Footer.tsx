@@ -22,7 +22,7 @@ export function Footer() {
     <footer className="print-hide mt-12 bg-brand-950 pb-16 text-white/65 md:pb-0">
       <div className="bg-canvas">
         <Container className="py-10 sm:py-12">
-          <div className="hero-mesh relative overflow-hidden rounded-[14px] px-5 py-7 text-white sm:px-8 sm:py-9 lg:px-10">
+          <div className="hero-mesh relative overflow-hidden rounded-[14px] px-4 py-6 text-white sm:px-8 sm:py-9 lg:px-10">
             <div
               aria-hidden="true"
               className="absolute -right-16 -top-24 h-72 w-72 rounded-full border border-white/10"
@@ -32,13 +32,13 @@ export function Footer() {
               className="absolute -bottom-32 left-1/3 h-72 w-72 rounded-full border border-white/10"
             />
             <div aria-hidden="true" className="absolute inset-0 paper-texture opacity-[0.08]" />
-            <div className="relative grid gap-7 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12">
+            <div className="relative grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12">
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/80">
                   <Sparkles size={11} className="text-sale" />
                   The TalkNest Letter
                 </span>
-                <h2 className="mt-3 max-w-2xl text-[24px] font-bold leading-tight text-white sm:text-[30px]">
+                <h2 className="mt-3 max-w-2xl text-[22px] font-bold leading-tight text-white sm:text-[30px]">
                   Better books for your inbox,{" "}
                   <span className="text-brand-200">not more noise.</span>
                 </h2>
@@ -47,7 +47,7 @@ export function Footer() {
                   and subscriber-only offers.
                 </p>
 
-                <div className="mt-5 grid max-w-xl grid-cols-2 gap-2.5">
+                <div className="mt-5 grid max-w-xl grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5">
                   {[
                     { icon: BookOpen, label: "One letter a week" },
                     { icon: Gift, label: "Subscriber-only offers" },
@@ -58,7 +58,7 @@ export function Footer() {
                     return (
                       <span
                         key={item.label}
-                        className="flex items-center gap-2 rounded-[6px] border border-white/12 bg-white/[0.06] px-3 py-2 text-[11px] text-white/80"
+                        className="flex items-center gap-2 rounded-[6px] border border-white/12 bg-white/[0.06] px-3 py-2.5 text-[12px] text-white/80 sm:py-2 sm:text-[11px]"
                       >
                         <Icon size={13} className="shrink-0 text-brand-200" />
                         {item.label}
