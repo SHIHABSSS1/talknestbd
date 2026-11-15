@@ -198,6 +198,11 @@ export function Header() {
 
               <Logo />
 
+              {/* Desktop keeps search inside the logo row; smaller screens use the strip below. */}
+              <div className="hidden min-w-0 flex-1 justify-center px-2 lg:flex">
+                <SearchForm className="mx-auto w-full max-w-2xl" />
+              </div>
+
               <div className="ml-auto flex items-center gap-1 sm:gap-2">
                 <Link
                   href="/login"
@@ -228,10 +233,14 @@ export function Header() {
                 <Link
                   href="/cart"
                   aria-label="Cart"
-                  className="relative hidden h-10 items-center gap-2 rounded-[4px] bg-brand-600 px-3 text-white transition-colors hover:bg-brand-700 sm:flex sm:px-4"
+                  className="relative inline-flex h-10 items-center gap-2 rounded-full bg-brand-600 pl-3 pr-3 text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-brand-700 hover:shadow-md sm:pr-3.5 lg:pl-3.5 lg:pr-4"
                 >
-                  <ShoppingBag size={18} />
-                  <span className="hidden text-xs font-medium sm:inline">Cart</span>
+                  <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15">
+                    <ShoppingBag size={14} />
+                  </span>
+                  <span className="hidden text-xs font-semibold tracking-tight lg:inline">
+                    Cart
+                  </span>
                   {hydrated && cartCount > 0 && (
                     <span className="absolute -right-1 -top-1 grid h-4.5 min-w-4.5 place-items-center rounded-full bg-sale px-1 text-[9px] font-bold text-white ring-2 ring-white">
                       {cartCount}
@@ -252,25 +261,25 @@ export function Header() {
             marginBottom: collapsed ? -regionHeight : 0,
           }}
         >
-          <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
-            <div className="mx-auto w-full max-w-2xl pb-3">
+          <div className="mx-auto w-full max-w-[1425px] px-4 pb-3 sm:px-6 lg:hidden">
+            <div className="mx-auto w-full max-w-2xl">
               <SearchForm />
             </div>
           </div>
 
           <nav aria-label="Primary navigation" className="hidden lg:block">
-            <div className="bg-brand-600">
-              <div className="mx-auto flex h-10 w-full max-w-[1425px] items-center gap-1 px-4 text-[13px] font-medium text-white sm:px-6 lg:px-8">
-                <div className="group relative h-10">
+            <div className="bg-gradient-to-r from-brand-800 via-brand-700 to-brand-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]">
+              <div className="mx-auto flex h-11 w-full max-w-[1425px] items-center gap-1 px-4 text-[13px] font-medium sm:px-6 lg:px-8">
+                <div className="group relative">
                   <Link
                     href="/categories"
-                    className="inline-flex h-10 items-center gap-2 whitespace-nowrap px-3 transition-colors hover:bg-brand-700"
+                    className="inline-flex h-8 items-center gap-2 whitespace-nowrap rounded-full bg-white/10 px-3.5 text-white transition-colors hover:bg-white/20"
                   >
-                    <Menu size={15} />
+                    <Menu size={14} />
                     All Categories
                     <ChevronDown size={13} />
                   </Link>
-                  <div className="invisible absolute left-0 top-full z-20 w-72 translate-y-1 border border-line bg-white p-1.5 text-ink opacity-0 shadow-[0_16px_32px_-20px_rgba(17,24,39,0.4)] transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="invisible absolute left-0 top-full z-20 w-72 translate-y-1 rounded-b-[10px] border border-t-0 border-line bg-white p-1.5 text-ink opacity-0 shadow-[0_20px_40px_-24px_rgba(8,42,82,0.55)] transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     {categoryLinks.map((link) => (
                       <Link
                         key={link.href}
@@ -299,31 +308,33 @@ export function Header() {
                   </div>
                 </div>
 
-                <span aria-hidden="true" className="mx-1 h-5 w-px bg-white/25" />
+                <span aria-hidden="true" className="mx-1.5 h-5 w-px bg-white/20" />
 
                 {mainNav.map((link, index) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "inline-flex h-10 items-center whitespace-nowrap px-2.5 transition-colors hover:bg-brand-700",
+                      "inline-flex h-8 items-center whitespace-nowrap rounded-full px-3 transition-colors",
                       index >= 5 && "hidden xl:inline-flex",
-                      isActive(link.href) && "bg-brand-700",
+                      isActive(link.href)
+                        ? "bg-white font-semibold text-brand-800 shadow-sm"
+                        : "text-white/85 hover:bg-white/10 hover:text-white",
                     )}
                   >
                     {link.label}
                   </Link>
                 ))}
 
-                <div className="group relative ml-auto h-10">
+                <div className="group relative ml-auto">
                   <button
                     type="button"
-                    className="inline-flex h-10 items-center gap-1 whitespace-nowrap px-3 transition-colors hover:bg-brand-700"
+                    className="inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full px-3 text-white/85 transition-colors hover:bg-white/10 hover:text-white"
                   >
                     More
                     <ChevronDown size={13} />
                   </button>
-                  <div className="invisible absolute right-0 top-full z-20 w-[30rem] translate-y-1 border border-line bg-white p-2 text-ink opacity-0 shadow-[0_16px_32px_-20px_rgba(17,24,39,0.4)] transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="invisible absolute right-0 top-full z-20 w-[30rem] translate-y-1 rounded-b-[10px] border border-t-0 border-line bg-white p-2 text-ink opacity-0 shadow-[0_20px_40px_-24px_rgba(8,42,82,0.55)] transition-all duration-150 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                     <div className="grid grid-cols-2 gap-1">
                       {moreLinks.map((link) => {
                         const Icon = link.icon;
