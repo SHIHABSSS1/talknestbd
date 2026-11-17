@@ -6,7 +6,7 @@ export type CategorySlug =
   | "student"
   | "international";
 
-export type BookTag = "bestseller" | "new" | "viral" | "free-delivery";
+export type BookTag = "bestseller" | "new" | "viral" | "free-delivery" | "up-sale";
 
 export type CollectionSlug =
   | "bestseller"

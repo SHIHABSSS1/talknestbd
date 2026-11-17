@@ -20,6 +20,7 @@ export interface SaveResult {
 
 export const SHELF_SLUGS = {
   viral: "viral-books",
+  upSale: "up-sale",
 } as const;
 
 const STORAGE_PREFIX = "talknestbd-shelf-";

@@ -59,6 +59,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   if (slug === "viral-books") {
     return <ShelfEditor label={label} config={viralShelf} />;
   }
+  const upSaleShelf: ShelfConfig = {
+    slug: "up-sale",
+    tag: "up-sale",
+    href: "/up-sales",
+    shelfName: "50% Up Sale",
+  };
+  if (slug === "up-sale") {
+    return <ShelfEditor label={label} config={upSaleShelf} />;
+  }
   if (slug === "sell-used-books") {
     return <SellUsedBooksEditor label={label} />;
   }

@@ -25,6 +25,7 @@ const tagOptions: { value: BookTag; label: string }[] = [
   { value: "new", label: "New arrival" },
   { value: "viral", label: "Trending" },
   { value: "free-delivery", label: "Free delivery" },
+  { value: "up-sale", label: "50% up sale" },
 ];
 
 interface FormState {
@@ -647,7 +648,7 @@ export function BookForm({
           {showPreview && (
             <p className="text-[9px] leading-relaxed text-muted">
               Saving adds this book to the shared catalogue. It appears on the book detail
-              page, in its category and (if tagged) the Viral Books shelf — no separate shelf code.
+              page, in its category and (if tagged) a shelf such as Viral Books or 50% Up Sale.
             </p>
           )}
           {notice && (

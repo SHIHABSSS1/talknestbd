@@ -31,6 +31,7 @@ const ShelfContentContext = createContext<ShelfContentContextValue | null>(null)
 // Stable first render (server + client) so hydration matches.
 const initialHeadings: Record<string, ShelfHeading> = {
   [SHELF_SLUGS.viral]: shelfDefaults(SHELF_SLUGS.viral),
+  [SHELF_SLUGS.upSale]: shelfDefaults(SHELF_SLUGS.upSale),
 };
 
 export function ShelfContentProvider({ children }: { children: ReactNode }) {
@@ -40,6 +41,7 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setHeadings({
       [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
+      [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
     });
     setHydrated(true);
 
@@ -47,6 +49,7 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
       if (!event.key || event.key.startsWith("talknestbd-shelf-")) {
         setHeadings({
           [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
+          [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
         });
       }
     };

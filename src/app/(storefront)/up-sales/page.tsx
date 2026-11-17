@@ -13,9 +13,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/Button";
-import { UpSaleGrid } from "@/components/books/UpSaleGrid";
-import { upSaleBooks } from "@/data/community";
-import { toBn } from "@/lib/utils";
+import { UpSaleBooksGrid } from "@/components/books/UpSaleBooksGrid";
+import { UpSaleCount } from "@/components/books/UpSaleCount";
 
 export const metadata: Metadata = {
   title: "50% Up Sale",
@@ -62,7 +61,7 @@ export default function UpSalePage() {
       >
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            {toBn(upSaleBooks.length)} copies in stock
+            <UpSaleCount />
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
             Condition checked by TalkNest
@@ -145,7 +144,7 @@ export default function UpSalePage() {
             </Button>
           </div>
 
-          <UpSaleGrid books={upSaleBooks} variant="page" className="mt-5" />
+          <UpSaleBooksGrid className="mt-5" />
 
           <div className="mt-7 grid gap-3 rounded-[8px] border border-line bg-canvas p-4 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
             <div>

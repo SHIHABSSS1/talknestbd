@@ -9,7 +9,8 @@
  */
 
 import { books as staticBooks } from "@/data/books";
-import type { Book, BookCoverTheme } from "@/lib/types";
+import { upSaleBooks } from "@/data/community";
+import type { Book, BookCoverTheme, UpSaleBook } from "@/lib/types";
 
 export const BOOK_STORAGE_KEY = "talknestbd-books-v1";
 
@@ -111,9 +112,36 @@ export function mergeBooks(...lists: Book[][]): Book[] {
   return Array.from(bySlug.values());
 }
 
-/** Single source of truth: static catalogue + admin uploads. */
+/** Existing 50% up-sale copies represented as catalogue books. */
+function upSaleToBook(item: UpSaleBook): Book {
+  return {
+    slug: item.cartSlug,
+    title: item.title,
+    author: item.author,
+    authorSlug: item.author.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    publisher: "TalkNest Used Books",
+    publisherSlug: "talknestbd",
+    category: "used",
+    price: item.price,
+    oldPrice: item.originalPrice,
+    rating: 4.5,
+    reviewCount: 0,
+    stock: item.stock,
+    pages: 200,
+    language: "Bangla",
+    binding: "Paperback",
+    publishedYear: 2026,
+    description: `Checked used copy — ${item.condition}. Sold to us by ${item.returnedBy} in ${item.location}.`,
+    longDescription: [],
+    highlights: [],
+    cover: item.cover,
+    tags: ["up-sale"],
+  };
+}
+
+/** Single source of truth: static catalogue + up-sale copies + admin uploads. */
 export function allBooks(uploads: Book[] = []): Book[] {
-  return mergeBooks(staticBooks, uploads);
+  return mergeBooks(staticBooks, upSaleBooks.map(upSaleToBook), uploads);
 }
 
 export function findBook(slug: string, source: Book[]): Book | undefined {

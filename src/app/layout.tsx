@@ -8,6 +8,7 @@ import { BookContentProvider } from "@/components/providers/BookContentProvider"
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
 import { SellRequestsProvider } from "@/components/providers/SellRequestsProvider";
+import { UpSaleBooksProvider } from "@/components/providers/UpSaleBooksProvider";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -73,7 +74,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <BookContentProvider>
                   <ShelfContentProvider>
                     <SellContentProvider>
-                      <SellRequestsProvider>{children}</SellRequestsProvider>
+                      <SellRequestsProvider>
+                        <UpSaleBooksProvider>{children}</UpSaleBooksProvider>
+                      </SellRequestsProvider>
                     </SellContentProvider>
                   </ShelfContentProvider>
                 </BookContentProvider>

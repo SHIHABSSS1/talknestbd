@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "@/lib/store";
 import { useBookContent } from "@/components/providers/BookContentProvider";
-import { upSaleBooks } from "@/data/community";
+import { useUpSaleBooks } from "@/components/providers/UpSaleBooksProvider";
 import { sunnahItems } from "@/data/sunnah";
 import { formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
@@ -19,11 +19,9 @@ export function CartLine({
   onRemove: () => void;
 }) {
   const { getBook } = useBookContent();
+  const { getByCartSlug } = useUpSaleBooks();
   const book = item.kind !== "sunnah" ? getBook(item.slug) : undefined;
-  const upSale =
-    item.kind === "book"
-      ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)
-      : undefined;
+  const upSale = item.kind === "book" ? getByCartSlug(item.slug) : undefined;
   const sunnah = item.kind === "sunnah" ? sunnahItems.find((entry) => entry.slug === item.slug) : undefined;
   const href =
     item.kind === "audio"

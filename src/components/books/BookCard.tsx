@@ -21,6 +21,9 @@ function coverBadge(book: Book): { label: string; className: string } | null {
   if (book.tags.includes("viral")) {
     return { label: "Viral", className: "bg-sale text-ink" };
   }
+  if (book.tags.includes("up-sale")) {
+    return { label: "50% up", className: "bg-sale text-ink" };
+  }
   const discount = discountPercent(book.price, book.oldPrice);
   if (discount) {
     return {
