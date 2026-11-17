@@ -67,11 +67,11 @@ export const termsDocument: LegalDocumentData = {
       ],
     },
     {
-      id: "buyback",
-      title: "6. 50% book buyback",
+      id: "sell-used-books",
+      title: "6. Selling used books",
       paragraphs: [
-        "Selected books bought from TalkNest BD can be returned in good condition for 50% of the purchase price. The final amount is confirmed after we inspect the book.",
-        "Buyback is an optional service, and its terms and time limits may change.",
+        "Selected books bought from TalkNest BD can be sold to us in good condition for 50% of the purchase price. The final amount is confirmed after we inspect the book.",
+        "Selling used books is an optional service, and its terms and time limits may change.",
       ],
     },
     {
@@ -181,7 +181,7 @@ export const returnDocument: LegalDocumentData = {
   eyebrow: "Return & Refund",
   title: "Return & Refund Policy",
   description:
-    "The complete rules for returns, exchanges, refunds and the 50% buyback offer after you receive a book.",
+    "The complete rules for returns, exchanges, refunds and our 50% used-book selling offer after you receive a book.",
   lastUpdated: "1 November 2026",
   intro:
     "We want every reader to receive a book they are happy with. If a book has a printing fault, is the wrong title or was damaged in transit, you can request a return or exchange within seven days.",
@@ -208,7 +208,7 @@ export const returnDocument: LegalDocumentData = {
       bullets: [
         "The book has been used, marked or has folded pages.",
         "Stickers, gifts or extra materials have been removed.",
-        "A resaleable book is returned simply because you changed your mind (the buyback service may apply).",
+        "A resaleable book is returned simply because you changed your mind (our used-book selling service may apply).",
         "More than seven days have passed since the order.",
       ],
     },
@@ -231,11 +231,11 @@ export const returnDocument: LegalDocumentData = {
       ],
     },
     {
-      id: "buyback",
-      title: "6. 50% buyback",
+      id: "sell-used-books",
+      title: "6. Selling used books",
       paragraphs: [
-        "Books bought from TalkNest BD can be returned in good condition after reading for up to 50% of the purchase price. The final amount depends on condition, current demand and the publisher's terms.",
-        "You will need the order number or proof of purchase. Textbooks, older editions and damaged books may not qualify for buyback.",
+        "Books bought from TalkNest BD can be sold to us in good condition after reading for up to 50% of the purchase price. The final amount depends on condition, current demand and the publisher's terms.",
+        "You will need the order number or proof of purchase. Textbooks, older editions and damaged books may not qualify to sell.",
       ],
     },
     {

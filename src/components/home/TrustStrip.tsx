@@ -12,9 +12,9 @@ const features = [
   },
   {
     icon: Repeat2,
-    title: "50% book buyback",
-    text: "Return a book, get half back",
-    href: "/buyback",
+    title: "Sell used books",
+    text: "Sell a book, get half back",
+    href: "/sell-used-books",
     tint: "bg-[#fff5e6] text-sale",
   },
   {

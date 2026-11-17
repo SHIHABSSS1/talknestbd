@@ -173,3 +173,27 @@ export interface UsedBook {
   location: string;
   cover: BookCoverTheme;
 }
+
+/**
+ * A copy sold to TalkNest through the 50% used-book programme and now listed in
+ * the 50% up sale: the reader was paid half the new price, and the copy is
+ * priced 50% above that payout when it returns to the shelf.
+ */
+export interface UpSaleBook {
+  id: string;
+  cartSlug: string;
+  bookSlug: string;
+  title: string;
+  author: string;
+  condition: string;
+  /** Current price of a brand-new copy. */
+  originalPrice: number;
+  /** What TalkNest paid the reader for the used book (50% of new). */
+  sellingPrice: number;
+  /** Selling price + 50% — what the next reader pays. */
+  price: number;
+  returnedBy: string;
+  location: string;
+  stock: number;
+  cover: BookCoverTheme;
+}

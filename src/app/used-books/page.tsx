@@ -19,7 +19,7 @@ import { UsedBookSellForm, UsedBooksMarket } from "@/components/used-books/UsedB
 import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Used Books (Up to 50% Off)",
+  title: "Buy Used Books (Up to 50% Off)",
   description:
     "Buy used books from reader to reader at half price, or sell the books you've finished — the TalkNest BD used book market.",
 };
@@ -46,8 +46,8 @@ export default function UsedBooksPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Used Book Marketplace"
-        title="Used books, new joy"
+        eyebrow="Buy Used Books"
+        title="Buy used books, share new joy"
         description="A book's journey from reader to reader. Sell the books you've finished, or buy another reader's favorite at half price."
         tone="dark"
         crumbs={[{ label: "Used Books" }]}
@@ -157,17 +157,18 @@ export default function UsedBooksPage() {
 
               <div className="rounded-2xl bg-forest-950 p-5 text-cream-50">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gold-400">
-                  Buyback vs used books
+                  Selling vs buying used books
                 </p>
                 <p className="mt-1.5 text-xs leading-relaxed text-cream-100/60">
-                  Return a book you bought from TalkNest and get 50% cash back. To sell
-                  directly to another reader, list it on the used book market.
+                  Sell a finished book to TalkNest for 50% cash back, or list it on the
+                  used book market and sell directly to another reader. Buying used
+                  keeps every story in circulation.
                 </p>
                 <Link
-                  href="/buyback"
+                  href="/sell-used-books"
                   className="mt-2 inline-flex items-center gap-1 text-[10px] font-semibold text-gold-300 hover:text-gold-400"
                 >
-                  Learn about buyback
+                  Learn about selling
                   <ArrowRight size={11} />
                 </Link>
               </div>

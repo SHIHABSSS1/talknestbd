@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import { BookOpen, PlayCircle } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
+import { SectionTitle } from "@/components/ui/SectionTitle";
+import { Button } from "@/components/ui/Button";
 import { VideoGallery } from "@/components/video/VideoGallery";
 
 export const metadata: Metadata = {
@@ -34,6 +37,28 @@ export default function VideoPage() {
       <section className="py-8 sm:py-10">
         <Container>
           <VideoGallery />
+        </Container>
+      </section>
+
+      <section className="border-t border-line bg-canvas py-8 sm:py-10">
+        <Container>
+          <div className="flex flex-wrap items-end justify-between gap-5 rounded-[10px] border border-brand-100 bg-brand-50/60 p-5 sm:p-7">
+            <SectionTitle
+              eyebrow="Quiz section"
+              title="Two quizzes, one page."
+              description="Watch an episode and take the Watch & Quiz, or jump straight into the Book Quiz and this week's leaderboard. Both live together on the TalkNest Quiz page."
+            />
+            <div className="flex flex-wrap gap-2">
+              <Button href="/quiz?tab=watch">
+                <PlayCircle size={14} />
+                Watch &amp; Quiz
+              </Button>
+              <Button href="/quiz?tab=book" variant="outline">
+                <BookOpen size={14} />
+                Book Quiz
+              </Button>
+            </div>
+          </div>
         </Container>
       </section>
     </>

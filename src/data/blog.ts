@@ -50,10 +50,10 @@ export const blogPosts: BlogPost[] = [
     ],
   },
   {
-    slug: "buyback-50-percent",
-    title: "50% buyback: a new address for old books",
+    slug: "sell-used-books-50-percent",
+    title: "Selling used books: a new address for old books",
     excerpt:
-      "Finished books do not need to gather dust on a shelf. Here is how TalkNest buyback gives them another reader.",
+      "Finished books do not need to gather dust on a shelf. Here is how selling used books gives them another reader.",
     category: "TalkNest Services",
     date: "5 November 2026",
     readTime: "5 min read",
@@ -63,21 +63,21 @@ export const blogPosts: BlogPost[] = [
       "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1400&q=80",
     imageAlt: "Pre-loved books arranged on a shelf",
     paragraphs: [
-      "A good book never really grows old — it simply waits for its next reader. TalkNest BD's 50% buyback makes that wait shorter.",
-      "When you finish a book bought from us and return it in good condition, you can receive up to 50% of the purchase price. We check and clean the book, then pass it on to another reader at a friendly price.",
-      "Condition matters for buyback. Intact pages, a sturdy binding and no major stains or folds keep the process simple. Keep your order number or proof of purchase handy.",
-      "To apply, message us on WhatsApp with your order number or fill in the contact form. Our team will review photos of the book and give you an initial quote.",
-      "The book you return may become someone else's first favourite. That cycle is the loveliest part of our community — books keep moving, and knowledge does not disappear.",
+      "A good book never really grows old — it simply waits for its next reader. TalkNest BD's 50% used-book offer makes that wait shorter.",
+      "When you finish a book bought from us and sell it in good condition, you can receive up to 50% of the purchase price. We check and clean the book, then pass it on to another reader at a friendly price.",
+      "Condition matters when you sell used books. Intact pages, a sturdy binding and no major stains or folds keep the process simple. Keep your order number or proof of purchase handy.",
+      "To sell, message us on WhatsApp with your order number or fill in the contact form. Our team will review photos of the book and give you an initial quote.",
+      "The book you sell may become someone else's first favourite. That cycle is the loveliest part of our community — books keep moving, and knowledge does not disappear.",
     ],
     quote:
       "One book can pass through two pairs of hands and brighten several lives. Sharing a read is what completes it.",
-    checklistTitle: "What to check before a buyback",
+    checklistTitle: "What to check before selling used books",
     checklist: [
       "The book was bought from TalkNest BD",
       "Pages and binding are intact",
       "You have the order number or receipt",
       "There are no major stains or water damage",
-      "Take clear photos before you apply",
+      "Take clear photos before you sell",
     ],
   },
   {

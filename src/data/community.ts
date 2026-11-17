@@ -1,4 +1,4 @@
-import type { QuizQuestion, Story, TalkVideo, UsedBook } from "@/lib/types";
+import type { QuizQuestion, Story, TalkVideo, UpSaleBook, UsedBook } from "@/lib/types";
 
 export const stories: Story[] = [
   {
@@ -204,7 +204,7 @@ export const quizQuestions: QuizQuestion[] = [
       "The Prophet ﷺ was born in Makkah into the Quraysh tribe.",
   },
   {
-    question: "How much do you get back through TalkNest's book buyback?",
+    question: "How much cash back do you get when you sell a used book to TalkNest?",
     options: ["30%", "40%", "50%", "70%"],
     answerIndex: 2,
     explanation:
@@ -277,6 +277,104 @@ export const usedBooks: UsedBook[] = [
     originalPrice: 650,
     seller: "Mushfiq Ahmed",
     location: "Khulna",
+    cover: { from: "#0d3a2c", to: "#276b4e", accent: "#e7c979", motif: "arch" },
+  },
+];
+
+/**
+ * Copies sold to TalkNest through the 50% used-book programme, then returned to
+ * the shelf at a 50% markup on the selling price. A ৳380 new book pays its reader
+ * ৳190, and the next reader pays ৳285 — 25% below new, 50% above what we paid.
+ */
+export const upSaleBooks: UpSaleBook[] = [
+  {
+    id: "up1",
+    cartSlug: "upsale-blue-clouds",
+    bookSlug: "neel-megh",
+    title: "A Journey Through Blue Clouds",
+    author: "Rafida Noor",
+    condition: "Like new",
+    originalPrice: 380,
+    sellingPrice: 190,
+    price: 285,
+    returnedBy: "Sadia Afrin",
+    location: "Dhanmondi, Dhaka",
+    stock: 2,
+    cover: { from: "#0e3b3f", to: "#1d6b62", accent: "#e6c87c", motif: "arch" },
+  },
+  {
+    id: "up2",
+    cartSlug: "upsale-alchemist",
+    bookSlug: "the-alchemist",
+    title: "The Alchemist",
+    author: "Paulo Coelho",
+    condition: "Very good",
+    originalPrice: 550,
+    sellingPrice: 275,
+    price: 413,
+    returnedBy: "Rakib Hasan",
+    location: "Sylhet",
+    stock: 3,
+    cover: { from: "#3a2e1c", to: "#8d7138", accent: "#f2dea7", motif: "circle" },
+  },
+  {
+    id: "up3",
+    cartSlug: "upsale-30-steps",
+    bookSlug: "safolotar-30-siri",
+    title: "30 Steps to Success",
+    author: "Dr. Mahfuzur Rahman",
+    condition: "Like new",
+    originalPrice: 280,
+    sellingPrice: 140,
+    price: 210,
+    returnedBy: "Nahida Sultana",
+    location: "Uttara, Dhaka",
+    stock: 4,
+    cover: { from: "#1b3550", to: "#396b8a", accent: "#e9cf94", motif: "lines" },
+  },
+  {
+    id: "up4",
+    cartSlug: "upsale-colourful-pages",
+    bookSlug: "sahityer-rangin-pata",
+    title: "The Colourful Pages of Literature",
+    author: "Dr. Selina Parvin",
+    condition: "Very good",
+    originalPrice: 450,
+    sellingPrice: 225,
+    price: 338,
+    returnedBy: "Ariful Islam",
+    location: "Rajshahi",
+    stock: 2,
+    cover: { from: "#40321f", to: "#8a6a35", accent: "#f4dfb4", motif: "star" },
+  },
+  {
+    id: "up5",
+    cartSlug: "upsale-atomic-habits",
+    bookSlug: "atomic-habits",
+    title: "Atomic Habits",
+    author: "James Clear",
+    condition: "Like new",
+    originalPrice: 720,
+    sellingPrice: 360,
+    price: 540,
+    returnedBy: "Tasnim Jahan",
+    location: "Chattogram",
+    stock: 1,
+    cover: { from: "#21392f", to: "#536e56", accent: "#ddc996", motif: "grid" },
+  },
+  {
+    id: "up6",
+    cartSlug: "upsale-prophet-life",
+    bookSlug: "rasuler-jiboni",
+    title: "The Life of the Prophet ﷺ",
+    author: "Sheikh Abdur Rahman",
+    condition: "Good",
+    originalPrice: 650,
+    sellingPrice: 325,
+    price: 488,
+    returnedBy: "Mushfiq Ahmed",
+    location: "Khulna",
+    stock: 2,
     cover: { from: "#0d3a2c", to: "#276b4e", accent: "#e7c979", motif: "arch" },
   },
 ];

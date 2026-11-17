@@ -16,14 +16,14 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
-import { BuybackCalculator } from "@/components/services/BuybackCalculator";
+import { SellUsedBookCalculator } from "@/components/services/SellUsedBookCalculator";
 import { Button } from "@/components/ui/Button";
 import { siteConfig, toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "50% Book Buyback",
+  title: "Sell Used Books — 50% Cash Back",
   description:
-    "Finished a book you bought from TalkNest BD? Send it back and get up to 50% of the purchase price in cash. Simple buyback process and calculator.",
+    "Finished a book you bought from TalkNest BD? Sell it to us and get up to 50% of the purchase price in cash. Simple used-book selling process and calculator.",
 };
 
 const steps = [
@@ -40,7 +40,7 @@ const steps = [
   {
     icon: ShieldCheck,
     title: "Inspection and offer",
-    text: "Our team checks the book's condition and confirms the final buyback value.",
+    text: "Our team checks the book's condition and confirms the final selling value.",
   },
   {
     icon: Banknote,
@@ -65,7 +65,7 @@ const notAccepted = [
 
 const faqs = [
   {
-    question: "How long does the buyback payment take?",
+    question: "How long does the payment take?",
     answer:
       "After the book reaches us and passes inspection, we send the money via bKash, Nagad or bank transfer within 3–5 business days.",
   },
@@ -75,31 +75,31 @@ const faqs = [
       "Inside Dhaka our team can collect it. Outside Dhaka the reader usually covers the courier cost, but we can arrange something special for larger orders.",
   },
   {
-    question: "How many books can I return at once?",
+    question: "How many books can I sell at once?",
     answer:
-      "You can send several books together. Separate photos and condition notes for each book speed things up. The total buyback value is capped at ৳20,000.",
+      "You can send several books together. Separate photos and condition notes for each book speed things up. The total selling value is capped at ৳20,000.",
   },
   {
     question: "Can I take another book of equal value instead of cash?",
     answer:
-      "Yes. You can keep the buyback amount as store credit and put it toward new books. Just let us know when you get in touch.",
+      "Yes. You can keep the amount as store credit and put it toward new books. Just let us know when you get in touch.",
   },
   {
     question: "Does the demo site really pay money?",
     answer:
-      "No. This website is a front-end demo; no real payment or buyback transaction takes place here. These terms will apply when the real service launches.",
+      "No. This website is a front-end demo; no real payment or used-book transaction takes place here. These terms will apply when the real service launches.",
   },
 ];
 
-export default function BuybackPage() {
+export default function SellUsedBooksPage() {
   return (
     <>
       <PageHeader
-        eyebrow="TalkNest Buyback"
-        title="Finished reading? Send it back and get 50% cash"
-        description="The books gathering dust on your shelf are waiting for a new reader. Return a book you bought from TalkNest and get up to 50% of the purchase price back — simple, transparent and hassle-free."
+        eyebrow="Sell Used Books"
+        title="Finished reading? Sell it to us and get 50% cash"
+        description="The books gathering dust on your shelf are waiting for a new reader. Sell a book you bought from TalkNest and get up to 50% of the purchase price back — simple, transparent and hassle-free."
         tone="dark"
-        crumbs={[{ label: "50% Book Buyback" }]}
+        crumbs={[{ label: "Sell Used Books" }]}
       >
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
@@ -141,13 +141,13 @@ export default function BuybackPage() {
                 <div aria-hidden="true" className="absolute -bottom-20 -left-12 h-48 w-48 rounded-full border border-white/10" />
                 <div className="relative">
                   <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-400/25 bg-gold-500/10 px-3 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-gold-300">
-                    <Repeat2 size={11} /> Why Buyback
+                    <Repeat2 size={11} /> Why sell used books
                   </span>
                   <h2 className="mt-3 font-display text-2xl font-bold leading-snug sm:text-[1.7rem]">
                     One book, two readers, three times the joy
                   </h2>
                   <p className="mt-2 max-w-lg text-xs leading-relaxed text-cream-100/60">
-                    Finishing a book doesn't end its journey. A returned book is checked,
+                    Finishing a book doesn't end its journey. A book you sell to us is checked,
                     cleaned and passed on to a new reader at a friendly price. You get
                     cash, a new reader gets a beloved book — and together we waste less
                     paper.
@@ -221,16 +221,16 @@ export default function BuybackPage() {
             </div>
 
             <div className="space-y-4 lg:sticky lg:top-[88px]">
-              <BuybackCalculator />
+              <SellUsedBookCalculator />
               <div className="rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-950">
-                  <Sparkles size={13} className="text-gold-600" /> How buyback works
+                  <Sparkles size={13} className="text-gold-600" /> How selling works
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-muted">
                   The 50% is calculated on our selling price. The final amount may be
                   slightly lower depending on the book's condition, edition and demand.
                   Full details are in our{" "}
-                  <Link href="/return-policy#buyback" className="font-semibold text-clay-600">
+                  <Link href="/return-policy#sell-used-books" className="font-semibold text-clay-600">
                     return policy
                   </Link>
                   .
@@ -248,7 +248,7 @@ export default function BuybackPage() {
                 {[
                   {
                     name: "Sumaiya Akter",
-                    text: "I returned three old books and got 50% back. The whole process took just three days!",
+                    text: "I sold three old books and got 50% back. The whole process took just three days!",
                   },
                   {
                     name: "Abdullah Al Mamun",
@@ -285,7 +285,7 @@ export default function BuybackPage() {
             </p>
             <div className="flex flex-wrap gap-2">
               <Button href="/contact" variant="light" size="sm">Contact form</Button>
-              <Button href="/used-books" variant="gold" size="sm">Shop used books</Button>
+              <Button href="/used-books" variant="gold" size="sm">Buy used books</Button>
             </div>
           </div>
         </Container>

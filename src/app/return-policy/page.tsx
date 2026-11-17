@@ -4,7 +4,7 @@ import { LegalDocument } from "@/components/legal/LegalDocument";
 
 export const metadata: Metadata = {
   title: "Return & Refund Policy",
-  description: "TalkNest BD rules for book returns, exchanges, refunds and 50% buyback.",
+  description: "TalkNest BD rules for book returns, exchanges, refunds and selling used books.",
 };
 
 export default function ReturnPolicyPage() {

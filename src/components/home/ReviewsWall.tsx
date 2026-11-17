@@ -14,7 +14,7 @@ export function ReviewsWall() {
           <SectionHeader
             eyebrow="Reader reviews"
             title="What readers are saying"
-            description="A book, a delivery or a buyback — the reader experience is the only review that matters."
+            description="A book, a delivery or a used-book sale — the reader experience is the only review that matters."
             href="/reviews"
             linkLabel="All reviews"
             className="mb-0 flex-1"

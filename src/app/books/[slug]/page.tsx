@@ -112,11 +112,11 @@ export default async function BookDetailPage({
                       Get 50% back after reading
                     </p>
                     <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/65">
-                      Return the book to us and get{" "}
+                      Sell the book to us and get{" "}
                       ৳{toBn(Math.round(book.price * 0.5))} back.
                     </p>
                     <Link
-                      href="/buyback"
+                      href="/sell-used-books"
                       className="mt-1 inline-flex text-[10px] font-semibold text-clay-600 hover:text-clay-500"
                     >
                       Details →
@@ -235,7 +235,7 @@ export default async function BookDetailPage({
                 </span>
                 <span className="flex items-center gap-1.5">
                   <RefreshCcw size={13} />
-                  50% buyback
+                  Sell used books
                 </span>
               </div>
 

@@ -15,7 +15,7 @@ const subjects = [
   "General enquiry",
   "Order support",
   "Delivery issue",
-  "Returns / Buyback",
+  "Returns / Sell used books",
   "Wholesale orders",
   "Audiobook help",
 ];

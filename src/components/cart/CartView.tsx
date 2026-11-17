@@ -53,7 +53,7 @@ export function CartView() {
       <EmptyState
         icon={<ShoppingBag size={24} />}
         title="Your cart is empty"
-        description="Add books or Sunnah items you love to start shopping. Return a book after reading and get 50% of the purchase price back."
+        description="Add books or Sunnah items you love to start shopping. Sell a used book to us after reading and get 50% of the purchase price back."
         action={
           <div className="flex flex-wrap justify-center gap-3">
             <Button href="/books">Browse books</Button>
@@ -130,7 +130,7 @@ export function CartView() {
         <div className="mt-4 grid gap-2 sm:grid-cols-3">
           {[
             { icon: ShieldCheck, text: "100% original books" },
-            { icon: RotateCcw, text: "50% buyback" },
+            { icon: RotateCcw, text: "Sell used books" },
             { icon: Gift, text: "Beautiful packaging" },
           ].map((item) => (
             <div
@@ -200,12 +200,12 @@ export function CartView() {
         <div className="mt-3 rounded-2xl border border-forest-900/8 bg-forest-50/60 p-4">
           <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-900">
             <RotateCcw size={13} className="text-forest-600" />
-            Get 50% back when you return a book
+            Get 50% back when you sell a used book
           </p>
           <p className="mt-1 text-[10px] leading-relaxed text-muted">
-            Return the book to us in good condition after reading and get 50% of
+            Sell the book to us in good condition after reading and get 50% of
             the purchase price back.{" "}
-            <Link href="/buyback" className="font-semibold text-clay-600">
+            <Link href="/sell-used-books" className="font-semibold text-clay-600">
               Learn more
             </Link>
             .

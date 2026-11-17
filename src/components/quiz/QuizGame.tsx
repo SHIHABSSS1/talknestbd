@@ -17,7 +17,7 @@ import { quizQuestions } from "@/data/community";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
-export function QuizGame() {
+export function QuizGame({ label = "Book quiz" }: { label?: string }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
@@ -145,7 +145,7 @@ export function QuizGame() {
     <div className="mx-auto max-w-2xl">
       <div className="flex items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-900 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-gold-300">
-          <CircleHelp size={11} /> Book quiz
+          <CircleHelp size={11} /> {label}
         </span>
         <span className="text-[10px] font-semibold text-forest-800">
           Question {toBn(index + 1)} / {toBn(quizQuestions.length)}

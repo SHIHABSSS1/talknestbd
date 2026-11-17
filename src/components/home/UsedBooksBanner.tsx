@@ -45,11 +45,11 @@ export function UsedBooksBanner() {
 
             <div className="mt-4 flex flex-wrap gap-2">
               <Button href="/used-books" variant="primary">
-                Browse used books
+                Buy used books
                 <ArrowRight size={15} />
               </Button>
-              <Button href="/used-books#sell" variant="outline">
-                Sell your books
+              <Button href="/sell-used-books" variant="outline">
+                Sell used books
               </Button>
             </div>
 

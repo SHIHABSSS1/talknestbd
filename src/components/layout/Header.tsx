@@ -159,7 +159,7 @@ export function Header() {
               </span>
               <span className="hidden items-center gap-1.5 whitespace-nowrap text-muted xl:flex">
                 <RotateCcw size={13} className="text-brand-600" />
-                50% book buyback
+                50% cash back when you sell used books
               </span>
             </div>
             <div className="flex items-center gap-4 text-muted sm:gap-5">

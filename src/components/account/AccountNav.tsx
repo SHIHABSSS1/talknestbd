@@ -78,10 +78,10 @@ export function AccountNav() {
       <div className="mt-3 rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
         <p className="text-[11px] font-semibold text-forest-900">Get 50% back after reading</p>
         <p className="mt-1 text-[9px] leading-relaxed text-muted">
-          Return a book you bought from us and get 50% of the purchase price back.
+          Sell a book you bought from us and get 50% of the purchase price back.
         </p>
         <Link
-          href="/buyback"
+          href="/sell-used-books"
           className="mt-2 inline-flex text-[10px] font-semibold text-clay-600 hover:text-clay-500"
         >
           Learn more →

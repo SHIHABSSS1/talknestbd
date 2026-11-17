@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Check, Truck } from "lucide-react";
 import type { CartItem } from "@/lib/store";
 import { books } from "@/data/books";
+import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import {
   deliveryLabels,
@@ -41,6 +42,10 @@ export function CheckoutSummary({
       <div className="max-h-[280px] overflow-y-auto px-5 py-3">
         {items.map((item) => {
           const book = item.kind !== "sunnah" ? books.find((entry) => entry.slug === item.slug) : undefined;
+          const upSale =
+            item.kind === "book"
+              ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)
+              : undefined;
           const sunnah = item.kind === "sunnah" ? sunnahItems.find((entry) => entry.slug === item.slug) : undefined;
           return (
             <div
@@ -53,14 +58,28 @@ export function CheckoutSummary({
                     ? "/audio-books"
                     : book
                       ? `/books/${book.slug}`
-                      : sunnah
-                        ? `/sunnah-items/${sunnah.slug}`
-                        : "/sunnah-items"
+                      : upSale
+                        ? "/up-sales"
+                        : sunnah
+                          ? `/sunnah-items/${sunnah.slug}`
+                          : item.kind === "book"
+                            ? "/books"
+                            : "/sunnah-items"
                 }
                 className="relative block h-14 w-10 shrink-0 overflow-hidden rounded bg-cream-100"
               >
                 {book ? (
                   <BookCover book={book} size="sm" />
+                ) : upSale ? (
+                  <BookCover
+                    book={{
+                      title: upSale.title,
+                      author: upSale.author,
+                      publisher: "TalkNest Used Books",
+                      cover: upSale.cover,
+                    }}
+                    size="sm"
+                  />
                 ) : (
                   <span
                     className="grid h-full w-full place-items-center px-0.5 text-center text-[7px] font-semibold leading-tight"

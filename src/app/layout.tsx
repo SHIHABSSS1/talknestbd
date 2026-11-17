@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "Islamic books",
     "audiobooks",
     "used books",
-    "book buyback",
+    "sell used books",
   ],
   authors: [{ name: "TalkNest BD" }],
   openGraph: {

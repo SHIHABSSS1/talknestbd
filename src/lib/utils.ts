@@ -62,5 +62,5 @@ export const siteConfig = {
   telegram: "https://t.me/talknestbd",
   youtube: "https://www.youtube.com/@talknestbd",
   freeDeliveryThreshold: 999,
-  buybackRate: 50,
+  sellUsedBookRate: 50,
 };

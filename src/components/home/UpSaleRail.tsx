@@ -1,0 +1,64 @@
+import Link from "next/link";
+import { ArrowRight, BadgePercent } from "lucide-react";
+import { upSaleBooks } from "@/data/community";
+import { formatPrice } from "@/lib/utils";
+import { Container } from "@/components/ui/Container";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ViewAllRow } from "@/components/ui/ViewAllRow";
+import { UpSaleGrid } from "@/components/books/UpSaleGrid";
+
+export function UpSaleRail() {
+  const example = upSaleBooks[0];
+  const saving = example.originalPrice - example.price;
+
+  return (
+    <section id="up-sale" className="border-b border-line bg-white py-8 sm:py-10">
+      <Container>
+        <SectionHeader
+          eyebrow="Buy used books"
+          title="50% Up Sale"
+          description="Readers sell us the books they have finished, and those checked copies come back at a friendly price. Every copy here is 25% below a new one — a second life for the book, a saving for the next reader."
+          href="/up-sales"
+          linkLabel="All up-sale books"
+          className="mb-5 sm:mb-6"
+        />
+
+        <div className="mb-4 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 rounded-[8px] border border-line bg-canvas px-3 py-2.5 text-[10.5px] text-body sm:mb-5 sm:text-[11.5px]">
+          <span className="inline-flex items-center gap-1 rounded-[3px] bg-sale px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-ink">
+            <BadgePercent size={10} />
+            How the price works
+          </span>
+          <span>
+            New <b className="text-ink">{formatPrice(example.originalPrice)}</b>
+          </span>
+          <ArrowRight size={11} className="text-muted" aria-hidden="true" />
+          <span>
+            Reader gets 50% <b className="text-ink">{formatPrice(example.sellingPrice)}</b>
+          </span>
+          <ArrowRight size={11} className="text-muted" aria-hidden="true" />
+          <span>
+            +50% up <b className="text-ink">{formatPrice(example.price)}</b>
+          </span>
+          <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[9.5px] font-semibold text-brand-700">
+            Next reader saves {formatPrice(saving)}
+          </span>
+          <Link
+            href="/sell-used-books"
+            className="ml-auto inline-flex items-center gap-1 text-[10px] font-semibold text-brand-700 hover:text-brand-800"
+          >
+            See how selling works
+            <ArrowRight size={11} />
+          </Link>
+        </div>
+
+        <UpSaleGrid books={upSaleBooks} variant="rail" />
+
+        <ViewAllRow
+          href="/up-sales"
+          label="See all 50% up books"
+          count={`${upSaleBooks.length} copies`}
+        />
+      </Container>
+    </section>
+  );
+}

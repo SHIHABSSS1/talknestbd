@@ -24,6 +24,7 @@ import {
   type Order,
 } from "@/lib/orders";
 import { books } from "@/data/books";
+import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import { formatCount, formatPrice, siteConfig } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
@@ -181,6 +182,10 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
                 item.kind !== "sunnah"
                   ? books.find((entry) => entry.slug === item.slug)
                   : undefined;
+              const upSale =
+                item.kind === "book"
+                  ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)
+                  : undefined;
               const sunnah =
                 item.kind === "sunnah"
                   ? sunnahItems.find((entry) => entry.slug === item.slug)
@@ -193,6 +198,16 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
                   <div className="h-16 w-11 shrink-0 overflow-hidden rounded bg-cream-100">
                     {book ? (
                       <BookCover book={book} size="sm" />
+                    ) : upSale ? (
+                      <BookCover
+                        book={{
+                          title: upSale.title,
+                          author: upSale.author,
+                          publisher: "TalkNest Used Books",
+                          cover: upSale.cover,
+                        }}
+                        size="sm"
+                      />
                     ) : (
                       <span
                         className="grid h-full w-full place-items-center px-1 text-center text-[8px] font-semibold"
@@ -207,11 +222,13 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
                       {item.title}
                     </p>
                     <p className="text-[9px] text-muted">
-                      {item.kind === "audio"
-                        ? "Audiobook"
-                        : item.kind === "sunnah"
-                          ? "Sunnah essential"
-                          : "Book"}
+                      {upSale
+                        ? "Used book"
+                        : item.kind === "audio"
+                          ? "Audiobook"
+                          : item.kind === "sunnah"
+                            ? "Sunnah essential"
+                            : "Book"}
                       {item.meta ? ` · ${item.meta}` : ""}
                     </p>
                   </div>

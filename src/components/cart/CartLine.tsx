@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "@/lib/store";
 import { books } from "@/data/books";
+import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import { formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
@@ -18,15 +19,23 @@ export function CartLine({
   onRemove: () => void;
 }) {
   const book = item.kind !== "sunnah" ? books.find((entry) => entry.slug === item.slug) : undefined;
+  const upSale =
+    item.kind === "book"
+      ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)
+      : undefined;
   const sunnah = item.kind === "sunnah" ? sunnahItems.find((entry) => entry.slug === item.slug) : undefined;
   const href =
     item.kind === "audio"
       ? "/audio-books"
       : book
         ? `/books/${book.slug}`
-        : sunnah
-          ? `/sunnah-items/${sunnah.slug}`
-          : "/sunnah-items";
+        : upSale
+          ? "/up-sales"
+          : sunnah
+            ? `/sunnah-items/${sunnah.slug}`
+            : item.kind === "book"
+              ? "/books"
+              : "/sunnah-items";
 
   return (
     <article className="flex gap-3 border-b border-forest-900/8 py-4 last:border-b-0 sm:gap-4 sm:py-5">
@@ -37,6 +46,16 @@ export function CartLine({
       >
         {book ? (
           <BookCover book={book} size="sm" />
+        ) : upSale ? (
+          <BookCover
+            book={{
+              title: upSale.title,
+              author: upSale.author,
+              publisher: "TalkNest Used Books",
+              cover: upSale.cover,
+            }}
+            size="sm"
+          />
         ) : (
           <span
             className="grid h-full w-full place-items-center px-1 text-center font-display text-[11px] font-semibold leading-tight"
@@ -54,11 +73,13 @@ export function CartLine({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted">
-              {item.kind === "book"
-                ? "Book"
-                : item.kind === "audio"
-                  ? "Audiobook"
-                  : "Sunnah item"}
+              {upSale
+                ? "Used book"
+                : item.kind === "book"
+                  ? "Book"
+                  : item.kind === "audio"
+                    ? "Audiobook"
+                    : "Sunnah item"}
             </span>
             <Link href={href} className="mt-0.5 block">
               <h3 className="line-clamp-2 font-display text-sm font-semibold leading-snug text-forest-950 transition-colors hover:text-forest-600 sm:text-base">

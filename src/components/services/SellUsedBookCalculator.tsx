@@ -19,7 +19,7 @@ const conditions = [
   { key: "fair", label: "Fair", rate: 35, note: "May have marks or creases" },
 ] as const;
 
-export function BuybackCalculator() {
+export function SellUsedBookCalculator() {
   const [bookSlug, setBookSlug] = useState(books[0]?.slug ?? "");
   const [purchasePrice, setPurchasePrice] = useState(String(books[0]?.price ?? 380));
   const [condition, setCondition] = useState<(typeof conditions)[number]["key"]>("like-new");
@@ -41,8 +41,8 @@ export function BuybackCalculator() {
             <Calculator size={16} />
           </span>
           <div>
-            <h2 className="font-display text-lg font-bold text-forest-950">Buyback Calculator</h2>
-            <p className="text-[9px] text-muted">See an estimated buyback value based on the book&apos;s condition</p>
+            <h2 className="font-display text-lg font-bold text-forest-950">Sell Used Book Calculator</h2>
+            <p className="text-[9px] text-muted">See an estimated selling value based on the book&apos;s condition</p>
           </div>
         </div>
       </div>
@@ -118,7 +118,7 @@ export function BuybackCalculator() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.16em] text-gold-400">
-                <Banknote size={12} /> Estimated buyback
+                <Banknote size={12} /> Estimated selling value
               </p>
               <p className="mt-1 font-display text-3xl font-bold">
                 {eligible ? formatPrice(amount) : "৳0"}
@@ -137,7 +137,7 @@ export function BuybackCalculator() {
         <div className="mt-3 flex items-start gap-2 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
           <Info size={12} className="mt-0.5 shrink-0 text-gold-600" />
           This is only an estimate. The final value is confirmed after we receive
-          and inspect the book. Textbooks and older editions may not be eligible for buyback.
+          and inspect the book. Textbooks and older editions may not be eligible to sell.
         </div>
 
         {submitted ? (
@@ -146,7 +146,7 @@ export function BuybackCalculator() {
             <div>
               <p className="text-[11px] font-semibold text-forest-900">Your request is ready as a demo</p>
               <p className="mt-0.5 text-[9px] leading-relaxed text-muted">
-                For a real buyback, contact us on WhatsApp with your order number and photos of the book.
+                For a real sale, contact us on WhatsApp with your order number and photos of the book.
               </p>
             </div>
           </div>
@@ -154,7 +154,7 @@ export function BuybackCalculator() {
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <p className="text-[9px] text-muted">Works for books with a purchase price up to ৳20,000.</p>
             <Button type="button" size="sm" disabled={!eligible} onClick={() => setSubmitted(true)}>
-              Request buyback
+              Request a sale
               <ArrowRight size={13} />
             </Button>
           </div>

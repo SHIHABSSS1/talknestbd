@@ -18,7 +18,7 @@ export const reviews: Review[] = [
     name: "Sumaiya Akter",
     location: "Chattogram",
     rating: 5,
-    text: "The 50% buyback is a brilliant idea. I sent the book back after reading it and the whole process took only three days.",
+    text: "The 50% used-book selling service is a brilliant idea. I sold the book after reading it and the whole process took only three days.",
     bookTitle: "The Life of the Prophet ﷺ",
     bookSlug: "rasuler-jiboni",
     date: "5 days ago",

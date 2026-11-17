@@ -1,7 +1,8 @@
 import { Hero } from "@/components/home/Hero";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { CategoryShowcase } from "@/components/home/CategoryShowcase";
-import { BuybackBanner } from "@/components/home/BuybackBanner";
+import { SellUsedBooksBanner } from "@/components/home/SellUsedBooksBanner";
+import { UpSaleRail } from "@/components/home/UpSaleRail";
 import { FreeOrderWholesale } from "@/components/home/FreeOrderWholesale";
 import { AudioShowcase } from "@/components/home/AudioShowcase";
 import { SunnahShowcase } from "@/components/home/SunnahShowcase";
@@ -36,7 +37,9 @@ export default function HomePage() {
         linkLabel="All bestsellers"
       />
 
-      <BuybackBanner />
+      <SellUsedBooksBanner />
+      <UpSaleRail />
+      <UsedBooksBanner />
 
       <BookRail
         books={newBooks}
@@ -61,7 +64,6 @@ export default function HomePage() {
 
       <AudioShowcase />
       <SunnahShowcase />
-      <UsedBooksBanner />
 
       <BookRail
         books={internationalBooks}

@@ -18,11 +18,11 @@ const steps = [
   {
     icon: Banknote,
     title: "Get 50% back",
-    text: "Return it to us for half the purchase price in cash.",
+    text: "Sell it to us for half the purchase price in cash.",
   },
 ];
 
-export function BuybackBanner() {
+export function SellUsedBooksBanner() {
   return (
     <section className="bg-canvas py-8 sm:py-10">
       <Container>
@@ -54,14 +54,14 @@ export function BuybackBanner() {
               <SectionTitle
                 light
                 size="lg"
-                eyebrow="TalkNest Buyback"
+                eyebrow="Sell Used Books"
                 title={
                   <>
-                    Finished a book? Return it and get{" "}
+                    Finished a book? Sell it to us and get{" "}
                     <span className="text-sale">50% back.</span>
                   </>
                 }
-                description="Buy any book from TalkNest, read it at your own pace, then send it back in readable condition. We will refund half the purchase price — simple, transparent and hassle-free."
+                description="Buy any book from TalkNest, read it at your own pace, then sell it to us in readable condition. We will pay half the purchase price — simple, transparent and hassle-free."
               />
 
               <div className="mt-5 grid gap-2.5 sm:grid-cols-3">
@@ -89,16 +89,16 @@ export function BuybackBanner() {
               </div>
 
               <div className="mt-5 flex flex-wrap items-center gap-4">
-                <Button href="/buyback" variant="white">
-                  See how buyback works
+                <Button href="/sell-used-books" variant="white">
+                  See how selling works
                   <ArrowRight size={15} />
                 </Button>
                 <Link
-                  href="/buyback#calculator"
+                  href="/sell-used-books#calculator"
                   className="inline-flex items-center gap-1.5 text-[11px] font-medium text-white/70 transition-colors hover:text-white"
                 >
                   <CheckCircle2 size={13} />
-                  Estimate your refund
+                  Estimate your payout
                 </Link>
               </div>
             </div>

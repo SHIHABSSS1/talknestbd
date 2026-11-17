@@ -52,7 +52,7 @@ const returnHighlights = [
   "Request a return or exchange within 7 days of delivery.",
   "Printing faults, wrong title or transit damage are always accepted.",
   "Approved refunds are processed within 3–7 working days.",
-  "Finished books can be returned for 50% back through our buyback service.",
+  "Finished books can be sold to us for 50% back through our used-book service.",
 ];
 
 export function BookDetailTabs({ book }: { book: Book }) {
@@ -223,10 +223,10 @@ export function BookDetailTabs({ book }: { book: Book }) {
                 Read the full return policy
               </Link>
               <Link
-                href="/buyback"
+                href="/sell-used-books"
                 className="inline-flex h-10 items-center justify-center gap-1.5 rounded-full border border-forest-900/15 px-4 text-[11px] font-semibold text-forest-800 transition-colors hover:border-forest-900"
               >
-                50% buyback after reading
+                Sell used books after reading
               </Link>
             </div>
           </div>

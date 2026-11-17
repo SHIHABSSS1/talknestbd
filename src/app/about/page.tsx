@@ -53,7 +53,7 @@ const values = [
   {
     icon: Leaf,
     title: "A second life for books",
-    text: "Buyback and our used-book market send books on to new readers — and cut down on paper waste.",
+    text: "Selling used books and shopping the used-book market send stories on to new readers — and cut down on paper waste.",
   },
   {
     icon: ShieldCheck,
@@ -80,8 +80,8 @@ const milestones = [
   },
   {
     year: "2025",
-    title: "50% buyback and wholesale",
-    text: "Buyback, the used-book market and institutional orders completed the circle for books.",
+    title: "Selling used books and wholesale",
+    text: "Our used-book selling service, the used-book market and institutional orders completed the circle for books.",
   },
   {
     year: "2026",
