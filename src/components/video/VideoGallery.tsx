@@ -16,6 +16,7 @@ import { videos as allVideos } from "@/data/community";
 import { siteConfig, cn, toBn } from "@/lib/utils";
 import { YouTubeIcon } from "@/components/layout/SocialLinks";
 import { Button } from "@/components/ui/Button";
+import { CommentThread } from "@/components/community/CommentThread";
 
 export function VideoGallery() {
   const [category, setCategory] = useState("All");
@@ -313,7 +314,7 @@ export function VideoGallery() {
             role="dialog"
             aria-modal="true"
             aria-label={player.title}
-            className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-forest-950 shadow-2xl"
+            className="relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-forest-950 shadow-2xl"
           >
             <div className="flex items-center justify-between gap-3 px-4 py-3">
               <div className="min-w-0">
@@ -353,6 +354,13 @@ export function VideoGallery() {
                 <YouTubeIcon size={12} />
                 Watch on YouTube
               </Link>
+            </div>
+            <div className="px-3 pb-3">
+              <CommentThread
+                target="video"
+                title={`Comments · ${player.title}`}
+                compact
+              />
             </div>
           </div>
         </div>

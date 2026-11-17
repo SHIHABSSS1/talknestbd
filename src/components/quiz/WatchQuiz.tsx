@@ -19,6 +19,7 @@ import { cn, toBn } from "@/lib/utils";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/Button";
 import { QuizGame } from "@/components/quiz/QuizGame";
+import { CommentThread } from "@/components/community/CommentThread";
 
 const WATCHED_KEY = "talknestbd-watched-videos-v1";
 
@@ -226,6 +227,10 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
         <div className="mt-3 rounded-[8px] border border-line bg-white p-3 shadow-[0_18px_46px_-40px_rgba(8,42,82,0.55)] sm:p-5">
           <QuizGame label="Episode quiz" />
         </div>
+
+        <div className="mt-3">
+          <CommentThread target="quiz" title="Quiz discussion" />
+        </div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
@@ -250,7 +255,7 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
             role="dialog"
             aria-modal="true"
             aria-label={player.title}
-            className="relative w-full max-w-4xl overflow-hidden rounded-[8px] bg-brand-950 shadow-2xl"
+            className="relative max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[8px] bg-brand-950 shadow-2xl"
           >
             <div className="flex items-center justify-between gap-3 px-4 py-3 text-white">
               <div className="min-w-0">
@@ -307,6 +312,14 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
                   <ArrowRight size={11} />
                 </button>
               </div>
+            </div>
+
+            <div className="px-3 pb-3 sm:px-4">
+              <CommentThread
+                target="video"
+                title={`Comments · ${player.title}`}
+                compact
+              />
             </div>
           </div>
         </div>
