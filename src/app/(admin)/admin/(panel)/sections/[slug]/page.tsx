@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { HeroEditor } from "@/components/admin/HeroEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
@@ -34,6 +35,11 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
 
   const label =
     findAdminNavItem(`/admin/sections/${slug}`)?.label ?? humanize(slug);
+
+  // The hero is an image carousel, so it needs its own banner editor.
+  if (slug === "hero") {
+    return <HeroEditor label={label} />;
+  }
 
   return (
     <SectionEditor slug={slug} label={label} defaults={sectionDefaults[slug]} />

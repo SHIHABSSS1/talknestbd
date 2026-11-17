@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
+import { HeroContentProvider } from "@/components/providers/HeroContentProvider";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -59,7 +60,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <StoreProvider>{children}</StoreProvider>
+        <StoreProvider>
+          <HeroContentProvider>{children}</HeroContentProvider>
+        </StoreProvider>
       </body>
     </html>
   );
