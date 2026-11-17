@@ -5,6 +5,7 @@ import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
+import { UsedBooksEditor } from "@/components/admin/UsedBooksEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
 import { SellUsedBooksEditor } from "@/components/admin/SellUsedBooksEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
@@ -70,6 +71,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "sell-used-books") {
     return <SellUsedBooksEditor label={label} />;
+  }
+  if (slug === "used-books") {
+    return <UsedBooksEditor label={label} />;
   }
 
   return (

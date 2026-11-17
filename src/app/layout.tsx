@@ -9,6 +9,7 @@ import { ShelfContentProvider } from "@/components/providers/ShelfContentProvide
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
 import { SellRequestsProvider } from "@/components/providers/SellRequestsProvider";
 import { UpSaleBooksProvider } from "@/components/providers/UpSaleBooksProvider";
+import { UsedContentProvider } from "@/components/providers/UsedContentProvider";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -75,7 +76,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <ShelfContentProvider>
                     <SellContentProvider>
                       <SellRequestsProvider>
-                        <UpSaleBooksProvider>{children}</UpSaleBooksProvider>
+                        <UpSaleBooksProvider>
+                          <UsedContentProvider>{children}</UsedContentProvider>
+                        </UpSaleBooksProvider>
                       </SellRequestsProvider>
                     </SellContentProvider>
                   </ShelfContentProvider>
