@@ -23,9 +23,13 @@ const motifs: CoverMotif[] = ["arch", "circle", "lines", "star", "wave", "grid"]
 const tagOptions: { value: BookTag; label: string }[] = [
   { value: "bestseller", label: "Bestseller" },
   { value: "new", label: "New arrival" },
-  { value: "viral", label: "Trending" },
+  { value: "viral", label: "Viral" },
   { value: "free-delivery", label: "Free delivery" },
   { value: "up-sale", label: "50% up sale" },
+  { value: "trending", label: "Trending now" },
+  { value: "sunnah", label: "Sunnah essentials" },
+  { value: "international", label: "International" },
+  { value: "student", label: "Student books" },
 ];
 
 interface FormState {

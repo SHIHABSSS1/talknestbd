@@ -79,6 +79,36 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   if (slug === "new-arrivals") {
     return <ShelfEditor label={label} config={newArrivalsShelf} />;
   }
+
+  const extraShelves: Record<string, ShelfConfig> = {
+    trending: {
+      slug: "trending",
+      tag: "trending",
+      href: "/trending",
+      shelfName: "Trending Now",
+    },
+    sunnah: {
+      slug: "sunnah",
+      tag: "sunnah",
+      href: "/sunnah",
+      shelfName: "Sunnah Essentials",
+    },
+    international: {
+      slug: "international",
+      tag: "international",
+      href: "/international-books",
+      shelfName: "International Books",
+    },
+    "student-books": {
+      slug: "student-books",
+      tag: "student",
+      href: "/student-books",
+      shelfName: "Student Books",
+    },
+  };
+  if (extraShelves[slug]) {
+    return <ShelfEditor label={label} config={extraShelves[slug]} />;
+  }
   if (slug === "sell-used-books") {
     return <SellUsedBooksEditor label={label} />;
   }

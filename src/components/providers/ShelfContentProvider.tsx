@@ -33,6 +33,10 @@ const initialHeadings: Record<string, ShelfHeading> = {
   [SHELF_SLUGS.viral]: shelfDefaults(SHELF_SLUGS.viral),
   [SHELF_SLUGS.upSale]: shelfDefaults(SHELF_SLUGS.upSale),
   [SHELF_SLUGS.newArrivals]: shelfDefaults(SHELF_SLUGS.newArrivals),
+  [SHELF_SLUGS.trending]: shelfDefaults(SHELF_SLUGS.trending),
+  [SHELF_SLUGS.sunnah]: shelfDefaults(SHELF_SLUGS.sunnah),
+  [SHELF_SLUGS.international]: shelfDefaults(SHELF_SLUGS.international),
+  [SHELF_SLUGS.studentBooks]: shelfDefaults(SHELF_SLUGS.studentBooks),
 };
 
 export function ShelfContentProvider({ children }: { children: ReactNode }) {
@@ -44,6 +48,10 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
       [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
       [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
       [SHELF_SLUGS.newArrivals]: readShelfHeading(SHELF_SLUGS.newArrivals),
+      [SHELF_SLUGS.trending]: readShelfHeading(SHELF_SLUGS.trending),
+      [SHELF_SLUGS.sunnah]: readShelfHeading(SHELF_SLUGS.sunnah),
+      [SHELF_SLUGS.international]: readShelfHeading(SHELF_SLUGS.international),
+      [SHELF_SLUGS.studentBooks]: readShelfHeading(SHELF_SLUGS.studentBooks),
     });
     setHydrated(true);
 
@@ -53,6 +61,10 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
           [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
           [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
           [SHELF_SLUGS.newArrivals]: readShelfHeading(SHELF_SLUGS.newArrivals),
+          [SHELF_SLUGS.trending]: readShelfHeading(SHELF_SLUGS.trending),
+          [SHELF_SLUGS.sunnah]: readShelfHeading(SHELF_SLUGS.sunnah),
+          [SHELF_SLUGS.international]: readShelfHeading(SHELF_SLUGS.international),
+          [SHELF_SLUGS.studentBooks]: readShelfHeading(SHELF_SLUGS.studentBooks),
         });
       }
     };

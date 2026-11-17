@@ -10,7 +10,7 @@
 
 import { books as staticBooks } from "@/data/books";
 import { upSaleBooks } from "@/data/community";
-import type { Book, BookCoverTheme, UpSaleBook } from "@/lib/types";
+import type { Book, BookCoverTheme, BookTag, UpSaleBook } from "@/lib/types";
 
 export const BOOK_STORAGE_KEY = "talknestbd-books-v1";
 
@@ -139,9 +139,27 @@ function upSaleToBook(item: UpSaleBook): Book {
   };
 }
 
+/**
+ * Seed shelf tags on the demo catalogue so the Trending, Sunnah and
+ * International shelves have content before anything is uploaded.
+ */
+function seedShelfTags(book: Book): Book {
+  const extra: BookTag[] = [];
+  if (book.tags.includes("viral")) extra.push("trending");
+  if (book.category === "islamic-itihas") extra.push("sunnah");
+  if (book.category === "international") extra.push("international");
+  if (book.category === "student") extra.push("student");
+  if (extra.length === 0) return book;
+  return { ...book, tags: Array.from(new Set([...book.tags, ...extra])) };
+}
+
 /** Single source of truth: static catalogue + up-sale copies + admin uploads. */
 export function allBooks(uploads: Book[] = []): Book[] {
-  return mergeBooks(staticBooks, upSaleBooks.map(upSaleToBook), uploads);
+  return mergeBooks(
+    staticBooks.map(seedShelfTags),
+    upSaleBooks.map(upSaleToBook),
+    uploads,
+  );
 }
 
 export function findBook(slug: string, source: Book[]): Book | undefined {

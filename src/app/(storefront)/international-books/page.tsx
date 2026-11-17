@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
-import { CollectionPage } from "@/components/books/CollectionPage";
+import { ShelfPageContent } from "@/components/books/ShelfPageContent";
 
 export const metadata: Metadata = {
   title: "International Books",
-  description: "Selected world literature and international bestsellers.",
+  description: "World literature, modern classics and translations for curious readers.",
 };
 
 export default function InternationalBooksPage() {
-  return <CollectionPage collection="international" />;
+  return (
+    <ShelfPageContent
+      slug="international"
+      tag="international"
+      crumb="International Books"
+    />
+  );
 }

@@ -4,24 +4,19 @@ import { CategoryShowcase } from "@/components/home/CategoryShowcase";
 import { CategoryBookRails } from "@/components/home/CategoryBookRails";
 import { ViralRail } from "@/components/home/ViralRail";
 import { NewArrivalsRail } from "@/components/home/NewArrivalsRail";
+import { ShelfRail } from "@/components/books/ShelfRail";
 import { SellUsedBooksBanner } from "@/components/home/SellUsedBooksBanner";
 import { UpSaleRail } from "@/components/home/UpSaleRail";
 import { FreeOrderWholesale } from "@/components/home/FreeOrderWholesale";
 import { AudioShowcase } from "@/components/home/AudioShowcase";
-import { SunnahShowcase } from "@/components/home/SunnahShowcase";
 import { UsedBooksBanner } from "@/components/home/UsedBooksBanner";
 import { AuthorsSpotlight } from "@/components/home/AuthorsSpotlight";
 import { PublishersStrip } from "@/components/home/PublishersStrip";
 import { ReviewsWall } from "@/components/home/ReviewsWall";
 import { VideoQuizSection } from "@/components/home/VideoQuizSection";
 import { StoryCommunity } from "@/components/home/StoryCommunity";
-import { BookRail } from "@/components/books/BookRail";
-import { getBooksByCollection } from "@/data/books";
 
 export default function HomePage() {
-  const internationalBooks = getBooksByCollection("international");
-  const studentBooks = getBooksByCollection("student");
-
   return (
     <>
       <Hero />
@@ -39,29 +34,35 @@ export default function HomePage() {
 
       <ViralRail />
 
-      <AudioShowcase />
-      <SunnahShowcase />
+      <ShelfRail
+        slug="trending"
+        tag="trending"
+        href="/trending"
+      />
 
-      <BookRail
-        books={internationalBooks}
-        eyebrow="International"
-        title="World literature, within reach"
-        description="Global bestsellers, modern classics and translations for curious readers."
+      <AudioShowcase />
+
+      <ShelfRail
+        slug="sunnah"
+        tag="sunnah"
+        href="/sunnah"
+        tone="soft"
+      />
+
+      <ShelfRail
+        slug="international"
+        tag="international"
         href="/international-books"
-        linkLabel="All world literature"
         tone="soft"
       />
 
       <AuthorsSpotlight />
       <PublishersStrip />
 
-      <BookRail
-        books={studentBooks}
-        eyebrow="Student Books"
-        title="Books for every study day"
-        description="Study guides, reference books and skill-builders for exams and beyond."
+      <ShelfRail
+        slug="student-books"
+        tag="student"
         href="/student-books"
-        linkLabel="All student books"
       />
 
       <ReviewsWall />

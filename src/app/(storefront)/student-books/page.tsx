@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { CollectionPage } from "@/components/books/CollectionPage";
+import { ShelfPageContent } from "@/components/books/ShelfPageContent";
 
 export const metadata: Metadata = {
   title: "Student Books",
-  description: "Selected books for HSC, SSC and competitive exam preparation.",
+  description: "Study guides, reference books and skill-builders for exams and beyond.",
 };
 
 export default function StudentBooksPage() {
-  return <CollectionPage collection="student" />;
+  return (
+    <ShelfPageContent slug="student-books" tag="student" crumb="Student Books" />
+  );
 }

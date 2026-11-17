@@ -75,9 +75,9 @@ export const sectionDefaults: Record<string, SectionContent> = {
   },
   trending: {
     eyebrow: "Trending Now",
-    title: "Books everyone is talking about",
+    title: "Trending right now",
     description:
-      "The titles moving through reading groups, social feeds and dinner conversations.",
+      "The books picking up momentum this week — liked, shared and talked about by readers.",
     linkLabel: "All trending books",
   },
   audio: {

@@ -15,8 +15,13 @@ const collections: { value: BookTag | "all"; label: string }[] = [
   { value: "all", label: "All collections" },
   { value: "bestseller", label: "Bestsellers" },
   { value: "new", label: "New arrivals" },
-  { value: "viral", label: "Trending" },
+  { value: "viral", label: "Viral" },
   { value: "free-delivery", label: "Free delivery" },
+  { value: "up-sale", label: "50% up sale" },
+  { value: "trending", label: "Trending now" },
+  { value: "sunnah", label: "Sunnah essentials" },
+  { value: "international", label: "International" },
+  { value: "student", label: "Student books" },
 ];
 
 export function CatalogManager() {

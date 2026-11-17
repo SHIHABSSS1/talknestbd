@@ -22,6 +22,10 @@ export const SHELF_SLUGS = {
   viral: "viral-books",
   upSale: "up-sale",
   newArrivals: "new-arrivals",
+  trending: "trending",
+  sunnah: "sunnah",
+  international: "international",
+  studentBooks: "student-books",
 } as const;
 
 const STORAGE_PREFIX = "talknestbd-shelf-";
