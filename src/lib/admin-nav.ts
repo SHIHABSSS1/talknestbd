@@ -49,7 +49,7 @@ export const adminNavGroups: AdminNavGroup[] = [
     label: "Homepage sections",
     items: [
       { label: "Hero banner", href: "/admin/sections/hero", icon: ImageIcon },
-      { label: "Trust strip", href: "/admin/sections/trust-strip", icon: BadgeCheck },
+      { label: "Trust strip cards", href: "/admin/sections/trust-strip", icon: BadgeCheck },
       { label: "Category showcase", href: "/admin/sections/categories", icon: LayoutGrid },
       { label: "Best sellers", href: "/admin/sections/best-sellers", icon: Flame },
       { label: "Sell used books banner", href: "/admin/sections/sell-used-books", icon: Repeat2 },

@@ -1,66 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpen,
-  Feather,
-  Globe2,
-  GraduationCap,
-  Headphones,
-  Landmark,
-  Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/free-mode";
-import { books } from "@/data/books";
-import { categories } from "@/data/categories";
-import type { CategorySlug } from "@/lib/types";
+import { tileBookCount } from "@/lib/category-books";
 import { formatCount } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
-
-const categoryIcons: Record<CategorySlug, LucideIcon> = {
-  uponnash: BookOpen,
-  sahitto: Feather,
-  "islamic-itihas": Landmark,
-  jiboni: Users,
-  student: GraduationCap,
-  international: Globe2,
-};
-
-const categoryItems = [
-  ...categories.map((category) => ({
-    key: category.slug,
-    name: category.name,
-    href: `/category/${category.slug}`,
-    accent: category.accent,
-    count: books.filter((book) => book.category === category.slug).length,
-    icon: categoryIcons[category.slug],
-  })),
-  {
-    key: "audio-books",
-    name: "Audiobooks",
-    href: "/audio-books",
-    accent: "#37AAF7",
-    count: books.filter((book) => Boolean(book.audio)).length,
-    icon: Headphones,
-  },
-];
+import { CategoryIcon } from "@/components/ui/CategoryIcon";
+import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
 
 export function CategoryShowcase() {
+  const { content } = useCategoryContent();
+
+  if (content.tiles.length === 0) return null;
+
   return (
     <section className="border-b border-line bg-white py-8 sm:py-10">
       <Container>
         <SectionHeader
-          eyebrow="Browse the shelves"
-          title="Shop by category"
-          description="Find your next read by mood, subject or the season of life you are in."
+          eyebrow={content.heading.eyebrow}
+          title={content.heading.title}
+          description={content.heading.description}
           href="/categories"
-          linkLabel="All categories"
+          linkLabel={content.heading.linkLabel}
           className="mb-5 sm:mb-6"
         />
 
@@ -79,26 +45,31 @@ export function CategoryShowcase() {
           aria-label="Book categories"
           className="!overflow-visible"
         >
-          {categoryItems.map((category) => {
-            const Icon = category.icon;
+          {content.tiles.map((tile) => {
+            const count = tileBookCount(tile);
             return (
-              <SwiperSlide key={category.key} className="!h-auto">
+              <SwiperSlide key={tile.id} className="!h-auto">
                 <Link
-                  href={category.href}
+                  href={tile.href || "/categories"}
                   className="group flex h-full min-h-[126px] flex-col items-center justify-center gap-2 rounded-[8px] border border-line bg-white px-1.5 py-3.5 text-center transition-colors hover:border-brand-300 hover:bg-brand-50/70 sm:min-h-[142px] sm:px-2 sm:py-4"
                 >
                   <span
-                    className="grid h-12 w-12 place-items-center rounded-full transition-transform duration-300 group-hover:-translate-y-0.5 sm:h-14 sm:w-14"
-                    style={{ backgroundColor: `${category.accent}55` }}
+                    className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-full transition-transform duration-300 group-hover:-translate-y-0.5 sm:h-14 sm:w-14"
+                    style={{ backgroundColor: `${tile.accent}55` }}
                   >
-                    <Icon size={22} className="text-brand-900" strokeWidth={1.6} />
+                    {tile.src ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={tile.src} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <CategoryIcon icon={tile.icon} className="text-brand-900" />
+                    )}
                   </span>
                   <span className="min-w-0">
                     <span className="block text-[11px] font-medium leading-snug text-ink transition-colors group-hover:text-brand-700 sm:text-[12px]">
-                      {category.name}
+                      {tile.name}
                     </span>
                     <span className="mt-0.5 block text-[10px] text-muted">
-                      {formatCount(category.count)} {category.key === "audio-books" ? "titles" : "books"}
+                      {formatCount(count)} {tile.audio ? "titles" : "books"}
                     </span>
                   </span>
                 </Link>
@@ -107,7 +78,11 @@ export function CategoryShowcase() {
           })}
         </Swiper>
 
-        <ViewAllRow href="/categories" label="All categories" count={`${categoryItems.length} shelves`} />
+        <ViewAllRow
+          href="/categories"
+          label={content.heading.linkLabel}
+          count={`${content.tiles.length} shelves`}
+        />
       </Container>
     </section>
   );

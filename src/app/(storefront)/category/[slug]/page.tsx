@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { categories, getCategory } from "@/data/categories";
-import { getBooksByCategory } from "@/data/books";
-import { PageHeader } from "@/components/ui/PageHeader";
-import { Container } from "@/components/ui/Container";
-import { BookGrid } from "@/components/books/BookGrid";
-import { cn } from "@/lib/utils";
+import { CategoryDetail } from "@/components/categories/CategoryDetail";
 
 export function generateStaticParams() {
   return categories.map((category) => ({ slug: category.slug }));
@@ -26,55 +21,25 @@ export async function generateMetadata({
   };
 }
 
-export default async function CategoryPage({
+async function CategoryLoader({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  return <CategoryDetail slug={slug} />;
+}
+
+export default function CategoryPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const category = getCategory(slug);
-  if (!category) notFound();
-  const categoryBooks = getBooksByCategory(category.slug);
-
   return (
-    <>
-      <PageHeader
-        eyebrow={category.englishName}
-        title={category.name}
-        description={category.description}
-        crumbs={[{ label: "Categories", href: "/categories" }, { label: category.name }]}
-      >
-        <div className="no-scrollbar flex gap-2 overflow-x-auto">
-          {categories.map((item) => (
-            <Link
-              key={item.slug}
-              href={`/category/${item.slug}`}
-              className={cn(
-                "shrink-0 rounded-full border px-3.5 py-1.5 text-[11px] font-medium transition-colors",
-                item.slug === category.slug
-                  ? "border-forest-900 bg-forest-900 text-cream-50"
-                  : "border-forest-900/10 bg-cream-50 text-forest-800 hover:border-forest-900/30",
-              )}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </div>
-      </PageHeader>
-      <section className="py-8 sm:py-12">
-        <Container>
-          <p className="mb-6 text-xs text-muted">
-            {categoryBooks.length} books found
-          </p>
-          {categoryBooks.length > 0 ? (
-            <BookGrid books={categoryBooks} columns="five" />
-          ) : (
-            <p className="rounded-[8px] border border-line bg-white p-8 text-center text-sm text-muted">
-              New books will be added to this category soon.
-            </p>
-          )}
-        </Container>
-      </section>
-    </>
+    <Suspense
+      fallback={
+        <section className="py-16">
+          <p className="text-center text-sm text-muted">Loading category…</p>
+        </section>
+      }
+    >
+      <CategoryLoader params={params} />
+    </Suspense>
   );
 }

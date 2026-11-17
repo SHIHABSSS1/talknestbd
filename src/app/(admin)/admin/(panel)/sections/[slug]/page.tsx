@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
+import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
@@ -36,9 +38,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   const label =
     findAdminNavItem(`/admin/sections/${slug}`)?.label ?? humanize(slug);
 
-  // The hero is an image carousel, so it needs its own banner editor.
+  // These sections render cards/slides, so they need dedicated editors.
   if (slug === "hero") {
     return <HeroEditor label={label} />;
+  }
+  if (slug === "trust-strip") {
+    return <TrustStripEditor label={label} />;
+  }
+  if (slug === "categories") {
+    return <CategoryEditor label={label} />;
   }
 
   return (

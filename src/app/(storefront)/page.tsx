@@ -1,6 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { CategoryShowcase } from "@/components/home/CategoryShowcase";
+import { CategoryBookRails } from "@/components/home/CategoryBookRails";
 import { SellUsedBooksBanner } from "@/components/home/SellUsedBooksBanner";
 import { UpSaleRail } from "@/components/home/UpSaleRail";
 import { FreeOrderWholesale } from "@/components/home/FreeOrderWholesale";
@@ -27,6 +28,7 @@ export default function HomePage() {
       <Hero />
       <TrustStrip />
       <CategoryShowcase />
+      <CategoryBookRails />
 
       <BookRail
         books={bestsellers}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Save, UploadCloud, X } from "lucide-react";
 import { BookCover } from "@/components/books/BookCover";
 import { categories } from "@/data/categories";
+import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
 import type { Book, BookTag, CoverMotif } from "@/lib/types";
 
 const inputClass =
@@ -25,6 +26,7 @@ interface FormState {
   author: string;
   publisher: string;
   category: string;
+  subcategory: string;
   price: string;
   oldPrice: string;
   stock: string;
@@ -47,6 +49,7 @@ function initialState(book?: Book): FormState {
     author: book?.author ?? "",
     publisher: book?.publisher ?? "",
     category: book?.category ?? categories[0].slug,
+    subcategory: book?.subcategory ?? "",
     price: book ? String(book.price) : "",
     oldPrice: book?.oldPrice ? String(book.oldPrice) : "",
     stock: book ? String(book.stock) : "",
@@ -66,6 +69,10 @@ function initialState(book?: Book): FormState {
 export function BookForm({ book, onCancel }: { book?: Book; onCancel: () => void }) {
   const [form, setForm] = useState<FormState>(() => initialState(book));
   const [notice, setNotice] = useState("");
+  const { content } = useCategoryContent();
+  const categoryOptions = content.tiles.filter((tile) => !tile.audio);
+  const subcategoryOptions =
+    categoryOptions.find((tile) => tile.slug === form.category)?.subcategories ?? [];
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -157,17 +164,38 @@ export function BookForm({ book, onCancel }: { book?: Book; onCancel: () => void
             </label>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-4">
             <label className="block">
               <span className={labelClass}>Category</span>
               <select
                 value={form.category}
-                onChange={(event) => set("category", event.target.value)}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    category: event.target.value,
+                    subcategory: "",
+                  }))
+                }
                 className={inputClass}
               >
-                {categories.map((category) => (
-                  <option key={category.slug} value={category.slug}>
-                    {category.name}
+                {categoryOptions.map((tile) => (
+                  <option key={tile.id} value={tile.slug}>
+                    {tile.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className={labelClass}>Subcategory</span>
+              <select
+                value={form.subcategory}
+                onChange={(event) => set("subcategory", event.target.value)}
+                className={inputClass}
+              >
+                <option value="">— None —</option>
+                {subcategoryOptions.map((sub) => (
+                  <option key={sub.id} value={sub.slug}>
+                    {sub.name}
                   </option>
                 ))}
               </select>

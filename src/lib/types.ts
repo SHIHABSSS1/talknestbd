@@ -39,6 +39,8 @@ export interface Book {
   publisher: string;
   publisherSlug: string;
   category: CategorySlug;
+  /** Optional sub-shelf inside the category (slug from the admin category editor). */
+  subcategory?: string;
   price: number;
   oldPrice?: number;
   rating: number;
