@@ -32,6 +32,7 @@ const ShelfContentContext = createContext<ShelfContentContextValue | null>(null)
 const initialHeadings: Record<string, ShelfHeading> = {
   [SHELF_SLUGS.viral]: shelfDefaults(SHELF_SLUGS.viral),
   [SHELF_SLUGS.upSale]: shelfDefaults(SHELF_SLUGS.upSale),
+  [SHELF_SLUGS.newArrivals]: shelfDefaults(SHELF_SLUGS.newArrivals),
 };
 
 export function ShelfContentProvider({ children }: { children: ReactNode }) {
@@ -42,6 +43,7 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
     setHeadings({
       [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
       [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
+      [SHELF_SLUGS.newArrivals]: readShelfHeading(SHELF_SLUGS.newArrivals),
     });
     setHydrated(true);
 
@@ -50,6 +52,7 @@ export function ShelfContentProvider({ children }: { children: ReactNode }) {
         setHeadings({
           [SHELF_SLUGS.viral]: readShelfHeading(SHELF_SLUGS.viral),
           [SHELF_SLUGS.upSale]: readShelfHeading(SHELF_SLUGS.upSale),
+          [SHELF_SLUGS.newArrivals]: readShelfHeading(SHELF_SLUGS.newArrivals),
         });
       }
     };

@@ -55,7 +55,7 @@ export const adminNavGroups: AdminNavGroup[] = [
       { label: "Sell used books banner", href: "/admin/sections/sell-used-books", icon: Repeat2 },
       { label: "50% Up Sale", href: "/admin/sections/up-sale", icon: TrendingUp },
       { label: "Used books banner", href: "/admin/sections/used-books", icon: BookMarked },
-      { label: "New arrivals", href: "/admin/sections/new-arrivals", icon: Sparkles },
+      { label: "New Arrivals", href: "/admin/sections/new-arrivals", icon: Sparkles },
       { label: "Free order & wholesale", href: "/admin/sections/free-order-wholesale", icon: Gift },
       { label: "Trending now", href: "/admin/sections/trending", icon: BadgePercent },
       { label: "Audiobooks showcase", href: "/admin/sections/audio", icon: Headphones },

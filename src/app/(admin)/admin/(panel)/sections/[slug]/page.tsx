@@ -69,6 +69,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   if (slug === "up-sale") {
     return <ShelfEditor label={label} config={upSaleShelf} />;
   }
+  const newArrivalsShelf: ShelfConfig = {
+    slug: "new-arrivals",
+    tag: "new",
+    href: "/new-books",
+    shelfName: "New Arrivals",
+  };
+  if (slug === "new-arrivals") {
+    return <ShelfEditor label={label} config={newArrivalsShelf} />;
+  }
   if (slug === "sell-used-books") {
     return <SellUsedBooksEditor label={label} />;
   }

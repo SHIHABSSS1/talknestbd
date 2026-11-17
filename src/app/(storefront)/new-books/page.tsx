@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CollectionPage } from "@/components/books/CollectionPage";
+import { NewArrivalsPageContent } from "@/components/books/NewArrivalsPageContent";
 
 export const metadata: Metadata = {
   title: "New Arrivals",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function NewBooksPage() {
-  return <CollectionPage collection="new" />;
+  return <NewArrivalsPageContent />;
 }

@@ -3,6 +3,7 @@ import { TrustStrip } from "@/components/home/TrustStrip";
 import { CategoryShowcase } from "@/components/home/CategoryShowcase";
 import { CategoryBookRails } from "@/components/home/CategoryBookRails";
 import { ViralRail } from "@/components/home/ViralRail";
+import { NewArrivalsRail } from "@/components/home/NewArrivalsRail";
 import { SellUsedBooksBanner } from "@/components/home/SellUsedBooksBanner";
 import { UpSaleRail } from "@/components/home/UpSaleRail";
 import { FreeOrderWholesale } from "@/components/home/FreeOrderWholesale";
@@ -18,7 +19,6 @@ import { BookRail } from "@/components/books/BookRail";
 import { getBooksByCollection } from "@/data/books";
 
 export default function HomePage() {
-  const newBooks = getBooksByCollection("new");
   const internationalBooks = getBooksByCollection("international");
   const studentBooks = getBooksByCollection("student");
 
@@ -33,15 +33,7 @@ export default function HomePage() {
       <UpSaleRail />
       <UsedBooksBanner />
 
-      <BookRail
-        books={newBooks}
-        eyebrow="New Arrivals"
-        title="Fresh off the press"
-        description="Newly published and newly added — the latest books on our shelves."
-        href="/new-books"
-        linkLabel="All new arrivals"
-        tone="soft"
-      />
+      <NewArrivalsRail />
 
       <FreeOrderWholesale />
 
