@@ -7,31 +7,97 @@ import {
   Calculator,
   CheckCircle2,
   Info,
+  LogIn,
   Repeat2,
 } from "lucide-react";
-import { books } from "@/data/books";
+import { useBookContent } from "@/components/providers/BookContentProvider";
+import { useSellContent } from "@/components/providers/SellContentProvider";
+import { useSellRequests } from "@/components/providers/SellRequestsProvider";
+import { readAddresses, readProfile } from "@/lib/orders";
 import { formatPrice, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import type { SellRequest } from "@/lib/sell-requests";
 
-const conditions = [
-  { key: "like-new", label: "Like new", rate: 50, note: "Pages, binding and cover intact" },
-  { key: "good", label: "Good", rate: 45, note: "Normal signs of use" },
-  { key: "fair", label: "Fair", rate: 35, note: "May have marks or creases" },
-] as const;
+const inputClass =
+  "h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3 text-[12px] text-forest-950 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25";
 
 export function SellUsedBookCalculator() {
-  const [bookSlug, setBookSlug] = useState(books[0]?.slug ?? "");
-  const [purchasePrice, setPurchasePrice] = useState(String(books[0]?.price ?? 380));
-  const [condition, setCondition] = useState<(typeof conditions)[number]["key"]>("like-new");
+  const { books: allBooks } = useBookContent();
+  const { content } = useSellContent();
+  const calculator = content.calculator;
+  const { add } = useSellRequests();
+
+  const [bookSlug, setBookSlug] = useState(allBooks[0]?.slug ?? "");
+  const [purchasePrice, setPurchasePrice] = useState(String(allBooks[0]?.price ?? 380));
+  const [conditionId, setConditionId] = useState(calculator.conditions[0]?.id ?? "");
+  const [showForm, setShowForm] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [form, setForm] = useState({ name: "", phone: "", email: "", address: "" });
   const [submitted, setSubmitted] = useState(false);
 
-  const selectedBook = books.find((book) => book.slug === bookSlug);
-  const activeCondition = conditions.find((entry) => entry.key === condition) ?? conditions[0];
+  const selectedBook = allBooks.find((book) => book.slug === bookSlug);
+  const activeCondition =
+    calculator.conditions.find((entry) => entry.id === conditionId) ??
+    calculator.conditions[0];
   const price = Number(purchasePrice.replace(/[^\d]/g, "")) || 0;
-  const amount = Math.round((price * activeCondition.rate) / 100);
-  const percent = useMemo(() => activeCondition.rate, [activeCondition]);
+  const amount = Math.round((price * (activeCondition?.rate ?? 0)) / 100);
+  const percent = useMemo(() => activeCondition?.rate ?? 0, [activeCondition]);
+  const rate = percent;
+  const eligible = price > 0 && price <= calculator.cap;
 
-  const eligible = price > 0 && price <= 20000;
+  const setField = (key: keyof typeof form, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setFormError("");
+  };
+
+  const loginWithProfile = () => {
+    const profile = readProfile();
+    const saved = readAddresses();
+    const defaultAddress = saved.find((entry) => entry.isDefault) ?? saved[0];
+    setForm({
+      name: defaultAddress?.name || profile.name,
+      phone: defaultAddress?.phone || profile.phone,
+      email: defaultAddress?.email || profile.email,
+      address: defaultAddress
+        ? [
+            defaultAddress.street,
+            defaultAddress.area,
+            defaultAddress.district,
+            defaultAddress.division,
+            defaultAddress.postcode,
+          ]
+            .filter(Boolean)
+            .join(", ")
+        : profile.city || "",
+    });
+    setLoggedIn(true);
+    setFormError("");
+  };
+
+  const submitRequest = () => {
+    if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
+      setFormError("Please enter your name, phone number and address.");
+      return;
+    }
+    const request: SellRequest = {
+      id: `sell-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      address: form.address.trim(),
+      bookTitle: selectedBook?.title ?? "—",
+      purchasePrice: price,
+      condition: activeCondition?.label ?? "—",
+      rate,
+      amount,
+      status: "New",
+    };
+    add(request);
+    setShowForm(false);
+    setSubmitted(true);
+  };
 
   return (
     <div id="calculator" className="scroll-mt-[88px] overflow-hidden rounded-3xl border border-forest-900/8 bg-cream-50">
@@ -41,8 +107,10 @@ export function SellUsedBookCalculator() {
             <Calculator size={16} />
           </span>
           <div>
-            <h2 className="font-display text-lg font-bold text-forest-950">Sell Used Book Calculator</h2>
-            <p className="text-[9px] text-muted">See an estimated selling value based on the book&apos;s condition</p>
+            <h2 className="font-display text-lg font-bold text-forest-950">
+              {calculator.heading}
+            </h2>
+            <p className="text-[9px] text-muted">{calculator.subheading}</p>
           </div>
         </div>
       </div>
@@ -50,18 +118,20 @@ export function SellUsedBookCalculator() {
       <div className="p-5 sm:p-6">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Choose a book</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">
+              Choose a book
+            </span>
             <select
               value={bookSlug}
               onChange={(event) => {
                 const next = event.target.value;
                 setBookSlug(next);
-                const book = books.find((entry) => entry.slug === next);
+                const book = allBooks.find((entry) => entry.slug === next);
                 if (book) setPurchasePrice(String(book.price));
               }}
-              className="h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3 text-[12px] text-forest-950 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
+              className={inputClass}
             >
-              {books.slice(0, 18).map((book) => (
+              {allBooks.slice(0, 18).map((book) => (
                 <option key={book.slug} value={book.slug}>
                   {book.title}
                 </option>
@@ -70,13 +140,15 @@ export function SellUsedBookCalculator() {
           </label>
 
           <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Purchase price (৳)</span>
+            <span className="mb-1 block text-[11px] font-semibold text-forest-900">
+              Purchase price (৳)
+            </span>
             <input
               value={purchasePrice}
               onChange={(event) => setPurchasePrice(event.target.value)}
               inputMode="numeric"
               placeholder="e.g. 380"
-              className="h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25"
+              className={inputClass}
             />
             {selectedBook && (
               <span className="mt-1 block text-[9px] text-muted">
@@ -87,26 +159,34 @@ export function SellUsedBookCalculator() {
         </div>
 
         <div className="mt-3">
-          <span className="mb-1.5 block text-[11px] font-semibold text-forest-900">Book condition</span>
+          <span className="mb-1.5 block text-[11px] font-semibold text-forest-900">
+            Book condition
+          </span>
           <div className="grid gap-2 sm:grid-cols-3">
-            {conditions.map((entry) => (
+            {calculator.conditions.map((entry) => (
               <button
-                key={entry.key}
+                key={entry.id}
                 type="button"
-                onClick={() => setCondition(entry.key)}
+                onClick={() => setConditionId(entry.id)}
                 className={
-                  condition === entry.key
+                  conditionId === entry.id
                     ? "rounded-xl border border-forest-800 bg-forest-900 px-3 py-2.5 text-left text-cream-50"
                     : "rounded-xl border border-forest-900/12 bg-cream-50 px-3 py-2.5 text-left text-forest-900 transition-colors hover:border-forest-900/30"
                 }
               >
                 <span className="flex items-center justify-between gap-1 text-[11px] font-semibold">
                   {entry.label}
-                  <span className={condition === entry.key ? "text-gold-300" : "text-clay-600"}>
+                  <span className={conditionId === entry.id ? "text-gold-300" : "text-clay-600"}>
                     {toBn(entry.rate)}%
                   </span>
                 </span>
-                <span className={condition === entry.key ? "mt-0.5 block text-[8px] text-cream-100/50" : "mt-0.5 block text-[8px] text-muted"}>
+                <span
+                  className={
+                    conditionId === entry.id
+                      ? "mt-0.5 block text-[8px] text-cream-100/50"
+                      : "mt-0.5 block text-[8px] text-muted"
+                  }
+                >
                   {entry.note}
                 </span>
               </button>
@@ -129,35 +209,128 @@ export function SellUsedBookCalculator() {
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-gold-400/25 bg-gold-500/10 px-3 py-1.5 text-[9px] font-semibold text-gold-300">
               <Repeat2 size={11} />
-              {activeCondition.label}
+              {activeCondition?.label}
             </span>
           </div>
         </div>
 
         <div className="mt-3 flex items-start gap-2 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
           <Info size={12} className="mt-0.5 shrink-0 text-gold-600" />
-          This is only an estimate. The final value is confirmed after we receive
-          and inspect the book. Textbooks and older editions may not be eligible to sell.
+          {calculator.disclaimer}
         </div>
+
+        {showForm && (
+          <div className="mt-3 rounded-xl border border-forest-900/12 bg-white p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[11px] font-semibold text-forest-900">Your details</p>
+              <button
+                type="button"
+                onClick={loginWithProfile}
+                className="inline-flex h-8 items-center gap-1.5 rounded-full border border-forest-900/15 px-3 text-[10px] font-semibold text-forest-800 hover:bg-forest-50"
+              >
+                <LogIn size={12} />
+                {loggedIn ? "Saved profile applied" : "Log in with saved profile"}
+              </button>
+            </div>
+            {loggedIn && (
+              <p className="mb-2 flex items-center gap-1.5 rounded-lg bg-forest-50 px-2.5 py-2 text-[9px] text-forest-800">
+                <CheckCircle2 size={11} className="text-forest-600" />
+                Logged in as {form.name || "reader"} — edit anything below, especially the
+                address if it was missing.
+              </p>
+            )}
+            <div className="grid gap-2 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1 block text-[9px] font-semibold text-forest-900">Name</span>
+                <input
+                  value={form.name}
+                  onChange={(event) => setField("name", event.target.value)}
+                  placeholder="Full name"
+                  className={inputClass}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1 block text-[9px] font-semibold text-forest-900">Phone</span>
+                <input
+                  value={form.phone}
+                  onChange={(event) => setField("phone", event.target.value)}
+                  placeholder="01XXX-XXXXXX"
+                  className={inputClass}
+                />
+              </label>
+            </div>
+            <label className="mt-2 block">
+              <span className="mb-1 block text-[9px] font-semibold text-forest-900">Email (optional)</span>
+              <input
+                value={form.email}
+                onChange={(event) => setField("email", event.target.value)}
+                placeholder="you@example.com"
+                className={inputClass}
+              />
+            </label>
+            <label className="mt-2 block">
+              <span className="mb-1 block text-[9px] font-semibold text-forest-900">Address</span>
+              <textarea
+                value={form.address}
+                onChange={(event) => setField("address", event.target.value)}
+                rows={2}
+                placeholder="Street, area, district, city"
+                className="w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3 py-2 text-[12px] text-forest-950 focus:border-forest-700/40 focus:outline-none"
+              />
+            </label>
+            {formError && (
+              <p className="mt-2 text-[9px] font-medium text-clay-600">{formError}</p>
+            )}
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button type="button" size="sm" onClick={submitRequest}>
+                Submit request
+                <ArrowRight size={13} />
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setShowForm(false);
+                  setFormError("");
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
 
         {submitted ? (
           <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-forest-500/20 bg-forest-100/60 px-3.5 py-3">
             <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-forest-600" />
             <div>
-              <p className="text-[11px] font-semibold text-forest-900">Your request is ready as a demo</p>
+              <p className="text-[11px] font-semibold text-forest-900">
+                {calculator.successTitle}
+              </p>
               <p className="mt-0.5 text-[9px] leading-relaxed text-muted">
-                For a real sale, contact us on WhatsApp with your order number and photos of the book.
+                {calculator.successText}
               </p>
             </div>
           </div>
         ) : (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[9px] text-muted">Works for books with a purchase price up to ৳20,000.</p>
-            <Button type="button" size="sm" disabled={!eligible} onClick={() => setSubmitted(true)}>
-              Request a sale
-              <ArrowRight size={13} />
-            </Button>
-          </div>
+          !showForm && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[9px] text-muted">{calculator.eligibilityNote}</p>
+              <Button
+                type="button"
+                size="sm"
+                disabled={!eligible}
+                onClick={() => {
+                  setSubmitted(false);
+                  setShowForm(true);
+                }}
+              >
+                {calculator.submitLabel}
+                <ArrowRight size={13} />
+              </Button>
+            </div>
+          )
         )}
       </div>
     </div>

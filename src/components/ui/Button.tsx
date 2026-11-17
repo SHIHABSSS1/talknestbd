@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -59,6 +61,26 @@ export function Button({
   );
 
   if (href) {
+    // Hash links must scroll on the current page; a plain anchor is reliable
+    // here (Next's <Link> can skip the scroll on client-rendered content).
+    if (href.startsWith("#")) {
+      return (
+        <a
+          href={href}
+          className={classes}
+          onClick={(event) => {
+            event.preventDefault();
+            const target = document.getElementById(href.slice(1));
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+              window.history.replaceState(null, "", href);
+            }
+          }}
+        >
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className={classes} target={rest.target} rel={rest.rel}>
         {children}

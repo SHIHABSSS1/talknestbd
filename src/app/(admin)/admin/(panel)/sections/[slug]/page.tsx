@@ -6,6 +6,7 @@ import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
+import { SellUsedBooksEditor } from "@/components/admin/SellUsedBooksEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
 
@@ -57,6 +58,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   };
   if (slug === "viral-books") {
     return <ShelfEditor label={label} config={viralShelf} />;
+  }
+  if (slug === "sell-used-books") {
+    return <SellUsedBooksEditor label={label} />;
   }
 
   return (
