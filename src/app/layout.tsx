@@ -1,13 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
 import { Roboto } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
-import { Header } from "@/components/layout/Header";
-import { HeaderSkeleton } from "@/components/layout/HeaderSkeleton";
-import { Footer } from "@/components/layout/Footer";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
-import { LiveChatDock } from "@/components/layout/LiveChatDock";
-import { Toast } from "@/components/layout/Toast";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -58,7 +51,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={roboto.variable}>
+    <html lang="en" className={roboto.variable} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
         <a
           href="#main-content"
@@ -66,25 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to main content
         </a>
-        <StoreProvider>
-          <Suspense fallback={<HeaderSkeleton />}>
-            <Header />
-          </Suspense>
-          <main id="main-content">{children}</main>
-          <Footer />
-          <Suspense
-            fallback={
-              <div
-                aria-hidden="true"
-                className="print-hide fixed inset-x-0 bottom-0 z-50 h-15 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] md:hidden"
-              />
-            }
-          >
-            <MobileBottomNav />
-          </Suspense>
-          <LiveChatDock />
-          <Toast />
-        </StoreProvider>
+        <StoreProvider>{children}</StoreProvider>
       </body>
     </html>
   );
