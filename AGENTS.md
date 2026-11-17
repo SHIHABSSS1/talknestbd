@@ -34,7 +34,15 @@ TalkNest BD is a Bengali-first demo bookstore and reader community built with Ne
 - UI copy is Bengali-first; keep new user-facing text in Bengali.
 - Use the existing palette/tokens (`forest-*`, `cream-*`, `gold-*`, `clay-*`) and the small UI primitives in `src/components/ui`.
 - Prefer server components for static pages; add `"use client"` only for interaction/localStorage/browser APIs.
-- Book covers are CSS-generated via `BookCover`; do not add external cover images.
+- Book covers are CSS-generated via `BookCover` (an optional uploaded `cover.imageSrc` is supported for admin-managed books); otherwise do not add external cover images.
 - External demo media: Unsplash for editorial images, SoundHelix MP3s for audio, YouTube embeds for video.
+
+### Unified book system (required design)
+
+- There must be ONE book detail page at `/books/[slug]` used by EVERY book — static demo books, admin-uploaded books, and shelf books (e.g. Viral Books) alike. Never build a separate detail page or detail layout for a shelf.
+- The admin book upload form must capture **all information the detail page displays** (title, subtitle, author, publisher, category, subcategory, price/old price, stock, pages, language, binding, published year, rating, description, long description, highlights, tags/audio info, cover theme or uploaded cover image). The slug is generated from the title.
+- Locally uploaded books are stored in `localStorage` and merged with the static `src/data/books.ts` catalogue through one shared lookup (e.g. a `BookContentProvider` / `useAllBooks()` helper). Every book-facing surface (detail page, Viral Books shelf, category shelves/sliders, catalog, search) must resolve books through that shared lookup so an uploaded book appears everywhere.
+- Shelf sections (Viral Books) are tag-based views into this unified catalogue: adding a book to a shelf uses the same full upload form as Admin → Books, the shelf tag (e.g. `viral`) is auto-selected and locked, and every book links to `/books/<slug>`.
+- Keep demo disclaimers: uploads are browser-local only, nothing reaches a server.
 - Keep demo disclaimers in checkout, receipts and forms — no real payments or server storage.
 - Preserve this file and the Next.js agent-rules block above when editing.

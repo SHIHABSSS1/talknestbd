@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { CollectionPage } from "@/components/books/CollectionPage";
+import { ViralPageContent } from "@/components/books/ViralPageContent";
 
 export const metadata: Metadata = {
-  title: "Trending Books",
-  description: "Popular books spreading through reader conversations and social media.",
+  title: "Viral Books",
+  description: "The books everyone is talking about at TalkNest BD.",
 };
 
 export default function ViralBooksPage() {
-  return <CollectionPage collection="viral" />;
+  return <ViralPageContent />;
 }

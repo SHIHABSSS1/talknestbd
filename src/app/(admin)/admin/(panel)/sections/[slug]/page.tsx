@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
+import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
@@ -47,6 +48,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "categories") {
     return <CategoryEditor label={label} />;
+  }
+  const viralShelf: ShelfConfig = {
+    slug: "viral-books",
+    tag: "viral",
+    href: "/viral-books",
+    shelfName: "Viral Books",
+  };
+  if (slug === "viral-books") {
+    return <ShelfEditor label={label} config={viralShelf} />;
   }
 
   return (

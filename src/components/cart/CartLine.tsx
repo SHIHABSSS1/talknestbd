@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "@/lib/store";
-import { books } from "@/data/books";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import { formatPrice, toBn } from "@/lib/utils";
@@ -18,7 +18,8 @@ export function CartLine({
   onQuantity: (quantity: number) => void;
   onRemove: () => void;
 }) {
-  const book = item.kind !== "sunnah" ? books.find((entry) => entry.slug === item.slug) : undefined;
+  const { getBook } = useBookContent();
+  const book = item.kind !== "sunnah" ? getBook(item.slug) : undefined;
   const upSale =
     item.kind === "book"
       ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)

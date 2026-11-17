@@ -80,7 +80,7 @@ const quickActions = [
 
 const activity = [
   { title: "Hero banner updated", time: "12 minutes ago", icon: ImageIcon },
-  { title: "New book added to Best sellers", time: "2 hours ago", icon: BookOpen },
+  { title: "New book added to Viral books", time: "2 hours ago", icon: BookOpen },
   { title: "Review approved", time: "Yesterday", icon: Star },
 ];
 

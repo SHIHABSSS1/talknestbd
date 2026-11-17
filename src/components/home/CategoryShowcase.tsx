@@ -12,9 +12,11 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 
 export function CategoryShowcase() {
   const { content } = useCategoryContent();
+  const { books: extraBooks } = useBookContent();
 
   if (content.tiles.length === 0) return null;
 
@@ -46,7 +48,7 @@ export function CategoryShowcase() {
           className="!overflow-visible"
         >
           {content.tiles.map((tile) => {
-            const count = tileBookCount(tile);
+            const count = tileBookCount(tile, extraBooks);
             return (
               <SwiperSlide key={tile.id} className="!h-auto">
                 <Link

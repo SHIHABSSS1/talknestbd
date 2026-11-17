@@ -1,0 +1,98 @@
+/**
+ * Section copy for the tag-based shelves (currently Viral Books).
+ * The books themselves live in the unified catalogue (book-content.ts) and are
+ * selected by their collection tag — there is no separate shelf book store.
+ */
+
+import { sectionDefaults } from "@/lib/section-content";
+
+export interface ShelfHeading {
+  eyebrow: string;
+  title: string;
+  description: string;
+  linkLabel: string;
+}
+
+export interface SaveResult {
+  ok: boolean;
+  message: string;
+}
+
+export const SHELF_SLUGS = {
+  viral: "viral-books",
+} as const;
+
+const STORAGE_PREFIX = "talknestbd-shelf-";
+
+export function shelfStorageKey(slug: string): string {
+  return `${STORAGE_PREFIX}${slug}-v1`;
+}
+
+export function shelfDefaults(slug: string): ShelfHeading {
+  const defaults = sectionDefaults[slug];
+  if (defaults) {
+    return {
+      eyebrow: defaults.eyebrow,
+      title: defaults.title,
+      description: defaults.description,
+      linkLabel: defaults.linkLabel,
+    };
+  }
+  return {
+    eyebrow: "Featured",
+    title: "Featured books",
+    description: "A hand-picked shelf for our readers.",
+    linkLabel: "View all",
+  };
+}
+
+function isHeading(value: unknown): value is ShelfHeading {
+  if (!value || typeof value !== "object") return false;
+  const heading = value as Record<string, unknown>;
+  return (
+    typeof heading.eyebrow === "string" &&
+    typeof heading.title === "string" &&
+    typeof heading.description === "string" &&
+    typeof heading.linkLabel === "string"
+  );
+}
+
+export function readShelfHeading(slug: string): ShelfHeading {
+  const defaults = shelfDefaults(slug);
+  if (typeof window === "undefined") return defaults;
+  try {
+    const raw = window.localStorage.getItem(shelfStorageKey(slug));
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw) as unknown;
+    return isHeading(parsed) ? parsed : defaults;
+  } catch {
+    return defaults;
+  }
+}
+
+export function writeShelfHeading(slug: string, heading: ShelfHeading): SaveResult {
+  if (typeof window === "undefined") {
+    return { ok: false, message: "Storage is not available while rendering on the server." };
+  }
+  try {
+    window.localStorage.setItem(shelfStorageKey(slug), JSON.stringify(heading));
+    return {
+      ok: true,
+      message: "Section copy saved to this browser — the shelf updated everywhere.",
+    };
+  } catch {
+    return { ok: false, message: "Could not save: browser storage may be full." };
+  }
+}
+
+export function clearShelfHeading(slug: string): SaveResult {
+  if (typeof window === "undefined") {
+    return { ok: false, message: "Storage is not available while rendering on the server." };
+  }
+  try {
+    window.localStorage.removeItem(shelfStorageKey(slug));
+    return { ok: true, message: "Restored the original section copy." };
+  } catch {
+    return { ok: false, message: "Could not reset browser storage." };
+  }
+}

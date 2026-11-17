@@ -8,6 +8,7 @@ import { BookCard } from "@/components/books/BookCard";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { booksForTile } from "@/lib/category-books";
 
 /**
@@ -16,13 +17,14 @@ import { booksForTile } from "@/lib/category-books";
  */
 export function CategoryBookRails() {
   const { content } = useCategoryContent();
+  const { books } = useBookContent();
   const tiles = content.tiles.filter((tile) => tile.homeBooks);
   if (tiles.length === 0) return null;
 
   return (
     <>
       {tiles.map((tile, index) => {
-        const tileBooks = booksForTile(tile);
+        const tileBooks = booksForTile(tile, undefined, books);
         if (tileBooks.length === 0) return null;
         return (
           <section

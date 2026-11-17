@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { RotateCcw, Search, SlidersHorizontal } from "lucide-react";
-import { books } from "@/data/books";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { categories } from "@/data/categories";
 import type { CategorySlug } from "@/lib/types";
 import { cn, toBn } from "@/lib/utils";
@@ -20,6 +20,7 @@ const sorts: { value: SortKey; label: string }[] = [
 ];
 
 export function BooksExplorer() {
+  const { books } = useBookContent();
   const [category, setCategory] = useState<"all" | CategorySlug>("all");
   const [sort, setSort] = useState<SortKey>("popular");
   const [query, setQuery] = useState("");
@@ -53,7 +54,7 @@ export function BooksExplorer() {
           return b.rating * b.reviewCount - a.rating * a.reviewCount;
       }
     });
-  }, [category, sort, query, freeOnly]);
+  }, [books, category, sort, query, freeOnly]);
 
   const hasFilters = category !== "all" || query.trim() || freeOnly;
 

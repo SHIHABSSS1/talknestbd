@@ -8,12 +8,14 @@ import { Container } from "@/components/ui/Container";
 import { BookGrid } from "@/components/books/BookGrid";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { booksForTile, subcategoryBooks, tileBookCount } from "@/lib/category-books";
 import { cn, formatCount } from "@/lib/utils";
 
 /** Category landing page: main category, its sub-shelves and their books. */
 export function CategoryDetail({ slug }: { slug: string }) {
   const { content, hydrated } = useCategoryContent();
+  const { books: extraBooks } = useBookContent();
   const [activeSub, setActiveSub] = useState<string | null>(null);
 
   const tile = content.tiles.find((item) => item.slug === slug);
@@ -53,7 +55,9 @@ export function CategoryDetail({ slug }: { slug: string }) {
   }
 
   const selected = tile.subcategories.find((sub) => sub.slug === activeSub);
-  const visibleBooks = selected ? subcategoryBooks(tile, selected) : booksForTile(tile);
+  const visibleBooks = selected
+    ? subcategoryBooks(tile, selected, extraBooks)
+    : booksForTile(tile, undefined, extraBooks);
 
   return (
     <>
@@ -120,7 +124,7 @@ export function CategoryDetail({ slug }: { slug: string }) {
                   {tile.name}
                 </h2>
                 <p className="mt-1 text-xs text-muted">
-                  {formatCount(tileBookCount(tile))} {tile.audio ? "audio titles" : "books"} across{" "}
+                  {formatCount(tileBookCount(tile, extraBooks))} {tile.audio ? "audio titles" : "books"} across{" "}
                   {tile.subcategories.length || 1} shelves
                 </p>
               </div>
@@ -151,7 +155,7 @@ export function CategoryDetail({ slug }: { slug: string }) {
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {tile.subcategories.map((sub) => {
-                  const count = subcategoryBooks(tile, sub).length;
+                  const count = subcategoryBooks(tile, sub, extraBooks).length;
                   const active = activeSub === sub.slug;
                   return (
                     <button

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Check, Truck } from "lucide-react";
 import type { CartItem } from "@/lib/store";
-import { books } from "@/data/books";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import {
@@ -30,6 +30,7 @@ export function CheckoutSummary({
   deliveryMethod: DeliveryMethod;
   paymentMethod: PaymentMethod;
 }) {
+  const { getBook } = useBookContent();
   return (
     <div className="overflow-hidden rounded-3xl border border-forest-900/10 bg-cream-50">
       <div className="border-b border-forest-900/8 bg-cream-100/60 px-5 py-4">
@@ -41,7 +42,7 @@ export function CheckoutSummary({
 
       <div className="max-h-[280px] overflow-y-auto px-5 py-3">
         {items.map((item) => {
-          const book = item.kind !== "sunnah" ? books.find((entry) => entry.slug === item.slug) : undefined;
+          const book = item.kind !== "sunnah" ? getBook(item.slug) : undefined;
           const upSale =
             item.kind === "book"
               ? upSaleBooks.find((entry) => entry.cartSlug === item.slug)

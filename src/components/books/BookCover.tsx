@@ -162,13 +162,33 @@ export function BookCover({
         background: `linear-gradient(148deg, ${book.cover.from} 0%, ${book.cover.to} 100%)`,
       }}
     >
-      <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[5%] bg-black/20" />
+      {book.cover.imageSrc ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={book.cover.imageSrc}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <>
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 w-[5%] bg-black/20" />
+          <div
+            aria-hidden="true"
+            className="absolute inset-y-0 left-[5%] w-px"
+            style={{ backgroundColor: `${book.cover.accent}55` }}
+          />
+          <CoverMotif motif={book.cover.motif} accent={book.cover.accent} />
+        </>
+      )}
       <div
         aria-hidden="true"
-        className="absolute inset-y-0 left-[5%] w-px"
-        style={{ backgroundColor: `${book.cover.accent}55` }}
+        className={cn(
+          "absolute inset-0",
+          book.cover.imageSrc
+            ? "bg-gradient-to-t from-black/85 via-black/25 to-black/10"
+            : "bg-transparent",
+        )}
       />
-      <CoverMotif motif={book.cover.motif} accent={book.cover.accent} />
 
       <div className={cn("relative flex h-full flex-col", styles.inner)}>
         <div className="flex items-start justify-between gap-2">

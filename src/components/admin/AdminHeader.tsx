@@ -37,9 +37,7 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
 
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-ink">Admin panel</p>
-        <p className="hidden text-[10px] text-muted sm:block">
-          TalkNest BD · demo workspace
-        </p>
+        <p className="hidden text-[10px] text-muted sm:block">TalkNest BD</p>
       </div>
 
       <div className="ml-auto flex items-center gap-2">

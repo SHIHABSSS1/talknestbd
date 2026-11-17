@@ -36,8 +36,8 @@ export function WishlistView() {
         action={
           <div className="flex flex-wrap justify-center gap-3">
             <Button href="/books">Browse books</Button>
-            <Button href="/best-sellers" variant="outline">
-              Best sellers
+            <Button href="/viral-books" variant="outline">
+              Viral books
             </Button>
           </div>
         }

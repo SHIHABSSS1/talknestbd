@@ -94,15 +94,6 @@ export function AdminSidebar({
           ))}
         </nav>
 
-        {/* Footer note */}
-        <div className="shrink-0 border-t border-line p-3">
-          <div className="rounded-[8px] bg-brand-50 px-3 py-2.5">
-            <p className="text-[10px] font-semibold text-brand-800">Design preview</p>
-            <p className="mt-0.5 text-[9px] leading-relaxed text-brand-800/65">
-              Editors are UI-only — no data is saved yet.
-            </p>
-          </div>
-        </div>
       </aside>
     </>
   );

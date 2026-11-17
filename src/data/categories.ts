@@ -63,6 +63,6 @@ export function getCategory(slug: string): Category | undefined {
   return categories.find((category) => category.slug === slug);
 }
 
-export function categoryLabel(slug: CategorySlug): string {
+export function categoryLabel(slug: string): string {
   return getCategory(slug)?.name ?? "Books";
 }

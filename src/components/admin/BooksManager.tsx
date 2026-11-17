@@ -1,10 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, Pencil, Plus, Search, SlidersHorizontal, UploadCloud } from "lucide-react";
+import { BookOpen, Pencil, Plus, Search, SlidersHorizontal, Trash2, UploadCloud } from "lucide-react";
 import { BookCover } from "@/components/books/BookCover";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { BookForm } from "./BookForm";
-import { categories } from "@/data/categories";
+import { categoryLabel } from "@/data/categories";
 import type { Book } from "@/lib/types";
 
 type Tab = "all" | "published" | "low-stock" | "drafts";
@@ -17,18 +18,18 @@ const tabs: { value: Tab; label: string }[] = [
 ];
 
 export function BooksManager({ books }: { books: Book[] }) {
+  const { books: allBooks, saveBook, removeBook } = useBookContent();
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<Tab>("all");
   const [selected, setSelected] = useState<string[]>([]);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Book | undefined>(undefined);
 
-  const categoryName = (slug: string) =>
-    categories.find((category) => category.slug === slug)?.name ?? slug;
+  const categoryName = (slug: string) => categoryLabel(slug);
 
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
-    return books.filter((book) => {
+    return allBooks.filter((book) => {
       const matchesTerm =
         !term ||
         book.title.toLowerCase().includes(term) ||
@@ -40,7 +41,7 @@ export function BooksManager({ books }: { books: Book[] }) {
         (tab === "drafts" && false);
       return matchesTerm && matchesTab;
     });
-  }, [books, query, tab]);
+  }, [allBooks, query, tab]);
 
   const openCreate = () => {
     setEditing(undefined);
@@ -112,7 +113,7 @@ export function BooksManager({ books }: { books: Book[] }) {
       </div>
 
       {/* Form (create / edit) */}
-      {formOpen && <BookForm book={editing} onCancel={closeForm} />}
+      {formOpen && <BookForm book={editing} onCancel={closeForm} onSave={saveBook} />}
 
       {/* List */}
       <section className="overflow-hidden rounded-[10px] border border-line bg-white">
@@ -230,6 +231,14 @@ export function BooksManager({ books }: { books: Book[] }) {
                     >
                       <Pencil size={12} /> Edit
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => removeBook(book.slug)}
+                      title="Remove uploaded book"
+                      className="ml-1.5 inline-flex h-8 w-8 items-center justify-center rounded-[4px] border border-line text-muted transition-colors hover:border-brand-300 hover:text-brand-700"
+                    >
+                      <Trash2 size={12} />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -249,7 +258,7 @@ export function BooksManager({ books }: { books: Book[] }) {
             Showing {visible.length} of {books.length} books
           </span>
           <span className="rounded-full bg-brand-50 px-2.5 py-1 font-medium text-brand-700">
-            Design preview — no data is saved
+            Uploads saved in this browser only — no server
           </span>
         </div>
       </section>

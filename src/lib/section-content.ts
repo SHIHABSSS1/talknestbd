@@ -31,12 +31,12 @@ export const sectionDefaults: Record<string, SectionContent> = {
       "Find your next read by mood, subject or the season of life you are in.",
     linkLabel: "All categories",
   },
-  "best-sellers": {
-    eyebrow: "Best Sellers",
-    title: "The books readers love most",
+  "viral-books": {
+    eyebrow: "Viral Books",
+    title: "Books everyone is talking about",
     description:
-      "The titles that keep finding new readers, month after month.",
-    linkLabel: "All bestsellers",
+      "The titles moving through reading groups, social feeds and dinner conversations.",
+    linkLabel: "All viral books",
   },
   "sell-used-books": {
     eyebrow: "Sell Used Books",

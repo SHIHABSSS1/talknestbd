@@ -2,6 +2,7 @@ import { Hero } from "@/components/home/Hero";
 import { TrustStrip } from "@/components/home/TrustStrip";
 import { CategoryShowcase } from "@/components/home/CategoryShowcase";
 import { CategoryBookRails } from "@/components/home/CategoryBookRails";
+import { ViralRail } from "@/components/home/ViralRail";
 import { SellUsedBooksBanner } from "@/components/home/SellUsedBooksBanner";
 import { UpSaleRail } from "@/components/home/UpSaleRail";
 import { FreeOrderWholesale } from "@/components/home/FreeOrderWholesale";
@@ -17,9 +18,7 @@ import { BookRail } from "@/components/books/BookRail";
 import { getBooksByCollection } from "@/data/books";
 
 export default function HomePage() {
-  const bestsellers = getBooksByCollection("bestseller");
   const newBooks = getBooksByCollection("new");
-  const viralBooks = getBooksByCollection("viral");
   const internationalBooks = getBooksByCollection("international");
   const studentBooks = getBooksByCollection("student");
 
@@ -29,15 +28,6 @@ export default function HomePage() {
       <TrustStrip />
       <CategoryShowcase />
       <CategoryBookRails />
-
-      <BookRail
-        books={bestsellers}
-        eyebrow="Best Sellers"
-        title="The books readers love most"
-        description="The titles that keep finding new readers, month after month."
-        href="/best-sellers"
-        linkLabel="All bestsellers"
-      />
 
       <SellUsedBooksBanner />
       <UpSaleRail />
@@ -55,14 +45,7 @@ export default function HomePage() {
 
       <FreeOrderWholesale />
 
-      <BookRail
-        books={viralBooks}
-        eyebrow="Trending Now"
-        title="Books everyone is talking about"
-        description="The titles moving through reading groups, social feeds and dinner conversations."
-        href="/viral-books"
-        linkLabel="All trending books"
-      />
+      <ViralRail />
 
       <AudioShowcase />
       <SunnahShowcase />

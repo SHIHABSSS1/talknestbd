@@ -23,6 +23,8 @@ export interface BookCoverTheme {
   to: string;
   accent: string;
   motif: CoverMotif;
+  /** Optional uploaded cover image (compressed data URL). */
+  imageSrc?: string;
 }
 
 export interface AudioInfo {
@@ -38,7 +40,7 @@ export interface Book {
   authorSlug: string;
   publisher: string;
   publisherSlug: string;
-  category: CategorySlug;
+  category: string;
   /** Optional sub-shelf inside the category (slug from the admin category editor). */
   subcategory?: string;
   price: number;

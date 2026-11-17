@@ -5,8 +5,7 @@ export function AdminFooter() {
     <footer className="border-t border-line bg-white">
       <div className="flex flex-col gap-2 px-4 py-4 text-[10px] text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p>
-          <span className="font-semibold text-ink">TalkNest BD Admin</span> · Design preview.
-          Editors are UI-only — no data is saved yet.
+          <span className="font-semibold text-ink">TalkNest BD Admin</span>
         </p>
         <div className="flex items-center gap-4">
           <Link href="/" className="transition-colors hover:text-brand-700">

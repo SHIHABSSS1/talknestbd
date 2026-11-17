@@ -7,6 +7,7 @@ import { booksForTile, subcategoryBooks } from "@/lib/category-books";
 import { Container } from "@/components/ui/Container";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 
 /**
  * Category grid for the /categories page. Uses the same editable tiles as the
@@ -14,6 +15,7 @@ import { useCategoryContent } from "@/components/providers/CategoryContentProvid
  */
 export function CategoryCards() {
   const { content } = useCategoryContent();
+  const { books: extraBooks } = useBookContent();
   if (content.tiles.length === 0) return null;
 
   return (
@@ -21,7 +23,7 @@ export function CategoryCards() {
       <Container>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {content.tiles.map((tile) => {
-            const tileBooks = booksForTile(tile);
+            const tileBooks = booksForTile(tile, undefined, extraBooks);
             return (
               <Link
                 key={tile.id}
@@ -65,7 +67,7 @@ export function CategoryCards() {
                         key={sub.id}
                         className="rounded-full border border-line bg-canvas px-2 py-0.5 text-[9px] text-muted"
                       >
-                        {sub.name} · {subcategoryBooks(tile, sub).length}
+                        {sub.name} · {subcategoryBooks(tile, sub, extraBooks).length}
                       </span>
                     ))}
                   </div>
