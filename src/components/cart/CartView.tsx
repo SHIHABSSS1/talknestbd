@@ -12,8 +12,8 @@ import {
 import { useStore, useHydrated } from "@/lib/store";
 import { siteConfig, formatPrice, toBn } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
+import { EmptyCart } from "./EmptyCart";
 import { CartLine } from "./CartLine";
 
 const deliveryEstimate = 60;
@@ -49,21 +49,7 @@ export function CartView() {
   }
 
   if (items.length === 0) {
-    return (
-      <EmptyState
-        icon={<ShoppingBag size={24} />}
-        title="Your cart is empty"
-        description="Add books or Sunnah items you love to start shopping. Sell a used book to us after reading and get 50% of the purchase price back."
-        action={
-          <div className="flex flex-wrap justify-center gap-3">
-            <Button href="/books">Browse books</Button>
-            <Button href="/sunnah-items" variant="outline">
-              Sunnah items
-            </Button>
-          </div>
-        }
-      />
-    );
+    return <EmptyCart />;
   }
 
   const remainingForFree = Math.max(0, siteConfig.freeDeliveryThreshold - cartTotal);

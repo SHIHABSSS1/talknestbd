@@ -14,15 +14,10 @@ import {
   ShoppingBag,
   Sparkles,
 } from "lucide-react";
-import { getBooksByCollection } from "@/data/books";
+import { useBookContent } from "@/components/providers/BookContentProvider";
+import { useAudioContent } from "@/components/providers/AudioContentProvider";
 import { useStore } from "@/lib/store";
-import {
-  audioChapters,
-  audioPrice,
-  isAudioFreeOrOwned,
-  isFreeAudio,
-  readUnlockedAudio,
-} from "@/lib/audio";
+import { audioChapters, audioPrice, readUnlockedAudio } from "@/lib/audio";
 import { cn, formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
 import { Badge } from "@/components/ui/Badge";
@@ -37,8 +32,13 @@ function formatTime(seconds: number): string {
 
 export function AudioLibrary() {
   const router = useRouter();
-  const { addItem, notify } = useStore();
-  const audioBooks = useMemo(() => getBooksByCollection("audio"), []);
+  const { addItem } = useStore();
+  const { books } = useBookContent();
+  const { content } = useAudioContent();
+  const audioBooks = useMemo(
+    () => books.filter((book) => book.tags.includes("audio")),
+    [books],
+  );
   const [selectedSlug, setSelectedSlug] = useState(audioBooks[0]?.slug ?? "");
   const [chapterIndex, setChapterIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -54,13 +54,21 @@ export function AudioLibrary() {
   }, []);
 
   const book = audioBooks.find((entry) => entry.slug === selectedSlug) ?? audioBooks[0];
-  const chapters = useMemo(() => (book ? audioChapters(book) : []), [book]);
+  const entry = content.books.find((item) => item.slug === book?.slug);
+  const chapters = useMemo(
+    () => (book ? entry?.chapters ?? audioChapters(book) : []),
+    [book, entry],
+  );
   const chapter = chapters[chapterIndex] ?? chapters[0];
   const owned = book
-    ? isFreeAudio(book.slug) || unlocked.includes(book.slug)
+    ? Boolean(entry?.free) || unlocked.includes(book.slug)
     : false;
   const playable = Boolean(chapter?.free || owned);
-  const price = book ? audioPrice(book) : 0;
+  const price = book
+    ? entry && !entry.free
+      ? entry.price
+      : audioPrice(book)
+    : 0;
 
   useEffect(() => {
     setChapterIndex(0);
@@ -157,7 +165,7 @@ export function AudioLibrary() {
         <div className="space-y-2">
           {audioBooks.map((entry) => {
             const active = entry.slug === book.slug;
-            const free = isFreeAudio(entry.slug);
+            const free = Boolean(content.books.find((item) => item.slug === entry.slug)?.free);
             const isOwned = free || unlocked.includes(entry.slug);
             return (
               <button
@@ -219,8 +227,7 @@ export function AudioLibrary() {
         </div>
         <p className="mt-3 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
           <Sparkles size={11} className="mr-1 inline text-gold-600" />
-          Two audiobooks are completely free. Every other book has a free first
-          chapter — unlock the audiobook to listen in full.
+          {content.library.freeNote} {content.library.previewNote}
         </p>
       </aside>
 
@@ -243,17 +250,17 @@ export function AudioLibrary() {
                   <span className="rounded-full bg-gold-500 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider text-forest-950">
                     TalkNest Audio
                   </span>
-                  {isFreeAudio(book.slug) ? (
+                  {entry?.free ? (
                     <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[8px] font-semibold text-cream-100/80">
-                      Completely free
+                      {content.pricing.freeLabel}
                     </span>
                   ) : owned ? (
                     <span className="rounded-full border border-forest-400/30 bg-forest-500/20 px-2 py-0.5 text-[8px] font-semibold text-forest-200">
-                      In your library
+                      {content.pricing.ownedLabel}
                     </span>
                   ) : (
                     <span className="rounded-full border border-white/15 bg-white/10 px-2 py-0.5 text-[8px] font-semibold text-cream-100/80">
-                      First chapter free
+                      {content.pricing.paidLabel}
                     </span>
                   )}
                 </div>
@@ -270,7 +277,7 @@ export function AudioLibrary() {
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Clock3 size={12} className="text-gold-400" />
-                    3 chapters
+                    {toBn(chapters.length)} chapters
                   </span>
                   <Link href={`/books/${book.slug}`} className="font-semibold text-gold-300 hover:text-gold-400">
                     Book details →
@@ -411,7 +418,9 @@ export function AudioLibrary() {
               <CheckCircle2 size={20} className="text-forest-600" />
               <div>
                 <p className="text-xs font-semibold text-forest-900">
-                  {isFreeAudio(book.slug) ? "This audiobook is completely free" : "This audiobook is unlocked"}
+                  {entry?.free
+                    ? content.pricing.freeLabel
+                    : `${content.pricing.ownedLabel} — unlocked`}
                 </p>
                 <p className="text-[10px] text-muted">Listen to every chapter anytime.</p>
               </div>
@@ -435,7 +444,7 @@ export function AudioLibrary() {
                   {book.title}
                 </p>
                 <p className="mt-0.5 text-[11px] text-muted">
-                  3 chapters · {book.audio?.duration} · buy once and listen forever
+                  {toBn(chapters.length)} chapters · {book.audio?.duration} · buy once and listen forever
                 </p>
                 <p className="mt-2 font-display text-2xl font-bold text-forest-950">
                   {formatPrice(price)}{" "}
@@ -476,7 +485,7 @@ export function AudioLibrary() {
                   </Button>
                 </div>
                 <p className="mt-2 text-center text-[9px] text-muted">
-                  The audiobook unlocks automatically after checkout
+                  {content.pricing.unlockNote}
                 </p>
               </div>
             </div>

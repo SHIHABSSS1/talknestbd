@@ -149,6 +149,7 @@ function seedShelfTags(book: Book): Book {
   if (book.category === "islamic-itihas") extra.push("sunnah");
   if (book.category === "international") extra.push("international");
   if (book.category === "student") extra.push("student");
+  if (book.audio) extra.push("audio");
   if (extra.length === 0) return book;
   return { ...book, tags: Array.from(new Set([...book.tags, ...extra])) };
 }

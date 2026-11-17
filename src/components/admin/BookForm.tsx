@@ -30,6 +30,7 @@ const tagOptions: { value: BookTag; label: string }[] = [
   { value: "sunnah", label: "Sunnah essentials" },
   { value: "international", label: "International" },
   { value: "student", label: "Student books" },
+  { value: "audio", label: "Audiobook" },
 ];
 
 interface FormState {

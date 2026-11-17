@@ -15,7 +15,8 @@ export type BookTag =
   | "trending"
   | "sunnah"
   | "international"
-  | "student";
+  | "student"
+  | "audio";
 
 export type CollectionSlug =
   | "bestseller"

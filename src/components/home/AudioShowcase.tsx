@@ -1,131 +1,125 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowUpRight, Clock3, Headphones, Play } from "lucide-react";
-import { getBooksByCollection } from "@/data/books";
-import { Button } from "@/components/ui/Button";
+import { Headphones, PlayCircle } from "lucide-react";
+import { useAudioContent } from "@/components/providers/AudioContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
+import { BookCover } from "@/components/books/BookCover";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
-import { BookCover } from "@/components/books/BookCover";
+import { Button } from "@/components/ui/Button";
+import { formatPrice } from "@/lib/utils";
 
 const waveform = [30, 62, 42, 84, 52, 72, 36, 90, 58, 74, 44, 66, 34, 78, 48, 86, 40, 60];
 
 export function AudioShowcase() {
-  const audioBooks = getBooksByCollection("audio");
-  const featured = audioBooks[0];
+  const { content } = useAudioContent();
+  const { books } = useBookContent();
+  const audioBooks = books.filter((book) => book.tags.includes("audio"));
+  const featured =
+    audioBooks.find((book) => book.slug === content.section.featuredSlug) ??
+    audioBooks[0];
+
   if (!featured) return null;
 
-  return (
-    <section className="relative overflow-hidden bg-brand-950 py-10 text-white sm:py-14">
-      <div aria-hidden="true" className="absolute inset-0 paper-texture opacity-[0.08]" />
-      <div
-        aria-hidden="true"
-        className="absolute -left-24 top-1/3 h-80 w-80 -translate-y-1/2 rounded-full bg-brand-600/20 blur-3xl"
-      />
-      <Container className="relative">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12">
-          <div>
-            <SectionHeader
-              light
-              eyebrow="TalkNest Audio"
-              title="A good story for every commute"
-              description="Listen while you travel, cook or wind down for the night. Bestselling novels, thoughtful non-fiction and the Seerah, narrated by voices worth spending time with."
-              href="/audio-books"
-              linkLabel="All audiobooks"
-              className="mb-5"
-            />
+  const featuredEntry = content.books.find((book) => book.slug === featured.slug);
 
-            <div className="rounded-[8px] border border-white/10 bg-white/[0.06] p-3.5 sm:p-4">
-              <div className="flex gap-3.5">
-                <Link
-                  href={`/books/${featured.slug}`}
-                  className="w-20 shrink-0 sm:w-24"
-                >
-                  <div className="aspect-[3/4]">
-                    <BookCover book={featured} size="sm" />
-                  </div>
-                </Link>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-medium uppercase tracking-[0.14em] text-brand-200/80">
-                    Featured audiobook
-                  </p>
+  return (
+    <section className="border-b border-line bg-white py-8 sm:py-10">
+      <Container>
+        <SectionHeader
+          eyebrow={content.section.eyebrow}
+          title={content.section.title}
+          description={content.section.description}
+          href="/audio-books"
+          linkLabel={content.section.linkLabel}
+          className="mb-6"
+        />
+
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+          <div className="relative overflow-hidden rounded-3xl bg-forest-950 p-6 text-cream-50 sm:p-8">
+            <div
+              aria-hidden="true"
+              className="absolute -right-16 -top-20 h-56 w-56 rounded-full border border-gold-400/20"
+            />
+            <div className="relative flex gap-5">
+              <Link
+                href={`/books/${featured.slug}`}
+                className="h-40 w-28 shrink-0 overflow-hidden rounded-xl sm:h-48 sm:w-32"
+              >
+                <BookCover book={featured} size="md" />
+              </Link>
+              <div className="min-w-0">
+                <span className="rounded-full border border-gold-400/25 bg-gold-500/10 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-gold-300">
+                  Featured audiobook
+                </span>
+                <h3 className="mt-3 font-display text-xl font-bold sm:text-2xl">
+                  {featured.title}
+                </h3>
+                <p className="mt-1 text-[11px] text-cream-100/60">
+                  {featured.author} · Narrated by {featured.audio?.narrator}
+                </p>
+                <p className="mt-2 text-[10px] text-cream-100/50">
+                  {featured.audio?.duration} · {featuredEntry?.chapters.length ?? 3} chapters ·{" "}
+                  {featuredEntry?.free
+                    ? content.pricing.freeLabel
+                    : formatPrice(featuredEntry?.price ?? featured.price)}
+                </p>
+                <div className="mt-4 flex h-8 items-end gap-0.5">
+                  {waveform.map((height, index) => (
+                    <span
+                      key={index}
+                      className="w-1 rounded-full bg-gold-400/60"
+                      style={{ height: `${height / 3}%` }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button href="/audio-books" variant="gold" size="sm">
+                    <PlayCircle size={13} /> Listen now
+                  </Button>
                   <Link
                     href={`/books/${featured.slug}`}
-                    className="mt-1 block truncate text-base font-bold text-white transition-colors hover:text-brand-200 sm:text-lg"
+                    className="inline-flex h-9 items-center px-2 text-[11px] font-medium text-cream-100/70 hover:text-white"
                   >
-                    {featured.title}
+                    Book details →
                   </Link>
-                  <p className="mt-0.5 truncate text-[11px] text-white/55">
-                    Narrated by {featured.audio?.narrator}
-                  </p>
-                  <div className="mt-3 flex items-center gap-2.5">
-                    <Link
-                      href="/audio-books"
-                      aria-label={`Play ${featured.title} audiobook`}
-                      className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-brand-700 transition-colors hover:bg-brand-50"
-                    >
-                      <Play size={14} className="ml-0.5 fill-current" />
-                    </Link>
-                    <div className="flex h-7 flex-1 items-center gap-[3px]" aria-hidden="true">
-                      {waveform.map((height, index) => (
-                        <span
-                          key={index}
-                          className="flex-1 rounded-full bg-brand-200/50"
-                          style={{ height: `${height}%` }}
-                        />
-                      ))}
-                    </div>
-                    <span className="flex shrink-0 items-center gap-1 text-[10px] text-white/55">
-                      <Clock3 size={11} />
-                      {featured.audio?.duration}
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
-
-            <Button href="/audio-books" variant="white" className="mt-4">
-              <Headphones size={15} />
-              Browse all audiobooks
-            </Button>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            {audioBooks.slice(0, 4).map((book) => (
-              <Link
-                key={book.slug}
-                href="/audio-books"
-                className="group flex items-center gap-3 rounded-[8px] border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-white/25 hover:bg-white/[0.08]"
-              >
-                <div className="w-12 shrink-0 sm:w-14">
-                  <div className="aspect-[3/4]">
+          <div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {audioBooks.slice(0, 6).map((book) => (
+                <Link
+                  key={book.slug}
+                  href="/audio-books"
+                  className="group rounded-xl border border-forest-900/8 bg-cream-50 p-2.5 transition-colors hover:border-brand-300"
+                >
+                  <span className="block aspect-[3/4] overflow-hidden rounded-lg bg-cream-100">
                     <BookCover book={book} size="sm" />
-                  </div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="line-clamp-1 text-[13px] font-medium text-white">
+                  </span>
+                  <span className="mt-2 block line-clamp-1 text-[10px] font-semibold text-forest-900">
                     {book.title}
-                  </p>
-                  <p className="mt-0.5 line-clamp-1 text-[10px] text-white/45">
-                    {book.author}
-                  </p>
-                  <p className="mt-1.5 flex items-center gap-1 text-[9px] text-brand-200/80">
-                    <Headphones size={10} />
+                  </span>
+                  <span className="block text-[9px] text-muted">
                     {book.audio?.duration}
-                  </p>
-                </div>
-                <ArrowUpRight
-                  size={15}
-                  className="shrink-0 text-white/30 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-200"
-                />
-              </Link>
-            ))}
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-4 flex items-center gap-2 rounded-xl border border-brand-100 bg-brand-50 px-3 py-2.5 text-[10px] text-brand-800">
+              <Headphones size={14} className="shrink-0" />
+              {content.library.previewNote}
+            </div>
           </div>
         </div>
 
         <ViewAllRow
-          light
           href="/audio-books"
-          label="All audiobooks"
+          label="Browse all audiobooks"
           count={`${audioBooks.length} titles`}
         />
       </Container>

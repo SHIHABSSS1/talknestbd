@@ -22,6 +22,7 @@ const collections: { value: BookTag | "all"; label: string }[] = [
   { value: "sunnah", label: "Sunnah essentials" },
   { value: "international", label: "International" },
   { value: "student", label: "Student books" },
+  { value: "audio", label: "Audiobook" },
 ];
 
 export function CatalogManager() {

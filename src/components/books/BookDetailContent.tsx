@@ -16,6 +16,7 @@ import {
 import { categoryLabel } from "@/data/categories";
 import { getAuthor } from "@/data/authors";
 import { useBookContent } from "@/components/providers/BookContentProvider";
+import { useAudioContent } from "@/components/providers/AudioContentProvider";
 import { relatedFromAll } from "@/lib/book-content";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -33,6 +34,7 @@ import { discountPercent, formatCount, toBn } from "@/lib/utils";
  */
 export function BookDetailContent({ slug }: { slug: string }) {
   const { getBook, books, hydrated } = useBookContent();
+  const { content: audioContent } = useAudioContent();
   const book = getBook(slug);
 
   if (!hydrated) {
@@ -222,6 +224,15 @@ export function BookDetailContent({ slug }: { slug: string }) {
                     <p className="text-[10px] text-muted">
                       {book.audio.duration} · Narrated by {book.audio.narrator}
                     </p>
+                    {(() => {
+                      const entry = audioContent.books.find((item) => item.slug === slug);
+                      return (
+                        <p className="mt-0.5 text-[9px] text-muted">
+                          {toBn(entry?.chapters.length ?? 3)} chapters ·{" "}
+                          {entry?.free ? audioContent.pricing.freeLabel : audioContent.pricing.paidLabel}
+                        </p>
+                      );
+                    })()}
                   </div>
                   <Link
                     href="/audio-books"

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { AudioEditor } from "@/components/admin/AudioEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
@@ -117,6 +118,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "free-order-wholesale") {
     return <WholesaleEditor label={label} />;
+  }
+  if (slug === "audio") {
+    return <AudioEditor label={label} />;
   }
 
   return (
