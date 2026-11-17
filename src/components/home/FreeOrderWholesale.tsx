@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -10,22 +12,22 @@ import {
 } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { useWholesaleContent } from "@/components/providers/WholesaleProviders";
 
-const wholesaleBenefits = [
-  { icon: BadgePercent, label: "Special bulk pricing" },
-  { icon: Headphones, label: "Dedicated support" },
-  { icon: Truck, label: "Nationwide delivery" },
-];
+const benefitIcons = [BadgePercent, Headphones, Truck];
 
 export function FreeOrderWholesale() {
+  const { content } = useWholesaleContent();
+  const { home } = content;
+
   return (
     <section className="border-y border-brand-100 bg-brand-50/70 py-9 sm:py-12">
       <Container>
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <SectionTitle
-            eyebrow="Books for organisations"
-            title="Build a better library for less"
-            description="Simple ordering and better prices for schools, libraries, offices, bookshops and reading clubs."
+            eyebrow={home.eyebrow}
+            title={home.title}
+            description={home.description}
           />
         </div>
 
@@ -48,33 +50,32 @@ export function FreeOrderWholesale() {
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-[3px] bg-sale px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.1em] text-ink">
                   <Store size={11} />
-                  Wholesale orders
+                  {home.wholesale.badge}
                 </span>
                 <h3 className="mt-4 max-w-xl text-2xl font-bold leading-tight sm:text-3xl lg:text-[34px]">
-                  More books. Better pricing. One helpful team.
+                  {home.wholesale.heading}
                 </h3>
                 <p className="mt-3 max-w-xl text-[13px] leading-relaxed text-white/68 sm:text-sm">
-                  Order 10 copies or more and receive a tailored quote, priority
-                  dispatch and support from selection through delivery.
+                  {home.wholesale.text}
                 </p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
-                  {wholesaleBenefits.map((benefit) => {
-                    const Icon = benefit.icon;
+                  {home.wholesale.benefits.map((benefit, index) => {
+                    const Icon = benefitIcons[index % benefitIcons.length];
                     return (
                       <span
-                        key={benefit.label}
+                        key={index}
                         className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/[0.07] px-3 py-1.5 text-[10px] text-white/80"
                       >
                         <Icon size={11} className="text-brand-200" />
-                        {benefit.label}
+                        {benefit}
                       </span>
                     );
                   })}
                 </div>
 
                 <span className="mt-6 inline-flex h-10 items-center gap-2 rounded-[4px] bg-white px-5 text-[12px] font-semibold text-brand-800 transition-colors group-hover:bg-brand-50">
-                  Get a wholesale quote
+                  {home.wholesale.cta}
                   <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -114,16 +115,16 @@ export function FreeOrderWholesale() {
             </span>
             <div className="relative mt-auto pt-8">
               <span className="text-[9px] font-bold uppercase tracking-[0.12em] text-sale">
-                Delivery offer
+                {home.freeOrder.label}
               </span>
               <h3 className="mt-1.5 text-xl font-bold leading-snug text-ink sm:text-2xl">
-                Free nationwide delivery over ৳999
+                {home.freeOrder.heading}
               </h3>
               <p className="mt-2 text-[12px] leading-relaxed text-body">
-                Selected books ship free at any order value.
+                {home.freeOrder.text}
               </p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-semibold text-brand-700">
-                See delivery details
+                {home.freeOrder.cta}
                 <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
               </span>
             </div>

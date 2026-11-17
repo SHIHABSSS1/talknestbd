@@ -4,6 +4,7 @@ import { Suspense, useCallback, useState } from "react";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { AdminFooter } from "./AdminFooter";
+import { AdminAccessGate } from "./AdminAccessGate";
 
 function SidebarPlaceholder() {
   return (
@@ -27,7 +28,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="lg:pl-64">
         <AdminHeader onMenuClick={openSidebar} />
         <main id="main-content" className="min-h-[70vh] p-4 sm:p-6">
-          {children}
+          <Suspense fallback={<>{children}</>}>
+            <AdminAccessGate>{children}</AdminAccessGate>
+          </Suspense>
         </main>
         <AdminFooter />
       </div>

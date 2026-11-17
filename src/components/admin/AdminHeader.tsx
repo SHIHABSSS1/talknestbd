@@ -10,13 +10,20 @@ import {
   LogOut,
   Menu,
   Search,
+  Settings2,
   UserRound,
 } from "lucide-react";
 import { logoutAdmin } from "@/lib/admin-auth";
+import { useNotifications } from "@/components/providers/NotificationsProvider";
+import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
+import { initials } from "@/lib/admin-access";
 
 export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+  const { currentUser, currentRole, isSuperAdmin } = useAdminAccess();
 
   const signOut = () => {
     logoutAdmin();
@@ -61,14 +68,85 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
           View site <ExternalLink size={13} />
         </Link>
 
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative grid h-9 w-9 place-items-center rounded-[4px] border border-line text-ink transition-colors hover:bg-brand-50 hover:text-brand-700"
+        <div
+          className="relative"
+          onMouseEnter={() => setNotificationsOpen(true)}
+          onMouseLeave={() => setNotificationsOpen(false)}
         >
-          <Bell size={15} />
-          <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-sale" />
-        </button>
+          <button
+            type="button"
+            aria-label="Notifications"
+            aria-expanded={notificationsOpen}
+            onClick={() => setNotificationsOpen((value) => !value)}
+            className="relative grid h-9 w-9 place-items-center rounded-[4px] border border-line text-ink transition-colors hover:bg-brand-50 hover:text-brand-700"
+          >
+            <Bell size={15} />
+            {unreadCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-sale px-1 text-[8px] font-bold leading-none text-ink">
+                {unreadCount}
+              </span>
+            )}
+          </button>
+
+          {notificationsOpen && (
+            <div className="absolute right-0 top-11 z-50 w-80 overflow-hidden rounded-[8px] border border-line bg-white shadow-[0_18px_45px_-30px_rgba(11,61,122,0.6)] animate-fade-up">
+              <div className="flex items-center justify-between gap-2 border-b border-line px-3 py-2.5">
+                <div>
+                  <p className="text-[11px] font-semibold text-ink">Notifications</p>
+                  <p className="text-[9px] text-muted">
+                    {unreadCount} unread
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={markAllRead}
+                  className="text-[10px] font-semibold text-brand-700 hover:underline"
+                >
+                  Mark all read
+                </button>
+              </div>
+              <div className="max-h-80 overflow-y-auto">
+                {notifications.slice(0, 5).map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.href ?? "/admin/notifications"}
+                    onClick={() => {
+                      markRead(item.id);
+                      setNotificationsOpen(false);
+                    }}
+                    className={`flex gap-2 border-b border-line/70 px-3 py-2.5 transition-colors last:border-0 hover:bg-brand-50 ${
+                      item.read ? "bg-white" : "bg-brand-50/40"
+                    }`}
+                  >
+                    <span
+                      className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${
+                        item.read ? "bg-line" : "bg-sale"
+                      }`}
+                    />
+                    <span className="min-w-0">
+                      <span className="block truncate text-[10px] font-semibold text-ink">
+                        {item.title}
+                      </span>
+                      <span className="mt-0.5 block text-[9px] leading-relaxed text-muted">
+                        {item.detail}
+                      </span>
+                      <span className="mt-0.5 block text-[8px] text-muted/70">
+                        {item.time}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+              <Link
+                href="/admin/notifications"
+                onClick={() => setNotificationsOpen(false)}
+                className="block border-t border-line px-3 py-2.5 text-center text-[10px] font-semibold text-brand-700 hover:bg-brand-50"
+              >
+                View all notifications
+              </Link>
+            </div>
+          )}
+        </div>
 
         <div className="relative">
           <button
@@ -78,12 +156,21 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
             aria-label="Account menu"
             className="flex h-9 items-center gap-2 rounded-[4px] border border-line pl-1.5 pr-2 transition-colors hover:bg-brand-50"
           >
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-brand-600 text-white">
-              <UserRound size={13} />
+            <span className="grid h-6 w-6 place-items-center overflow-hidden rounded-full bg-brand-600 text-[8px] font-bold text-white">
+              {currentUser?.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" />
+              ) : (
+                initials(currentUser?.name ?? "Admin")
+              )}
             </span>
             <span className="hidden text-left sm:block">
-              <span className="block text-[10px] font-semibold leading-tight text-ink">Admin</span>
-              <span className="block text-[9px] leading-tight text-muted">admin@talknestbd.com</span>
+              <span className="block text-[10px] font-semibold leading-tight text-ink">
+                {currentUser?.name ?? "Admin"}
+              </span>
+              <span className="block text-[9px] leading-tight text-muted">
+                {currentUser?.email ?? "admin@talknestbd.com"}
+              </span>
             </span>
             <ChevronDown size={13} className="text-muted" />
           </button>
@@ -98,9 +185,30 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
               />
               <div className="absolute right-0 top-11 z-50 w-52 overflow-hidden rounded-[8px] border border-line bg-white shadow-[0_18px_45px_-30px_rgba(11,61,122,0.6)]">
                 <div className="border-b border-line px-3 py-2.5">
-                  <p className="text-[11px] font-semibold text-ink">Signed in as Admin</p>
-                  <p className="text-[9px] text-muted">Demo session</p>
+                  <p className="text-[11px] font-semibold text-ink">
+                    {currentUser?.name ?? "Admin"}
+                  </p>
+                  <p className="text-[9px] text-muted">
+                    {currentRole?.name ?? "Admin role"}
+                    {currentUser?.batch ? ` · ${currentUser.batch}` : ""}
+                  </p>
                 </div>
+                <Link
+                  href="/admin/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2.5 text-[11px] text-ink transition-colors hover:bg-brand-50"
+                >
+                  <UserRound size={13} /> Admin profile
+                </Link>
+                {isSuperAdmin && (
+                  <Link
+                    href="/admin/users"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2.5 text-[11px] text-ink transition-colors hover:bg-brand-50"
+                  >
+                    <Settings2 size={13} /> Users &amp; roles
+                  </Link>
+                )}
                 <Link
                   href="/"
                   onClick={() => setMenuOpen(false)}

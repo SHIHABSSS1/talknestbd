@@ -1,6 +1,7 @@
 import {
   BadgeCheck,
   BadgePercent,
+  Bell,
   BookMarked,
   BookOpen,
   Building2,
@@ -21,11 +22,13 @@ import {
   PlayCircle,
   Repeat2,
   Settings,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   TrendingUp,
   Users,
   UsersRound,
+  UserRound,
   type LucideIcon,
 } from "lucide-react";
 
@@ -43,7 +46,11 @@ export interface AdminNavGroup {
 export const adminNavGroups: AdminNavGroup[] = [
   {
     label: "Overview",
-    items: [{ label: "Dashboard", href: "/admin", icon: LayoutDashboard }],
+    items: [
+      { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { label: "Notifications", href: "/admin/notifications", icon: Bell },
+      { label: "Admin profile", href: "/admin/profile", icon: UserRound },
+    ],
   },
   {
     label: "Homepage sections",
@@ -82,6 +89,7 @@ export const adminNavGroups: AdminNavGroup[] = [
   {
     label: "System",
     items: [
+      { label: "Users & roles", href: "/admin/users", icon: ShieldCheck },
       { label: "Site settings", href: "/admin/settings", icon: Settings },
       { label: "Sign in", href: "/admin/login", icon: LogIn },
     ],

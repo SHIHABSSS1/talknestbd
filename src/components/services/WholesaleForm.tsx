@@ -6,6 +6,7 @@ import {
   Building2,
   CheckCircle2,
   ClipboardList,
+  LogIn,
   Mail,
   Phone,
   Send,
@@ -14,6 +15,9 @@ import {
 } from "lucide-react";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { useWholesaleRequests } from "@/components/providers/WholesaleProviders";
+import { readAddresses, readProfile } from "@/lib/orders";
+import type { WholesaleRequest } from "@/lib/wholesale-requests";
 
 const inputClass =
   "h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25";
@@ -39,9 +43,31 @@ const emptyValues: WholesaleValues = {
 };
 
 export function WholesaleForm() {
+  const { add } = useWholesaleRequests();
   const [values, setValues] = useState<WholesaleValues>(emptyValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [reference, setReference] = useState<string | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const loginWithProfile = () => {
+    const profile = readProfile();
+    const saved = readAddresses();
+    const address = saved.find((item) => item.isDefault) ?? saved[0];
+    setValues((current) => ({
+      ...current,
+      organization: current.organization || "My organisation",
+      contact: address?.name || profile.name,
+      phone: address?.phone || profile.phone,
+      email: address?.email || profile.email,
+      city: address
+        ? [address.street, address.area, address.district, address.division]
+            .filter(Boolean)
+            .join(", ")
+        : profile.city,
+    }));
+    setLoggedIn(true);
+    setErrors({});
+  };
 
   const update = (patch: Partial<WholesaleValues>) =>
     setValues((previous) => ({ ...previous, ...patch }));
@@ -61,6 +87,19 @@ export function WholesaleForm() {
     }
     setErrors({});
     const random = Math.floor(1000 + Math.random() * 9000);
+    const request: WholesaleRequest = {
+      id: `ws-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      organization: values.organization.trim(),
+      contact: values.contact.trim(),
+      phone: values.phone.trim(),
+      email: values.email.trim(),
+      city: values.city.trim(),
+      quantity: values.quantity,
+      message: values.message.trim(),
+      status: "New",
+    };
+    add(request);
     setReference(`TN-WS-${random}`);
   };
 
@@ -118,6 +157,22 @@ export function WholesaleForm() {
             mosques, clubs and institutions. Fill in the form and we&apos;ll send you a quote.
           </p>
         </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-forest-900/10 bg-white/70 px-3 py-2.5">
+        <button
+          type="button"
+          onClick={loginWithProfile}
+          className="inline-flex h-8 items-center gap-1.5 rounded-full border border-forest-900/15 px-3 text-[10px] font-semibold text-forest-800 hover:bg-forest-50"
+        >
+          <LogIn size={12} />
+          {loggedIn ? "Saved profile applied" : "Log in with saved profile"}
+        </button>
+        {loggedIn && (
+          <span className="text-[9px] text-muted">
+            Logged in as {values.contact || "reader"} — edit any field, especially the address.
+          </span>
+        )}
       </div>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">

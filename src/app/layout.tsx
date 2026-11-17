@@ -10,6 +10,12 @@ import { SellContentProvider } from "@/components/providers/SellContentProvider"
 import { SellRequestsProvider } from "@/components/providers/SellRequestsProvider";
 import { UpSaleBooksProvider } from "@/components/providers/UpSaleBooksProvider";
 import { UsedContentProvider } from "@/components/providers/UsedContentProvider";
+import { NotificationsProvider } from "@/components/providers/NotificationsProvider";
+import { AdminAccessProvider } from "@/components/providers/AdminAccessProvider";
+import {
+  WholesaleContentProvider,
+  WholesaleRequestsProvider,
+} from "@/components/providers/WholesaleProviders";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -77,7 +83,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <SellContentProvider>
                       <SellRequestsProvider>
                         <UpSaleBooksProvider>
-                          <UsedContentProvider>{children}</UsedContentProvider>
+                          <UsedContentProvider>
+                            <NotificationsProvider>
+                              <WholesaleContentProvider>
+                                <WholesaleRequestsProvider>
+                                  <AdminAccessProvider>{children}</AdminAccessProvider>
+                                </WholesaleRequestsProvider>
+                              </WholesaleContentProvider>
+                            </NotificationsProvider>
+                          </UsedContentProvider>
                         </UpSaleBooksProvider>
                       </SellRequestsProvider>
                     </SellContentProvider>

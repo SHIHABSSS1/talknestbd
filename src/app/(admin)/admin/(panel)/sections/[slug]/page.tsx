@@ -7,6 +7,7 @@ import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { UsedBooksEditor } from "@/components/admin/UsedBooksEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
+import { WholesaleEditor } from "@/components/admin/WholesaleEditor";
 import { SellUsedBooksEditor } from "@/components/admin/SellUsedBooksEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
@@ -83,6 +84,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "used-books") {
     return <UsedBooksEditor label={label} />;
+  }
+  if (slug === "free-order-wholesale") {
+    return <WholesaleEditor label={label} />;
   }
 
   return (
