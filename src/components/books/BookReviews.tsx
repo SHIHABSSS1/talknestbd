@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { ArrowUpRight, PenLine, Star, ThumbsUp } from "lucide-react";
 import type { Book } from "@/lib/types";
-import { reviews, ratingBreakdown } from "@/data/reviews";
+import { ratingBreakdown } from "@/data/reviews";
+import { useReviews } from "@/components/providers/ReviewsProvider";
 import { toBn } from "@/lib/utils";
 
 export function BookReviews({ book }: { book: Book }) {
-  const bookReviews = reviews.filter((review) => review.bookSlug === book.slug);
+  const { content } = useReviews();
+  const bookReviews = content.reviews.filter((review) => review.bookSlug === book.slug);
   const total = ratingBreakdown.reduce((sum, row) => sum + row.count, 0);
 
   return (
@@ -112,6 +114,12 @@ export function BookReviews({ book }: { book: Book }) {
                 <p className="mt-2.5 text-[11px] leading-relaxed text-forest-900/70 sm:text-xs">
                   {review.text}
                 </p>
+                {review.reply && (
+                  <div className="mt-2 rounded-lg border-l-2 border-brand-400 bg-brand-50/70 px-3 py-2">
+                    <p className="text-[9px] font-semibold text-brand-700">TalkNest BD replied</p>
+                    <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/75">{review.reply}</p>
+                  </div>
+                )}
                 <p className="mt-2 flex items-center gap-1 text-[9px] text-muted">
                   <ThumbsUp size={10} /> This review was helpful
                 </p>

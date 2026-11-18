@@ -116,6 +116,9 @@ export interface Review {
   date: string;
   avatarColor: string;
   verified: boolean;
+  /** Optional admin reply shown under the review on the storefront. */
+  reply?: string;
+  replyDate?: string;
 }
 
 export type SunnahIcon =
