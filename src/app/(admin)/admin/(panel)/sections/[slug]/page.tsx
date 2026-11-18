@@ -5,6 +5,7 @@ import { AudioEditor } from "@/components/admin/AudioEditor";
 import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
 import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { ReviewsEditor } from "@/components/admin/ReviewsEditor";
+import { VideoQuizEditor } from "@/components/admin/VideoQuizEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
@@ -133,6 +134,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "reviews") {
     return <ReviewsEditor label={label} />;
+  }
+  if (slug === "video-quiz") {
+    return <VideoQuizEditor label={label} />;
   }
 
   return (

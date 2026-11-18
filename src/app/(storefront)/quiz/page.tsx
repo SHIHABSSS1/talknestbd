@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Award, BookOpen, Brain, PlayCircle, Trophy, Users } from "lucide-react";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
+import { QuizPageHeader } from "@/components/quiz/QuizPageHeader";
 import { QuizGame } from "@/components/quiz/QuizGame";
 import { QuizTabs, type QuizTab } from "@/components/quiz/QuizTabs";
 import { WatchQuiz } from "@/components/quiz/WatchQuiz";
-import { quizQuestions } from "@/data/community";
 import { toBn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -29,28 +28,7 @@ export default function QuizPage({
 }) {
   return (
     <>
-      <PageHeader
-        eyebrow="TalkNest Quiz"
-        title="Two quizzes, one reading break."
-        description="Watch an episode and take the quiz right below it, or jump straight into the book quiz. Six questions on Bengali literature, authors and Islamic history — every answer comes with a short explanation."
-        tone="dark"
-        crumbs={[{ label: "Quiz" }]}
-      >
-        <div className="flex flex-wrap gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            <PlayCircle size={11} /> Watch & Quiz
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            <BookOpen size={11} /> Book Quiz
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            <Brain size={11} /> {toBn(quizQuestions.length)} questions
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            <Trophy size={11} /> Bookworm Champion
-          </span>
-        </div>
-      </PageHeader>
+      <QuizPageHeader />
 
       <section className="bg-canvas py-8 sm:py-10">
         <Container>

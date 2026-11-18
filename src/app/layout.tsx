@@ -20,6 +20,7 @@ import { AudioContentProvider } from "@/components/providers/AudioContentProvide
 import { AuthorContentProvider } from "@/components/providers/AuthorContentProvider";
 import { PublisherContentProvider } from "@/components/providers/PublisherContentProvider";
 import { ReviewsProvider } from "@/components/providers/ReviewsProvider";
+import { VideoQuizProvider } from "@/components/providers/VideoQuizProvider";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -95,7 +96,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <AudioContentProvider>
                             <AuthorContentProvider>
                               <PublisherContentProvider>
-                                <ReviewsProvider>{children}</ReviewsProvider>
+                                <ReviewsProvider>
+                                  <VideoQuizProvider>{children}</VideoQuizProvider>
+                                </ReviewsProvider>
                               </PublisherContentProvider>
                             </AuthorContentProvider>
                           </AudioContentProvider>

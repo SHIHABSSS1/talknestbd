@@ -100,6 +100,8 @@ export function ReviewsEditor({ label }: { label: string }) {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [tab, setTab] = useState<Tab>("reviews");
   const [editing, setEditing] = useState<Review | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyDraft, setReplyDraft] = useState("");
   const [form, setForm] = useState<Review>(newReview);
 
   useEffect(() => setDraft(content), [content]);
@@ -325,16 +327,12 @@ export function ReviewsEditor({ label }: { label: string }) {
                           <button
                             type="button"
                             onClick={() => {
-                              const text = window.prompt("Admin reply", review.reply ?? "");
-                              if (text !== null) {
-                                updateReview(review.id, {
-                                  reply: text,
-                                  replyDate: text ? new Date().toISOString() : undefined,
-                                });
-                              }
+                              setReplyingTo(review.id);
+                              setReplyDraft(review.reply ?? "");
                             }}
+                            aria-label={`Reply to ${review.name}`}
                             className={cn(
-                              "text-[9px] font-semibold",
+                              "text-[9px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40",
                               review.reply ? "text-brand-700" : "text-muted hover:text-brand-700",
                             )}
                           >
@@ -362,6 +360,69 @@ export function ReviewsEditor({ label }: { label: string }) {
                   </tbody>
                 </table>
               </div>
+
+              {replyingTo && (
+                <div className="rounded-[8px] border border-brand-200 bg-brand-50/50 p-3">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-[11px] font-semibold text-ink">
+                      Reply to {draft.reviews.find((item) => item.id === replyingTo)?.name ?? "reader"}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReplyingTo(null);
+                        setReplyDraft("");
+                      }}
+                      aria-label="Close reply editor"
+                      className="rounded-[4px] p-1.5 text-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                    >
+                      <XCircle size={13} />
+                    </button>
+                  </div>
+                  <label htmlFor="admin-review-reply" className="sr-only">
+                    Admin reply text
+                  </label>
+                  <textarea
+                    id="admin-review-reply"
+                    value={replyDraft}
+                    onChange={(event) => setReplyDraft(event.target.value)}
+                    rows={3}
+                    placeholder="Write a short, helpful reply…"
+                    className={`${fieldClass} resize-y`}
+                  />
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const text = replyDraft.trim();
+                        updateReview(replyingTo, {
+                          reply: text,
+                          replyDate: text ? new Date().toISOString() : undefined,
+                        });
+                        setReplyingTo(null);
+                        setReplyDraft("");
+                        setNotice({ text: "Reply saved. Save all changes to publish." });
+                      }}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                    >
+                      <Check size={13} /> Save reply
+                    </button>
+                    {draft.reviews.find((item) => item.id === replyingTo)?.reply && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateReview(replyingTo, { reply: undefined, replyDate: undefined });
+                          setReplyingTo(null);
+                          setReplyDraft("");
+                        }}
+                        className="inline-flex h-9 items-center rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300"
+                      >
+                        Remove reply
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </Section>
           )}
 

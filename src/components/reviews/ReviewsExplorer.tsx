@@ -7,6 +7,7 @@ import { useReviews } from "@/components/providers/ReviewsProvider";
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { ReviewReply } from "@/components/ui/ReviewReply";
 import type { ReviewRequest } from "@/lib/review-requests";
 
 const filters = ["All", "5 stars", "4 stars", "3 stars"] as const;
@@ -153,10 +154,7 @@ export function ReviewsExplorer() {
             </div>
             <p className="mt-3 flex-1 text-[11px] leading-relaxed text-forest-900/75">“{review.text}”</p>
             {review.reply && (
-              <div className="mt-3 rounded-lg border-l-2 border-brand-400 bg-brand-50/70 px-3 py-2">
-                <p className="text-[9px] font-semibold text-brand-700">TalkNest BD replied</p>
-                <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/75">{review.reply}</p>
-              </div>
+              <ReviewReply reply={review.reply} date={review.replyDate} />
             )}
             <div className="mt-4 flex items-center gap-2.5">
               <span

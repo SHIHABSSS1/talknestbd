@@ -12,13 +12,15 @@ import {
   X,
 } from "lucide-react";
 import type { TalkVideo } from "@/lib/types";
-import { videos as allVideos } from "@/data/community";
+import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
 import { siteConfig, cn, toBn } from "@/lib/utils";
 import { YouTubeIcon } from "@/components/layout/SocialLinks";
 import { Button } from "@/components/ui/Button";
 import { CommentThread } from "@/components/community/CommentThread";
 
 export function VideoGallery() {
+  const { content } = useVideoQuiz();
+  const allVideos = content.videos;
   const [category, setCategory] = useState("All");
   const [active, setActive] = useState<TalkVideo>(
     allVideos.find((video) => video.featured) ?? allVideos[0],
@@ -27,7 +29,7 @@ export function VideoGallery() {
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(allVideos.map((video) => video.category)))],
-    [],
+    [allVideos],
   );
   const filtered = useMemo(
     () =>

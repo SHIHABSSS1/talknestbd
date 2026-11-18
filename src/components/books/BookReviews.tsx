@@ -5,6 +5,7 @@ import { ArrowUpRight, PenLine, Star, ThumbsUp } from "lucide-react";
 import type { Book } from "@/lib/types";
 import { ratingBreakdown } from "@/data/reviews";
 import { useReviews } from "@/components/providers/ReviewsProvider";
+import { ReviewReply } from "@/components/ui/ReviewReply";
 import { toBn } from "@/lib/utils";
 
 export function BookReviews({ book }: { book: Book }) {
@@ -115,10 +116,7 @@ export function BookReviews({ book }: { book: Book }) {
                   {review.text}
                 </p>
                 {review.reply && (
-                  <div className="mt-2 rounded-lg border-l-2 border-brand-400 bg-brand-50/70 px-3 py-2">
-                    <p className="text-[9px] font-semibold text-brand-700">TalkNest BD replied</p>
-                    <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/75">{review.reply}</p>
-                  </div>
+                  <ReviewReply reply={review.reply} date={review.replyDate} compact />
                 )}
                 <p className="mt-2 flex items-center gap-1 text-[9px] text-muted">
                   <ThumbsUp size={10} /> This review was helpful

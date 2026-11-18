@@ -13,12 +13,32 @@ import {
 } from "lucide-react";
 import {
   currentUser,
-  demoComments,
   demoUsers,
   findDemoUser,
   roleClass,
   type DemoComment,
 } from "@/data/comment-demo";
+import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
+
+/** Human-friendly timestamp for stored ISO dates, with a safe fallback. */
+function formatTime(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  const seconds = Math.round((parsed.getTime() - Date.now()) / 1000);
+  const minutes = Math.round(seconds / 60);
+  const hours = Math.round(minutes / 60);
+  const days = Math.round(hours / 24);
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  if (Math.abs(seconds) < 60) return "just now";
+  if (Math.abs(minutes) < 60) return formatter.format(minutes, "minute");
+  if (Math.abs(hours) < 24) return formatter.format(hours, "hour");
+  if (Math.abs(days) < 30) return formatter.format(days, "day");
+  return new Intl.DateTimeFormat("en-BD", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(parsed);
+}
 
 function Avatar({
   initials,
@@ -60,8 +80,8 @@ function CommentItem({
   const isLiked = liked.includes(comment.id);
 
   return (
-    <li className={depth > 0 ? "ml-4 border-l-2 border-brand-100 pl-3 sm:ml-7" : ""}>
-      <div className="flex gap-2.5 py-3">
+    <li className={depth > 0 ? "ml-3 border-l-2 border-brand-100 pl-3 sm:ml-7" : ""}>
+      <article className="flex gap-2.5 py-3">
         <Avatar initials={user.initials} avatarClass={user.avatarClass} small={depth > 0} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -69,31 +89,37 @@ function CommentItem({
             <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium ${roleClass(user.role)}`}>
               {user.role}
             </span>
-            <span className="text-[9px] text-muted">{comment.time}</span>
+            <time className="text-[9px] text-muted" dateTime={comment.time}>
+              {formatTime(comment.time)}
+            </time>
           </div>
-          <p className="mt-1 text-[11px] leading-relaxed text-body">{comment.text}</p>
+          <p className="mt-1 break-words text-pretty text-[11px] leading-relaxed text-body">
+            {comment.text}
+          </p>
           <div className="mt-1.5 flex items-center gap-3">
             <button
               type="button"
               onClick={() => onLike(comment.id)}
-              aria-label={isLiked ? "Unlike comment" : "Like comment"}
-              className={`inline-flex items-center gap-1 text-[9px] font-medium transition-colors ${
+              aria-label={isLiked ? `Unlike comment by ${user.name}` : `Like comment by ${user.name}`}
+              aria-pressed={isLiked}
+              className={`inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${
                 isLiked ? "text-clay-600" : "text-muted hover:text-clay-600"
               }`}
             >
-              <Heart size={11} className={isLiked ? "fill-current" : ""} />
-              {comment.likes + (isLiked ? 1 : 0)}
+              <Heart size={11} aria-hidden="true" className={isLiked ? "fill-current" : ""} />
+              <span className="tabular-nums">{comment.likes + (isLiked ? 1 : 0)}</span>
             </button>
             <button
               type="button"
               onClick={() => onReply(comment.id, user.name)}
-              className="inline-flex items-center gap-1 text-[9px] font-medium text-muted transition-colors hover:text-brand-700"
+              aria-label={`Reply to ${user.name}`}
+              className="inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium text-muted transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
             >
-              <Reply size={11} /> Reply
+              <Reply size={11} aria-hidden="true" /> Reply
             </button>
           </div>
         </div>
-      </div>
+      </article>
 
       {replies.length > 0 && (
         <ul className="divide-y divide-line">
@@ -123,9 +149,17 @@ export function CommentThread({
   title?: string;
   compact?: boolean;
 }) {
-  const [comments, setComments] = useState<DemoComment[]>(() => [
-    ...demoComments[target],
-  ]);
+  const { content, addComment } = useVideoQuiz();
+  const comments: DemoComment[] = content.comments
+    .filter((item) => item.target === target)
+    .map((item) => ({
+      id: item.id,
+      userId: item.userId,
+      text: item.text,
+      time: item.time,
+      likes: item.likes,
+      parentId: item.parentId,
+    }));
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
@@ -139,20 +173,19 @@ export function CommentThread({
     event.preventDefault();
     const text = draft.trim();
     if (!text) return;
-    setComments((current) => [
-      ...current,
-      {
-        id: `local-${current.length}-${text.length}`,
-        userId: currentUser.id,
-        text,
-        time: "Just now",
-        likes: 0,
-        parentId: replyTo?.id,
-      },
-    ]);
+    addComment({
+      id: `c-${Date.now()}`,
+      userId: currentUser.id,
+      userName: currentUser.name,
+      target,
+      text,
+      time: "Just now",
+      likes: 0,
+      parentId: replyTo?.id,
+    });
     setDraft("");
     setReplyTo(null);
-    setNotice("Design preview — your comment is visible for this session only.");
+    setNotice("Your comment was added to the discussion.");
   };
 
   return (
@@ -163,7 +196,10 @@ export function CommentThread({
           <h3 className="text-[12px] font-semibold text-ink">
             {title ?? (target === "video" ? "Episode discussion" : "Quiz discussion")}
           </h3>
-          <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[9px] font-semibold text-brand-700">
+          <span
+            aria-label={`${comments.length} comments`}
+            className="rounded-full bg-brand-50 px-2 py-0.5 text-[9px] font-semibold tabular-nums text-brand-700"
+          >
             {comments.length}
           </span>
         </div>
@@ -206,49 +242,52 @@ export function CommentThread({
         <Avatar initials={currentUser.initials} avatarClass={currentUser.avatarClass} />
         <div className="min-w-0 flex-1">
           {replyTo && (
-            <div className="mb-1.5 flex items-center gap-1.5 text-[9px] text-muted">
+            <div className="mb-1.5 flex items-center gap-1.5 rounded-[4px] bg-brand-50 px-2 py-1.5 text-[9px] text-muted">
               Replying to <span className="font-semibold text-brand-700">{replyTo.name}</span>
               <button
                 type="button"
                 onClick={() => setReplyTo(null)}
                 aria-label="Cancel reply"
-                className="text-muted hover:text-ink"
+                className="ml-auto rounded-[4px] p-1 text-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
               >
-                <X size={11} />
+                <X size={11} aria-hidden="true" />
               </button>
             </div>
           )}
+          <label htmlFor={`comment-draft-${target}`} className="sr-only">
+            {replyTo ? `Reply to ${replyTo.name}` : "Write a comment"}
+          </label>
           <textarea
+            id={`comment-draft-${target}`}
             value={draft}
             onChange={(event) => {
               setDraft(event.target.value);
               setNotice("");
             }}
-            rows={compact ? 2 : 2}
-            placeholder="Add to the conversation…"
-            aria-label="Write a comment"
+            rows={compact ? 2 : 3}
+            placeholder={replyTo ? `Reply to ${replyTo.name}…` : "Add to the conversation…"}
             className="w-full resize-none rounded-[6px] border border-line bg-white px-3 py-2 text-[11px] text-ink placeholder:text-muted/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15"
           />
           <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-[9px] text-muted">
               <span className="inline-flex items-center gap-1">
-                <Smile size={11} /> Emoji
+                <Smile size={11} aria-hidden="true" /> Be kind and specific
               </span>
               <span className="inline-flex items-center gap-1">
-                <ShieldCheck size={11} /> Moderated demo
+                <ShieldCheck size={11} aria-hidden="true" /> Moderated demo
               </span>
             </div>
             <button
               type="submit"
               disabled={!draft.trim()}
-              className="inline-flex h-8 items-center gap-1.5 rounded-[4px] bg-brand-600 px-3.5 text-[10px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-3.5 text-[10px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:pointer-events-none disabled:opacity-50"
             >
-              <Send size={11} /> Post comment
+              <Send size={11} aria-hidden="true" /> {replyTo ? "Post reply" : "Post comment"}
             </button>
           </div>
-          {notice && (
-            <p className="mt-2 text-[9px] text-brand-700">{notice}</p>
-          )}
+          <p aria-live="polite" className="mt-2 min-h-3 text-[9px] text-brand-700">
+            {notice}
+          </p>
         </div>
       </form>
 
@@ -273,7 +312,7 @@ export function CommentThread({
       </ul>
 
       <div className="border-t border-line px-4 py-2.5 text-center text-[9px] text-muted">
-        Design preview — comments use demo users and are not stored on a server.
+        Demo discussion — comments are stored in this browser only, not on a server.
       </div>
     </section>
   );

@@ -13,11 +13,22 @@ import {
   Trophy,
   XCircle,
 } from "lucide-react";
-import { quizQuestions } from "@/data/community";
+import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
+import type { QuizQuestion } from "@/lib/types";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
-export function QuizGame({ label = "Book quiz" }: { label?: string }) {
+export function QuizGame({
+  label = "Book quiz",
+  questions,
+}: {
+  label?: string;
+  questions?: QuizQuestion[];
+}) {
+  const { content } = useVideoQuiz();
+  const quizQuestions = questions?.length
+    ? questions
+    : content.quizzes.filter((item) => !item.videoId);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);

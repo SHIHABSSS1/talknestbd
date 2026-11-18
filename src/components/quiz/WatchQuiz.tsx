@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 import type { TalkVideo } from "@/lib/types";
-import { quizQuestions, videos } from "@/data/community";
+import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
 import { cn, toBn } from "@/lib/utils";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +24,9 @@ import { CommentThread } from "@/components/community/CommentThread";
 const WATCHED_KEY = "talknestbd-watched-videos-v1";
 
 export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
+  const { content } = useVideoQuiz();
+  const videos = content.videos;
+  const quizQuestions = content.quizzes;
   const [watched, setWatched] = useState<string[]>([]);
   const [player, setPlayer] = useState<TalkVideo | null>(null);
   const quizRef = useRef<HTMLDivElement>(null);
@@ -89,22 +92,14 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <SectionTitle
-          eyebrow="Watch & Quiz"
-          title={
-            fullPage
-              ? "Watch an episode, then take the quiz."
-              : "Many videos. One quiz waiting below."
-          }
-          description={
-            fullPage
-              ? "Pick an episode from the shelf, watch it without leaving this page, then scroll down to the quiz. Six conversations, six questions — a tea-break challenge for readers."
-              : "Pick an episode from the shelf, watch it without leaving the page, then scroll down to the quiz. Six conversations, six questions — a tea-break challenge for readers."
-          }
+          eyebrow={content.section.eyebrow}
+          title={fullPage ? content.videoPage.promoTitle : content.home.title}
+          description={content.home.description}
         />
         <div className="flex flex-col items-start gap-2 sm:items-end">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-100 bg-brand-50 px-3 py-1.5 text-[10px] font-semibold text-brand-700">
             <CheckCircle2 size={12} />
-            {toBn(watched.length)} of {toBn(videos.length)} episodes watched
+            {toBn(watched.length)} {content.home.progressPrefix} {toBn(videos.length)} {content.home.progressSuffix}
           </span>
           <div className="h-1.5 w-44 overflow-hidden rounded-full bg-brand-100">
             <div
@@ -180,15 +175,13 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-brand-700">
               <Trophy size={10} className="text-sale" />
-              The quiz below the videos
+              {content.home.quizTitle}
             </span>
             <h3 className="mt-2 font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
-              Now that you have watched, how much stuck?
+              {content.home.quizText}
             </h3>
             <p className="mt-1 max-w-xl text-[11.5px] leading-relaxed text-muted sm:text-xs">
-              Every answer comes with a short explanation, so a wrong guess still
-              teaches you something. The quiz stays open to everyone — watching first
-              just makes it more fun.
+              {content.home.quizNote}
             </p>
           </div>
 
@@ -212,8 +205,8 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
           <span className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
             <Sparkles size={12} className="text-gold-500" />
             {allWatched
-              ? "Shelf complete — you have watched every episode."
-              : `${toBn(watched.length)}/${toBn(videos.length)} episodes watched so far`}
+              ? content.home.allWatchedNote
+              : `${toBn(watched.length)}/${toBn(videos.length)} ${content.home.watchedSoFarNote}`}
           </span>
           <Link
             href={fullPage ? "/quiz?tab=book" : "/quiz?tab=watch"}
@@ -225,7 +218,10 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
         </div>
 
         <div className="mt-3 rounded-[8px] border border-line bg-white p-3 shadow-[0_18px_46px_-40px_rgba(8,42,82,0.55)] sm:p-5">
-          <QuizGame label="Episode quiz" />
+          <QuizGame
+            label="Episode quiz"
+            questions={quizQuestions.filter((item) => item.videoId)}
+          />
         </div>
 
         <div className="mt-3">
@@ -235,7 +231,7 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
         <p className="text-[9px] text-muted">
-          Demo videos play from YouTube. Watching is tracked only in this browser.
+          {content.home.demoNote}
         </p>
         <Button href="/video" variant="ghost" size="sm">
           Browse the full episode library

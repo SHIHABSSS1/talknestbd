@@ -7,6 +7,7 @@ import { formatCount } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
+import { ReviewReply } from "@/components/ui/ReviewReply";
 
 export function ReviewsWall() {
   const { content } = useReviews();
@@ -51,10 +52,7 @@ export function ReviewsWall() {
               <Quote size={15} className="mt-3 text-brand-300" />
               <p className="mt-1 flex-1 text-[11px] leading-relaxed text-forest-900/75">“{review.text}”</p>
               {review.reply && (
-                <div className="mt-3 rounded-lg border-l-2 border-brand-400 bg-brand-50/70 px-3 py-2">
-                  <p className="text-[9px] font-semibold text-brand-700">TalkNest BD replied</p>
-                  <p className="mt-0.5 text-[10px] leading-relaxed text-forest-800/75">{review.reply}</p>
-                </div>
+                <ReviewReply reply={review.reply} date={review.replyDate} />
               )}
               <div className="mt-4 flex items-center gap-2.5">
                 <span
