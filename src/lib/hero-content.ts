@@ -1,6 +1,10 @@
 /**
- * Shared hero banner content for the admin editor and the storefront hero.
- * Persisted in localStorage (demo only — there is no backend).
+ * Shared hero banner types, defaults and image URL helpers.
+ *
+ * The real document lives in Postgres (`content_blocks` key "hero"), read on the
+ * server by src/lib/db/queries/hero.ts and written by src/lib/actions/hero.ts.
+ * The only localStorage left here is `readHeroContent`, used once to import
+ * slides that were saved in a browser before the database existed.
  */
 
 export type HeroBanner = {
@@ -21,8 +25,12 @@ export type HeroContent = {
 
 export type SaveResult = { ok: boolean; message: string };
 
+/** Key of the hero document in the `content_blocks` table. */
+export const HERO_CONTENT_KEY = "hero";
+/** Legacy browser key — read only to import pre-database content. */
 export const HERO_STORAGE_KEY = "talknestbd-hero-v1";
 export const IMAGE_WIDTHS = [800, 1200, 1600, 2000];
+export const MAX_HERO_BANNERS = 12;
 
 /** Shown when a slide has neither an Unsplash id nor a custom source. */
 const PLACEHOLDER =
@@ -87,7 +95,7 @@ function isBanner(value: unknown): value is HeroBanner {
   );
 }
 
-/** Reads and validates stored content, falling back to the sample hero. */
+/** Reads and validates content saved in this browser before the database existed. */
 export function readHeroContent(): HeroContent {
   if (typeof window === "undefined") return cloneHeroDefaults();
   try {
@@ -108,35 +116,14 @@ export function readHeroContent(): HeroContent {
   }
 }
 
-/** Writes content to localStorage, reporting quota/availability failures. */
-export function writeHeroContent(content: HeroContent): SaveResult {
-  if (typeof window === "undefined") {
-    return { ok: false, message: "Storage is not available while rendering on the server." };
-  }
-  try {
-    window.localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(content));
-    return {
-      ok: true,
-      message: "Saved to this browser — the homepage hero now uses these banners.",
-    };
-  } catch {
-    return {
-      ok: false,
-      message:
-        "Could not save: browser storage may be full. Try fewer slides or smaller images.",
-    };
-  }
-}
-
-/** Removes the stored override so the sample hero is used again. */
-export function clearHeroContent(): SaveResult {
-  if (typeof window === "undefined") {
-    return { ok: false, message: "Storage is not available while rendering on the server." };
-  }
+/**
+ * Drops the legacy browser copy. Called after a successful publish so the
+ * editor stops offering to import slides that already live in the database.
+ */
+export function clearLegacyHeroContent(): void {
   try {
     window.localStorage.removeItem(HERO_STORAGE_KEY);
-    return { ok: true, message: "Restored the original sample hero." };
   } catch {
-    return { ok: false, message: "Could not reset browser storage." };
+    // Storage disabled: nothing to clean up.
   }
 }

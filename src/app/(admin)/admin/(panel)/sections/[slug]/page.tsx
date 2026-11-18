@@ -17,6 +17,7 @@ import { WholesaleEditor } from "@/components/admin/WholesaleEditor";
 import { SellUsedBooksEditor } from "@/components/admin/SellUsedBooksEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
+import { getHeroContent } from "@/lib/db/queries/hero";
 
 export const metadata: Metadata = {
   title: "Edit section",
@@ -50,7 +51,8 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
 
   // These sections render cards/slides, so they need dedicated editors.
   if (slug === "hero") {
-    return <HeroEditor label={label} />;
+    const hero = await getHeroContent();
+    return <HeroEditor label={label} initialContent={hero} />;
   }
   if (slug === "trust-strip") {
     return <TrustStripEditor label={label} />;

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
   ArrowDown,
   ArrowLeft,
   ArrowUp,
   Check,
+  Database,
   Eye,
   ImagePlus,
   Link2,
@@ -17,12 +18,15 @@ import {
   Trash2,
   UploadCloud,
 } from "lucide-react";
-import { useHeroContent } from "@/components/providers/HeroContentProvider";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
+import { resetHeroContent, saveHeroContent } from "@/lib/actions/hero";
 import {
   bannerSrc,
+  clearLegacyHeroContent,
   cloneHeroDefaults,
+  HERO_STORAGE_KEY,
   heroDefaults,
+  readHeroContent,
   type HeroBanner,
   type HeroContent,
 } from "@/lib/hero-content";
@@ -34,6 +38,35 @@ const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
 
+/** Compressed data URL → { url } on disk. Keeps the database free of base64. */
+async function postImageDataUrl(src: string): Promise<string> {
+  const response = await fetch("/api/uploads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ src, folder: "hero" }),
+  });
+  const result = (await response.json().catch(() => null)) as
+    | { url?: string; error?: string }
+    | null;
+  if (!response.ok || !result?.url) {
+    throw new Error(result?.error ?? "The image could not be uploaded.");
+  }
+  return result.url;
+}
+
+/** Uploads any slide still holding a base64 image, so only URLs reach the DB. */
+async function normaliseForSave(content: HeroContent): Promise<HeroContent> {
+  const banners: HeroBanner[] = [];
+  for (const banner of content.banners) {
+    if (banner.src?.startsWith("data:")) {
+      banners.push({ ...banner, src: await postImageDataUrl(banner.src) });
+    } else {
+      banners.push(banner);
+    }
+  }
+  return { banners };
+}
+
 function createBanner(index: number): HeroBanner {
   return {
     id: `slide-${Date.now()}-${index}`,
@@ -43,24 +76,44 @@ function createBanner(index: number): HeroBanner {
 }
 
 function sourceLabel(banner: HeroBanner): string {
-  if (banner.src?.startsWith("data:")) return "Uploaded";
+  if (banner.src?.startsWith("/media/")) return "Uploaded to server";
+  if (banner.src?.startsWith("data:")) return "Uploaded (not published yet)";
   if (banner.src) return "Custom URL";
   if (banner.imageId) return "Sample image";
   return "No image";
 }
 
-export function HeroEditor({ label }: { label: string }) {
-  const { content, save, reset } = useHeroContent();
-  const [draft, setDraft] = useState<HeroContent>(content);
+export function HeroEditor({
+  label,
+  initialContent,
+}: {
+  label: string;
+  initialContent: HeroContent;
+}) {
+  const [saved, setSaved] = useState<HeroContent>(initialContent);
+  const [draft, setDraft] = useState<HeroContent>(initialContent);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [legacy, setLegacy] = useState<HeroContent | null>(null);
+  const [pending, startTransition] = useTransition();
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  // Adopt stored content once it has been read from localStorage (and on save).
-  useEffect(() => setDraft(content), [content]);
+  // Slides saved in this browser before the database existed. They cannot be
+  // read on the server, so the editor offers a one-click import instead.
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem(HERO_STORAGE_KEY)) return;
+    } catch {
+      return;
+    }
+    const stored = readHeroContent();
+    if (JSON.stringify(stored) !== JSON.stringify(initialContent)) {
+      setLegacy(stored);
+    }
+  }, [initialContent]);
 
-  const dirty = JSON.stringify(draft) !== JSON.stringify(content);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const safeIndex = Math.min(activeIndex, Math.max(0, draft.banners.length - 1));
   const activeBanner = draft.banners[safeIndex];
 
@@ -108,15 +161,17 @@ export function HeroEditor({ label }: { label: string }) {
     setBusyId(id);
     setNotice(null);
     try {
-      const src = await fileToDataUrl(file);
-      updateBanner(id, { src, imageId: undefined });
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const url = await postImageDataUrl(dataUrl);
+      updateBanner(id, { src: url, imageId: undefined });
       setNotice({
-        text: `${file.name} compressed (${dataUrlSizeLabel(src)}) and added to slide ${position}. Save changes to publish.`,
+        text: `${file.name} stored on the server (${size}) for slide ${position}. Save changes to publish.`,
       });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that image.",
       });
     } finally {
       setBusyId(null);
@@ -135,16 +190,50 @@ export function HeroEditor({ label }: { label: string }) {
   };
 
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const normalised = await normaliseForSave(draft);
+        const result = await saveHeroContent(normalised);
+        setNotice({ text: result.message, error: !result.ok });
+        if (result.ok) {
+          setDraft(normalised);
+          setSaved(normalised);
+          // The legacy copy is now published, so stop offering to import it.
+          clearLegacyHeroContent();
+          setLegacy(null);
+        }
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the slides.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    const fresh = cloneHeroDefaults();
-    setDraft(fresh);
+    setNotice(null);
+    startTransition(async () => {
+      const result = await resetHeroContent();
+      if (result.ok) {
+        const fresh = cloneHeroDefaults();
+        setDraft(fresh);
+        setSaved(fresh);
+        setLegacy(null);
+        setActiveIndex(0);
+      }
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const importLocal = () => {
+    if (!legacy) return;
+    setDraft(legacy);
     setActiveIndex(0);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice({
+      text: "Loaded this browser's slides into the editor. Save changes to publish them for everyone.",
+    });
   };
 
   return (
@@ -318,13 +407,16 @@ export function HeroEditor({ label }: { label: string }) {
                             }
                           />
                         </label>
-                        {banner.src?.startsWith("data:") && (
+                        {(banner.src &&
+                          (banner.src.startsWith("data:") || banner.src.startsWith("/media/"))) && (
                           <button
                             type="button"
                             onClick={() => restoreSample(banner.id)}
                             className="text-[10px] font-medium text-brand-700 underline underline-offset-2"
                           >
-                            Remove upload ({dataUrlSizeLabel(banner.src)})
+                            {banner.src.startsWith("data:")
+                              ? `Remove upload (${dataUrlSizeLabel(banner.src)})`
+                              : "Remove upload"}
                           </button>
                         )}
                         {banner.imageId && !banner.src && (
@@ -332,8 +424,8 @@ export function HeroEditor({ label }: { label: string }) {
                         )}
                       </div>
                       <span className={hint}>
-                        Images are resized and compressed in your browser, then saved to this
-                        browser only. Max 15 MB.
+                        Resized and compressed in your browser, then stored on the server
+                        (uploads/hero) and served from /media. Max 15 MB.
                       </span>
                     </div>
 
@@ -388,18 +480,43 @@ export function HeroEditor({ label }: { label: string }) {
             </div>
           )}
 
+          {legacy && (
+            <div className="flex flex-wrap items-start gap-3 rounded-[8px] border border-dashed border-brand-300 bg-brand-50/50 px-3 py-2.5">
+              <Database size={13} className="mt-0.5 shrink-0 text-brand-700" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-semibold text-ink">
+                  Slides found in this browser
+                </p>
+                <p className="mt-0.5 text-[10px] leading-relaxed text-muted">
+                  This browser still holds {legacy.banners.length} slide
+                  {legacy.banners.length === 1 ? "" : "s"} saved before the database existed.
+                  Import them, then save to publish for everyone.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={importLocal}
+                className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-white px-2.5 text-[10px] font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+              >
+                <Database size={11} /> Import into editor
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-wrap items-center gap-2 rounded-[10px] border border-line bg-white p-4">
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-60"
             >
-              <Save size={13} /> Save changes
+              <Save size={13} /> {pending ? "Saving..." : "Save changes"}
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:text-brand-700"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:text-brand-700 disabled:opacity-60"
             >
               <RotateCcw size={13} /> Restore sample
             </button>
@@ -467,9 +584,11 @@ export function HeroEditor({ label }: { label: string }) {
 
           <div className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3">
             <p className="text-[10px] leading-relaxed text-muted">
-              <span className="font-semibold text-ink">Demo note:</span> slides and copy are
-              stored in this browser (localStorage) only — no upload reaches a server, and
-              there is no database. Saved changes appear on the homepage in this browser.
+              <span className="font-semibold text-ink">Storage:</span> slides live in the Neon
+              database (<code>content_blocks</code>, key <code>hero</code>) and images are
+              written to local disk under <code>uploads/hero</code>, served at{" "}
+              <code>/media</code>. Saving publishes for every visitor; the homepage is cached
+              and refreshed by the save action.
             </p>
           </div>
         </div>

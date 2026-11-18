@@ -15,11 +15,15 @@ import { PublishersStrip } from "@/components/home/PublishersStrip";
 import { ReviewsWall } from "@/components/home/ReviewsWall";
 import { VideoQuizSection } from "@/components/home/VideoQuizSection";
 import { StoryCommunity } from "@/components/home/StoryCommunity";
+import { getHeroContent } from "@/lib/db/queries/hero";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Cached with cacheTag "content:hero"; the admin save action expires it.
+  const hero = await getHeroContent();
+
   return (
     <>
-      <Hero />
+      <Hero banners={hero.banners} />
       <TrustStrip />
       <CategoryShowcase />
       <CategoryBookRails />

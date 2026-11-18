@@ -8,18 +8,114 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-## TalkNest BD project guide
+## Project docs, tooling and SEO - read these first
+
+Three project documents are authoritative for work beyond a one-line fix:
+
+- `docs/ARCHITECTURE.md` - the database decision (Neon PostgreSQL 18 + Drizzle), full schema,
+  Next.js 16 cache strategy (`"use cache"` / `cacheLife` / `cacheTag`), image pipeline,
+  local file-upload design, and the phased migration from `localStorage`.
+- `docs/SEO.md` - canonical / sitemap / robots rules, per-route metadata, JSON-LD,
+  Core Web Vitals budget, AI-crawler policy, and the known SEO bugs.
+- `docs/AGENT-TOOLING.md` - every installed skill and MCP server, with exact tool paths
+  and when to use each.
+
+### Auth is a later phase
+
+Authentication is **not** implemented yet - the login form is still a client-side demo.
+When it is built it will be self-hosted Better Auth with Google login; the decision and
+rationale are in `docs/ARCHITECTURE.md` §3.6. Do not add `@neon/auth` / `NEON_AUTH_*`.
+Do not build auth until the data-layer phases that precede it are done.
+
+### Accepted-risk workarounds must be tracked with `TODO(auth)`
+
+We are intentionally building APIs **before** auth exists. Anyone who takes a shortcut
+around authentication must leave a grep-able marker so it cannot be forgotten:
+
+```ts
+// TODO(auth): dev-only guard - replace with requireAdmin() when Better Auth lands
+```
+
+Rules:
+
+1. Every temporary auth bypass, dev-only token, hardcoded admin cookie, or nullable
+   `user_id` gets a `TODO(auth)` comment with the reason and the replacement.
+2. Every `TODO(auth)` must be gone **before any public deploy**. Non-empty means the site
+   is not shippable, no matter how finished the features look.
+
+   ```powershell
+   Get-ChildItem src -Recurse -Include *.ts,*.tsx | Select-String 'TODO\(auth\)'
+   ```
+
+   (git-bash / CI: `grep -rn "TODO(auth)" src`.)
+
+3. When Better Auth is implemented, closing every `TODO(auth)` is part of that task, not a
+   follow-up. The full ledger, with the replacement for each entry, is
+   `docs/ARCHITECTURE.md` §9.1.
+
+#### Known deferred debt (reads as of Nov 2026)
+
+| Item | Current state | Must become |
+| --- | --- | --- |
+| Media upload endpoint | Blocked in dev by a local-only guard; never public | `requireAdmin()` + per-kind MIME/size validation |
+| `orders.user_id`, `reviews.user_id`, `audio_unlocks.user_id` | Nullable text, no FK | `references users(id)` with real values |
+| `/account/**`, order history | Client-side demo only | Server session via `getSession()` |
+| Admin panel writes | Client localStorage gate | Server role check in the admin layout |
+
+On `AGENTS.md` / docs edits: `next dev` rewrites the block at the top of this file. Keep it,
+and keep this section intact.
+
+### Tooling is installed — use it, do not guess
+
+- **Next.js APIs:** call the `next-devtools` MCP tool `nextjs_docs`, or read
+  `node_modules/next/dist/docs/`. This is Next 16.4.6; training data is unreliable.
+- **Library APIs:** use `context7` (`resolve-library-id` → `query-docs`).
+- **UI verification:** use `playwright` to open the changed route and read
+  `browser_console_messages` before declaring the work done.
+- **Skills to load by task:**
+  - `nextjs-seo` — metadata, sitemap, robots, canonical, structured data, OG images.
+  - `nextjs-ship-ready` — any pre-deploy / production-readiness pass.
+  - `vercel-react-best-practices` — RSC boundaries, providers, bundle, data fetching.
+  - `security-best-practices` — auth, uploads, server actions, input handling.
+  - `ui-ux-pro-max` / `frontend-design` / `ui-styling` — visual or component design work.
+  - `web-design-guidelines` — UI/accessibility review.
+- **After editing code that touches input, auth, uploads, secrets, config or deps:** run a
+  secrets pass (gitleaks) plus a SAST pass (`semgrep`, `trivy` or `njordscan`). Report
+  findings with severity, `file:line`, why it matters and the fix. Never paste secret
+  values into the transcript.
 
 ### About
 
-TalkNest BD is a Bengali-first demo bookstore and reader community built with Next.js App Router, React 19 and Tailwind CSS v4. There is no backend: cart, wishlist, orders, addresses, profile and audio unlocks live in browser `localStorage`.
+TalkNest BD is a Bengali-first demo bookstore and reader community built with Next.js App Router, React 19 and Tailwind CSS v4. Today there is no backend: cart, wishlist, orders, addresses, profile and audio unlocks live in browser `localStorage`. A PostgreSQL-backed architecture is designed and documented in `docs/ARCHITECTURE.md`; until it is implemented, do not assume a server, session, or database exists.
 
 ### Commands
 
 - `npm run dev` — development server
 - `npm run build` — production build
 - `npm start` — serve the production build
-- `npx tsc --noEmit --pretty false` — type-check (run this before deploying)
+- `npx tsc --noEmit --pretty false` (alias `npm run typecheck`) — type-check before deploying
+- `npm run db:generate` — generate a SQL migration from `src/lib/db/schema.ts`
+- `npm run db:migrate` — apply migrations to Neon (uses `DATABASE_URL_UNPOOLED`)
+- `npm run db:seed` — seed `content_blocks` from `src/data` (safe to re-run)
+- `npm run db:studio` — Drizzle Studio
+
+### Database (Neon Postgres + Drizzle) — first slice is live
+
+- `src/lib/db/index.ts` — postgres.js singleton, `prepare: false` (Neon pooler), `ssl: "require"`. Server-only.
+- `src/lib/db/schema.ts` — `content_blocks(key, data jsonb, updated_at)`. One row per editable
+  page document; zod validates the shape in `src/lib/*-schema.ts`, not in the database.
+- `src/lib/db/queries/*.ts` — cached reads (`"use cache"` + `cacheLife` + `cacheTag`).
+- `src/lib/actions/*.ts` — `"use server"` writes; call `updateTag(tag)` so the editor sees
+  its own save immediately (never the deprecated single-arg `revalidateTag`).
+- **Migrated so far:** the homepage hero. Row `content_blocks.key = 'hero'`, read by
+  `src/app/(storefront)/page.tsx`, written from `/admin/sections/hero`. Everything else in
+  `src/lib/*-content.ts` is still localStorage — migrate it the same way, one section at a
+  time, using the hero as the reference implementation.
+- **Uploads:** `POST /api/uploads` (base64 JSON, development only — production is
+  fail-closed with a `TODO(auth)`) writes to `UPLOAD_DIR`; `GET /media/*` serves it.
+  Never write into `public/`.
+- **Next 16 trap:** `export const runtime` in a route file is rejected when
+  `cacheComponents: true` (build error). Omit it — route handlers are already Node.
 
 ### Architecture
 

@@ -5,19 +5,18 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperInstance } from "swiper";
 import "swiper/css";
 import { Container } from "@/components/ui/Container";
-import { useHeroContent } from "@/components/providers/HeroContentProvider";
-import { bannerSrc, bannerSrcSet } from "@/lib/hero-content";
+import { bannerSrc, bannerSrcSet, type HeroBanner } from "@/lib/hero-content";
 
 const AUTOPLAY_MS = 6000;
 
 /**
  * Image-only campaign banners. The carousel rotates on its own and can be
  * swiped, but it deliberately has no overlaid copy, buttons or navigation.
- * Slides are managed from /admin/sections/hero and stored in localStorage.
+ * Slides come from the `content_blocks` row key "hero", edited at
+ * /admin/sections/hero, and are passed in from the server component so the
+ * first paint already has them (no localStorage flash).
  */
-export function Hero() {
-  const { content } = useHeroContent();
-  const banners = content.banners;
+export function Hero({ banners }: { banners: HeroBanner[] }) {
   const swiperRef = useRef<SwiperInstance | null>(null);
   const timerRef = useRef<number | null>(null);
 

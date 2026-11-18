@@ -1,7 +1,6 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
-import { HeroContentProvider } from "@/components/providers/HeroContentProvider";
 import { TrustContentProvider } from "@/components/providers/TrustContentProvider";
 import { CategoryContentProvider } from "@/components/providers/CategoryContentProvider";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
@@ -36,11 +35,11 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: {
-    default: "TalkNest BD — Books, Stories & Community",
+    default: "TalkNest BD â€” Books, Stories & Community",
     template: "%s | TalkNest BD",
   },
   description:
-    "Discover bestselling books, new arrivals, audiobooks, used books, Islamic history and a community of readers — all in one place. TalkNest BD.",
+    "Discover bestselling books, new arrivals, audiobooks, used books, Islamic history and a community of readers â€” all in one place. TalkNest BD.",
   keywords: [
     "TalkNest BD",
     "online bookstore",
@@ -56,9 +55,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     url: SITE_URL,
-    title: "TalkNest BD — Books, Stories & Community",
+    title: "TalkNest BD â€” Books, Stories & Community",
     description:
-      "Books, audiobooks, stories and a community of readers — all in one place.",
+      "Books, audiobooks, stories and a community of readers â€” all in one place.",
     type: "website",
     locale: "en_BD",
     siteName: "TalkNest BD",
@@ -87,48 +86,46 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <StoreProvider>
-          <HeroContentProvider>
-            <TrustContentProvider>
-              <CategoryContentProvider>
-                <BookContentProvider>
-                  <ShelfContentProvider>
-                    <SellContentProvider>
-                      <SellRequestsProvider>
-                        <UpSaleBooksProvider>
-                          <UsedContentProvider>
-                            <NotificationsProvider>
-                              <WholesaleContentProvider>
-                                <WholesaleRequestsProvider>
-                                  <AdminAccessProvider>
-                            <AudioContentProvider>
-                            <AuthorContentProvider>
-                              <PublisherContentProvider>
-                                <ReviewsProvider>
-                                  <VideoQuizProvider>
-                                    <StoriesProvider>
-                                      <SiteSettingsProvider>
-                                        <SiteScripts />
-                                        {children}
-                                      </SiteSettingsProvider>
-                                    </StoriesProvider>
-                                  </VideoQuizProvider>
-                                </ReviewsProvider>
-                              </PublisherContentProvider>
-                            </AuthorContentProvider>
-                          </AudioContentProvider>
-                          </AdminAccessProvider>
-                                </WholesaleRequestsProvider>
-                              </WholesaleContentProvider>
-                            </NotificationsProvider>
-                          </UsedContentProvider>
-                        </UpSaleBooksProvider>
-                      </SellRequestsProvider>
-                    </SellContentProvider>
-                  </ShelfContentProvider>
-                </BookContentProvider>
-              </CategoryContentProvider>
-            </TrustContentProvider>
-          </HeroContentProvider>
+          <TrustContentProvider>
+            <CategoryContentProvider>
+              <BookContentProvider>
+                <ShelfContentProvider>
+                  <SellContentProvider>
+                    <SellRequestsProvider>
+                      <UpSaleBooksProvider>
+                        <UsedContentProvider>
+                          <NotificationsProvider>
+                            <WholesaleContentProvider>
+                              <WholesaleRequestsProvider>
+                                <AdminAccessProvider>
+                          <AudioContentProvider>
+                          <AuthorContentProvider>
+                            <PublisherContentProvider>
+                              <ReviewsProvider>
+                                <VideoQuizProvider>
+                                  <StoriesProvider>
+                                    <SiteSettingsProvider>
+                                      <SiteScripts />
+                                      {children}
+                                    </SiteSettingsProvider>
+                                  </StoriesProvider>
+                                </VideoQuizProvider>
+                              </ReviewsProvider>
+                            </PublisherContentProvider>
+                          </AuthorContentProvider>
+                        </AudioContentProvider>
+                        </AdminAccessProvider>
+                              </WholesaleRequestsProvider>
+                            </WholesaleContentProvider>
+                          </NotificationsProvider>
+                        </UsedContentProvider>
+                      </UpSaleBooksProvider>
+                    </SellRequestsProvider>
+                  </SellContentProvider>
+                </ShelfContentProvider>
+              </BookContentProvider>
+            </CategoryContentProvider>
+          </TrustContentProvider>
         </StoreProvider>
       </body>
     </html>
