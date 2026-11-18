@@ -159,6 +159,19 @@ export interface Story {
   likes: number;
   date: string;
   avatarColor: string;
+  /** Full submitted story text (written stories). */
+  body?: string;
+  /** Uploaded PDF file name (PDF stories). */
+  attachmentName?: string;
+  /** Small uploaded PDF stored as a data URL (demo, browser only). */
+  attachmentDataUrl?: string;
+  /** Recorded audio URL (voice stories, demo session only). */
+  audioUrl?: string;
+  /** Small uploaded audio file stored as a data URL (demo, browser only). */
+  audioDataUrl?: string;
+  /** Moderation state for admin-managed stories. */
+  status?: "Published" | "Pending" | "Rejected";
+  createdAt?: string;
 }
 
 export interface TalkVideo {

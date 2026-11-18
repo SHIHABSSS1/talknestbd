@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import {
-  CheckCircle2,
-  MessageSquareText,
-  Send,
-  ShoppingBag,
-  Sparkles,
-} from "lucide-react";
+  CheckCircle2, MessageSquareText, Send, ShoppingBag, Clock3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -137,7 +132,7 @@ export function ContactForm() {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-forest-900/8 pt-4">
         <p className="flex items-center gap-1.5 text-[9px] text-muted">
-          <Sparkles size={11} /> We try to respond within 1 business day
+          <Clock3 size={11} /> We try to respond within 1 business day
         </p>
         <Button type="submit" size="sm">
           <Send size={13} /> Send message

@@ -1,24 +1,4 @@
-import {
-  BookOpen,
-  Clock,
-  Gift,
-  GraduationCap,
-  Headphones,
-  Heart,
-  Library,
-  Mic,
-  PlayCircle,
-  Radio,
-  Repeat2,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Store,
-  Tag,
-  Truck,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { BookOpen, Clock, Gift, GraduationCap, Headphones, Heart, Library, Mic, PlayCircle, Radio, Repeat2, ShieldCheck, BadgeCheck, Star, Store, Tag, Truck, Users, type LucideIcon } from "lucide-react";
 import type { TrustIconKey } from "@/lib/trust-content";
 
 const icons: Record<TrustIconKey, LucideIcon> = {
@@ -33,7 +13,7 @@ const icons: Record<TrustIconKey, LucideIcon> = {
   star: Star,
   heart: Heart,
   users: Users,
-  sparkles: Sparkles,
+  sparkles: BadgeCheck,
   radio: Radio,
   play: PlayCircle,
   clock: Clock,
@@ -53,7 +33,7 @@ export function TrustIcon({
   className?: string;
   strokeWidth?: number;
 }) {
-  const Component = icons[icon] ?? Sparkles;
+  const Component = icons[icon] ?? BadgeCheck;
   return (
     <Component size={size} strokeWidth={strokeWidth} className={className} />
   );

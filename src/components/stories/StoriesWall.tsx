@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 import type { Story, StoryType } from "@/lib/types";
-import { stories } from "@/data/community";
+import { useStories } from "@/components/providers/StoriesProvider";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
@@ -30,6 +30,8 @@ const filters = ["All", "Voice", "Written", "PDF"] as const;
 const storyAudio = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
 export function StoriesWall() {
+  const { content } = useStories();
+  const stories = content.stories;
   const [filter, setFilter] = useState<(typeof filters)[number]>("All");
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [active, setActive] = useState<Story | null>(null);
@@ -38,7 +40,7 @@ export function StoriesWall() {
   const filtered = useMemo(() => {
     if (filter === "All") return stories;
     return stories.filter((story) => typeMeta[story.type].short === filter);
-  }, [filter]);
+  }, [filter, stories]);
 
   const toggleLike = (id: string) => {
     setLiked((previous) => ({ ...previous, [id]: !previous[id] }));
@@ -211,7 +213,7 @@ export function StoriesWall() {
                     <div className="min-w-0 flex-1">
                       <p className="text-[10px] font-semibold">Voice story · Demo audio</p>
                       <p className="text-[8px] text-cream-100/45">
-                        {active.duration ?? "03:48"} · SoundHelix demo track
+                        {active.duration ?? "03:48"} · {active.audioDataUrl || active.audioUrl ? "Reader audio" : "SoundHelix demo track"}
                       </p>
                       <div className="mt-2 flex h-5 items-center gap-[2px]">
                         {[40, 70, 50, 85, 55, 75, 45, 90, 60, 70, 48, 82, 44, 65, 38, 78].map((height, index) => (
@@ -225,7 +227,7 @@ export function StoriesWall() {
                     </div>
                   </div>
                   {playing && (
-                    <audio autoPlay controls src={storyAudio} className="mt-3 h-8 w-full">
+                    <audio autoPlay controls src={active.audioDataUrl || active.audioUrl || storyAudio} className="mt-3 h-8 w-full">
                       Your browser does not support audio playback.
                     </audio>
                   )}
@@ -233,14 +235,23 @@ export function StoriesWall() {
               )}
 
               {active.type === "pdf" && (
-                <div className="mb-3 flex items-center gap-2 rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2.5 text-[9px] text-clay-600">
-                  <FileText size={13} />
-                  Demo PDF diary — the text below is the first part of the diary
+                <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2.5 text-[9px] text-clay-600">
+                  <FileText size={13} aria-hidden="true" />
+                  {active.attachmentName ? `PDF diary: ${active.attachmentName}` : "Demo PDF diary"}
+                  {active.attachmentDataUrl && (
+                    <a
+                      href={active.attachmentDataUrl}
+                      download={active.attachmentName || "story.pdf"}
+                      className="ml-auto font-semibold text-brand-700 underline underline-offset-2"
+                    >
+                      Download
+                    </a>
+                  )}
                 </div>
               )}
 
-              <p className="mt-3 text-[12px] leading-[1.9] text-forest-900/75 sm:text-[13px]">
-                {active.excerpt}
+              <p className="mt-3 whitespace-pre-line text-[12px] leading-[1.9] text-forest-900/75 sm:text-[13px]">
+                {active.body || active.excerpt}
               </p>
               <p className="mt-2 text-[12px] leading-[1.9] text-forest-900/65">
                 The rest of this story is being prepared to share with the reader

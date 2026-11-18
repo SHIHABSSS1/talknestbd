@@ -1,14 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgePercent,
-  CheckCircle2,
-  HandCoins,
-  Repeat2,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, BadgePercent, CheckCircle2, HandCoins, Repeat2, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { SectionTitle } from "@/components/ui/SectionTitle";
@@ -24,7 +16,7 @@ export const metadata: Metadata = {
 
 const pricingSteps = [
   {
-    icon: Sparkles,
+    icon: BadgePercent,
     step: "01",
     title: "New shelf price",
     text: "A brand-new copy carries the publisher's list price — ৳380 for A Journey Through Blue Clouds, for example.",
@@ -149,7 +141,7 @@ export default function UpSalePage() {
           <div className="mt-7 grid gap-3 rounded-[8px] border border-line bg-canvas p-4 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
             <div>
               <p className="flex items-center gap-1.5 text-[11px] font-semibold text-ink">
-                <Sparkles size={13} className="text-gold-600" />
+                <BadgePercent size={13} className="text-gold-600" />
                 Want to sell a book instead?
               </p>
               <p className="mt-1 text-[10.5px] leading-relaxed text-muted">

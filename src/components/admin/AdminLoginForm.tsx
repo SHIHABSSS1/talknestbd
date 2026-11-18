@@ -4,17 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Layers3,
-  LayoutDashboard,
-  Lock,
-  Mail,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+  ArrowLeft, ArrowRight, Eye, EyeOff, Layers3, LayoutDashboard, Lock, Mail, ShieldCheck, BookOpen } from "lucide-react";
 import { loginAdmin } from "@/lib/admin-auth";
 import { Button } from "@/components/ui/Button";
 
@@ -61,7 +51,7 @@ export function AdminLoginForm() {
               href="/"
               className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-brand-200"
             >
-              <Sparkles size={11} /> TalkNest BD
+              <BookOpen size={11} /> TalkNest BD
             </Link>
 
             <h1 className="mt-8 max-w-sm font-display text-3xl font-bold leading-snug">

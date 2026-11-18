@@ -60,7 +60,7 @@ export const deliveryLabels: Record<DeliveryMethod, string> = {
   pickup: "Store pickup",
 };
 
-const ORDERS_KEY = "talknestbd-orders-v1";
+export const ORDERS_KEY = "talknestbd-orders-v1";
 const ADDRESS_KEY = "talknestbd-addresses-v1";
 const PROFILE_KEY = "talknestbd-profile-v1";
 

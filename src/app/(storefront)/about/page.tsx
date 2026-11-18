@@ -1,25 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookHeart,
-  BookOpen,
-  Building2,
-  Clock3,
-  Compass,
-  HeartHandshake,
-  Leaf,
-  LibraryBig,
-  Mail,
-  MapPin,
-  Mic,
-  PenLine,
-  Phone,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-  Users,
-} from "lucide-react";
+import { ArrowRight, BookHeart, BookOpen, Building2, Clock3, Compass, HeartHandshake, Leaf, LibraryBig, Mail, MapPin, Mic, PenLine, Phone, ShieldCheck, BadgeCheck, Truck, Users } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -277,7 +258,7 @@ export default function AboutPage() {
 
               <section className="rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-950">
-                  <Sparkles size={13} className="text-gold-600" /> Our promise
+                  <BadgeCheck size={13} className="text-gold-600" /> Our promise
                 </p>
                 <p className="mt-1 text-[10px] leading-relaxed text-muted">
                   Every book is 100% original and every reader matters. If something goes

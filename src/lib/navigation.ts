@@ -1,32 +1,4 @@
-import {
-  BadgePercent,
-  BookOpen,
-  BookMarked,
-  Bookmark,
-  Building2,
-  CircleHelp,
-  FileText,
-  Feather,
-  Flame,
-  Gift,
-  Globe2,
-  GraduationCap,
-  Headphones,
-  HeartHandshake,
-  Landmark,
-  LibraryBig,
-  Mic,
-  Moon,
-  Newspaper,
-  PackageSearch,
-  PlayCircle,
-  Repeat2,
-  Sparkles,
-  Store,
-  TrendingUp,
-  Users,
-  Video,
-} from "lucide-react";
+import { BadgePercent, BookOpen, BookMarked, Bookmark, Building2, CircleHelp, FileText, Feather, Flame, Gift, Globe2, GraduationCap, Headphones, HeartHandshake, Landmark, LibraryBig, Mic, Moon, Newspaper, PackageSearch, PlayCircle, Repeat2, Package, Store, TrendingUp, Users, Video } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export interface NavLink {
@@ -39,7 +11,7 @@ export interface NavLink {
 export const mainNav: NavLink[] = [
   { label: "All Books", href: "/books", icon: BookOpen },
   { label: "Best Sellers", href: "/best-sellers", icon: Flame },
-  { label: "New Arrivals", href: "/new-books", icon: Sparkles },
+  { label: "New Arrivals", href: "/new-books", icon: Package },
   { label: "Buy Used Books", href: "/used-books", icon: BookMarked },
   { label: "Audiobooks", href: "/audio-books", icon: Headphones },
   { label: "Sunnah Essentials", href: "/sunnah-items", icon: Moon },

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { BadgeCheck, Heart, Send, Sparkles, Star } from "lucide-react";
+import { BadgeCheck, Heart, Send, MessageSquareText, Star } from "lucide-react";
 import { useReviews } from "@/components/providers/ReviewsProvider";
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { cn, toBn } from "@/lib/utils";
@@ -187,7 +187,7 @@ export function ReviewsExplorer() {
       <section id="review-form" className="grid gap-6 rounded-3xl border border-forest-900/8 bg-cream-50 p-6 lg:grid-cols-[0.9fr_1.1fr] sm:p-8">
         <div>
           <p className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-600">
-            <Sparkles size={13} /> Share your experience
+            <MessageSquareText size={13} /> Share your experience
           </p>
           <h2 className="mt-2 font-display text-2xl font-bold text-forest-950">Write a review</h2>
           <p className="mt-2 text-[11px] leading-relaxed text-muted">{content.page.moderationNote}</p>

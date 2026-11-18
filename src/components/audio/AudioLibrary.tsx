@@ -4,16 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  BadgeCheck,
-  CheckCircle2,
-  Clock3,
-  Headphones,
-  Lock,
-  Pause,
-  Play,
-  ShoppingBag,
-  Sparkles,
-} from "lucide-react";
+  BadgeCheck, CheckCircle2, Clock3, Headphones, Lock, Pause, Play, ShoppingBag, Gift } from "lucide-react";
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useAudioContent } from "@/components/providers/AudioContentProvider";
 import { useStore } from "@/lib/store";
@@ -205,7 +196,7 @@ export function AudioLibrary() {
                   <span className="mt-1.5 flex items-center gap-1.5">
                     {free ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-forest-100 px-1.5 py-0.5 text-[8px] font-semibold text-forest-700">
-                        <Sparkles size={8} /> Free
+                        <Gift size={8} /> Free
                       </span>
                     ) : isOwned ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-gold-500/15 px-1.5 py-0.5 text-[8px] font-semibold text-gold-600">
@@ -226,7 +217,7 @@ export function AudioLibrary() {
           })}
         </div>
         <p className="mt-3 rounded-xl bg-gold-500/8 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
-          <Sparkles size={11} className="mr-1 inline text-gold-600" />
+          <Gift size={11} className="mr-1 inline text-gold-600" />
           {content.library.freeNote} {content.library.previewNote}
         </p>
       </aside>

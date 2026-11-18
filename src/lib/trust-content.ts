@@ -68,7 +68,7 @@ export const trustIconKeys: { key: TrustIconKey; label: string }[] = [
   { key: "star", label: "Star" },
   { key: "heart", label: "Heart" },
   { key: "users", label: "Community" },
-  { key: "sparkles", label: "Sparkles" },
+  { key: "sparkles", label: "Highlight" },
   { key: "radio", label: "Radio" },
   { key: "play", label: "Play" },
   { key: "clock", label: "Clock" },

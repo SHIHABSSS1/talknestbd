@@ -1,19 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpen,
-  Headphones,
-  GraduationCap,
-  Home,
-  Mic2,
-  PlayCircle,
-  Sparkles,
-  ShoppingBag,
-  Truck,
-  UploadCloud,
-} from "lucide-react";
+import { ArrowRight, BookOpen, Headphones, GraduationCap, Home, Mic2, PlayCircle, PackageOpen, ShoppingBag, Truck, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 
@@ -57,7 +45,7 @@ const destinations = [
     label: "Sunnah items",
     detail: "Miswak, attar, tasbih and more",
     href: "/sunnah-items",
-    icon: Sparkles,
+    icon: PackageOpen,
     className: "bg-brand-50 text-brand-700",
   },
 ];

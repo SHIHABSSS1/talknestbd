@@ -1,13 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BookOpen,
-  Compass,
-  Home,
-  PackageSearch,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, BookOpen, Compass, Home, PackageSearch } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 
@@ -32,7 +25,7 @@ export default function NotFound() {
       <Container className="relative">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-clay-500">
-            <Sparkles size={12} /> Lost in the pages
+            <Compass size={12} /> Lost in the pages
           </span>
           <p className="mt-4 font-display text-[5rem] font-bold leading-none text-forest-900/12 sm:text-[7rem]">
             404

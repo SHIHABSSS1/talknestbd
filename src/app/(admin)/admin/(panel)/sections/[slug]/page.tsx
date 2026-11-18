@@ -5,6 +5,7 @@ import { AudioEditor } from "@/components/admin/AudioEditor";
 import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
 import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { ReviewsEditor } from "@/components/admin/ReviewsEditor";
+import { StoriesEditor } from "@/components/admin/StoriesEditor";
 import { VideoQuizEditor } from "@/components/admin/VideoQuizEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
@@ -137,6 +138,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "video-quiz") {
     return <VideoQuizEditor label={label} />;
+  }
+  if (slug === "stories") {
+    return <StoriesEditor label={label} />;
   }
 
   return (

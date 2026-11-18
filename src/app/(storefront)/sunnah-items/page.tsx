@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BadgeCheck, HeartHandshake, Sparkles, Truck } from "lucide-react";
+import { BadgeCheck, HeartHandshake, Moon, Truck } from "lucide-react";
 import { sunnahItems } from "@/data/sunnah";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
@@ -62,7 +62,7 @@ export default function SunnahItemsPage() {
 
           <div className="mt-8 flex flex-col items-center justify-between gap-3 rounded-3xl border border-gold-500/20 bg-gold-500/8 px-5 py-5 sm:flex-row">
             <div className="flex items-start gap-2.5">
-              <Sparkles size={18} className="mt-0.5 shrink-0 text-gold-600" />
+              <Moon size={18} className="mt-0.5 shrink-0 text-gold-600" />
               <div>
                 <p className="text-xs font-semibold text-forest-950">
                   Build a Sunnah gift pack

@@ -3,16 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowRight,
-  ArrowUpRight,
-  CheckCircle2,
-  CircleHelp,
-  Clock3,
-  Play,
-  Sparkles,
-  Trophy,
-  X,
-} from "lucide-react";
+  ArrowRight, ArrowUpRight, CheckCircle2, CircleHelp, Clock3, Play, Trophy, X } from "lucide-react";
 import type { TalkVideo } from "@/lib/types";
 import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
 import { cn, toBn } from "@/lib/utils";
@@ -203,7 +194,7 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
 
         <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[6px] border border-brand-100 bg-white/80 px-3 py-2">
           <span className="flex items-center gap-1.5 text-[10px] font-semibold text-ink">
-            <Sparkles size={12} className="text-gold-500" />
+            <Trophy size={12} className="text-gold-500" />
             {allWatched
               ? content.home.allWatchedNote
               : `${toBn(watched.length)}/${toBn(videos.length)} ${content.home.watchedSoFarNote}`}

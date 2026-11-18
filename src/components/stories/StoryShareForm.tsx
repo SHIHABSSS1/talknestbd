@@ -3,22 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowLeft,
-  CheckCircle2,
-  FileText,
-  Heart,
-  Mic,
-  Pause,
-  Play,
-  Square,
-  Trash2,
-  Upload,
-  PenLine,
-  Send,
-  Sparkles,
-} from "lucide-react";
+  ArrowLeft, CheckCircle2, FileText, Heart, Mic, Pause, Play, Square, Trash2, Upload, PenLine, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
+import { useStories } from "@/components/providers/StoriesProvider";
+import type { StoryRequest } from "@/lib/story-requests";
 
 type Mode = "text" | "voice" | "pdf";
 
@@ -32,6 +21,7 @@ const inputClass =
   "h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25";
 
 export function StoryShareForm() {
+  const { addRequest } = useStories();
   const [mode, setMode] = useState<Mode>("text");
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
@@ -130,6 +120,19 @@ export function StoryShareForm() {
       setErrors(next);
       return;
     }
+    const request: StoryRequest = {
+      id: `req-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      name: name.trim(),
+      title: title.trim(),
+      type: mode,
+      excerpt: text.trim().slice(0, 140) || (mode === "voice" ? "Voice story" : "PDF diary"),
+      body: text.trim(),
+      attachmentName: mode === "pdf" ? fileName : undefined,
+      audioUrl: mode === "voice" ? recordingUrl ?? undefined : undefined,
+      status: "Pending",
+    };
+    addRequest(request);
     setErrors({});
     setSubmitted(true);
   };
@@ -379,7 +382,7 @@ export function StoryShareForm() {
 
       <aside className="space-y-3 lg:sticky lg:top-[88px]">
         <div className="rounded-3xl bg-forest-950 p-5 text-cream-50">
-          <Sparkles size={19} className="text-gold-400" />
+          <PenLine size={19} className="text-gold-400" />
           <h2 className="mt-2 font-display text-lg font-bold leading-snug">Quick tips for a good story</h2>
           <ul className="mt-3 space-y-2 text-[10px] leading-relaxed text-cream-100/60">
             {[

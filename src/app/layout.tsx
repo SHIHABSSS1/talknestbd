@@ -21,6 +21,10 @@ import { AuthorContentProvider } from "@/components/providers/AuthorContentProvi
 import { PublisherContentProvider } from "@/components/providers/PublisherContentProvider";
 import { ReviewsProvider } from "@/components/providers/ReviewsProvider";
 import { VideoQuizProvider } from "@/components/providers/VideoQuizProvider";
+import { StoriesProvider } from "@/components/providers/StoriesProvider";
+import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
+import { SiteScripts } from "@/components/layout/SiteScripts";
+import { SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -48,7 +52,10 @@ export const metadata: Metadata = {
     "sell used books",
   ],
   authors: [{ name: "TalkNest BD" }],
+  metadataBase: new URL(SITE_URL),
+  alternates: { canonical: "/" },
   openGraph: {
+    url: SITE_URL,
     title: "TalkNest BD — Books, Stories & Community",
     description:
       "Books, audiobooks, stories and a community of readers — all in one place.",
@@ -97,7 +104,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             <AuthorContentProvider>
                               <PublisherContentProvider>
                                 <ReviewsProvider>
-                                  <VideoQuizProvider>{children}</VideoQuizProvider>
+                                  <VideoQuizProvider>
+                                    <StoriesProvider>
+                                      <SiteSettingsProvider>
+                                        <SiteScripts />
+                                        {children}
+                                      </SiteSettingsProvider>
+                                    </StoriesProvider>
+                                  </VideoQuizProvider>
                                 </ReviewsProvider>
                               </PublisherContentProvider>
                             </AuthorContentProvider>

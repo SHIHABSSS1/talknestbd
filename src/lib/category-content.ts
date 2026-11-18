@@ -76,7 +76,7 @@ export const categoryIconKeys: { key: CategoryIconKey; label: string }[] = [
   { key: "graduation", label: "Graduation cap" },
   { key: "globe", label: "Globe" },
   { key: "headphones", label: "Headphones" },
-  { key: "sparkles", label: "Sparkles" },
+  { key: "sparkles", label: "Highlight" },
 ];
 
 export const categoryAccentPresets = [

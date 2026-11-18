@@ -2,16 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import {
-  ArrowRight,
-  BookOpen,
-  Building2,
-  Clock3,
-  FileText,
-  PackageSearch,
-  PenLine,
-  Search,
-  Sparkles,
-} from "lucide-react";
+  ArrowRight, BookOpen, Building2, Clock3, FileText, PackageSearch, PenLine, Search } from "lucide-react";
 import { books } from "@/data/books";
 import { authors } from "@/data/authors";
 import { publishers } from "@/data/publishers";
@@ -291,7 +282,7 @@ async function SearchResults({
                     className="group rounded-2xl border border-forest-900/8 bg-cream-50 p-4 transition-colors hover:border-forest-900/20"
                   >
                     <span className="flex items-center gap-2 text-[8px] text-muted">
-                      <Sparkles size={10} className="text-clay-500" />
+                      <Search size={10} className="text-clay-500" />
                       {post.category}
                       <span className="ml-auto flex items-center gap-1">
                         <Clock3 size={9} /> {post.readTime}

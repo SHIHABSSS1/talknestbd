@@ -3,16 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
-  ArrowRight,
-  BookOpen,
-  CheckCircle2,
-  CircleHelp,
-  Lightbulb,
-  RotateCcw,
-  Sparkles,
-  Trophy,
-  XCircle,
-} from "lucide-react";
+  ArrowRight, BookOpen, CheckCircle2, CircleHelp, Lightbulb, RotateCcw, Trophy, XCircle } from "lucide-react";
 import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
 import type { QuizQuestion } from "@/lib/types";
 import { cn, toBn } from "@/lib/utils";
@@ -129,7 +120,7 @@ export function QuizGame({
 
         <div className="mt-4 rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
           <p className="flex items-center gap-2 text-[11px] font-semibold text-forest-950">
-            <Sparkles size={13} className="text-gold-600" /> Today&apos;s scorecard
+            <Trophy size={13} className="text-gold-600" /> Today&apos;s scorecard
           </p>
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
             {quizQuestions.map((item, questionIndex) => {

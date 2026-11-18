@@ -1,17 +1,5 @@
 import Link from "next/link";
-import {
-  AlertTriangle,
-  CalendarClock,
-  CheckCircle2,
-  CloudRain,
-  Gift,
-  MapPin,
-  PackageCheck,
-  PackageSearch,
-  PhoneCall,
-  Sparkles,
-  Truck,
-} from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, CloudRain, Gift, MapPin, PackageCheck, PackageSearch, PhoneCall, Truck } from "lucide-react";
 import { siteConfig } from "@/lib/utils";
 
 const timeline = [
@@ -146,7 +134,7 @@ export function SunnahDeliveryInfo() {
                 Gift box
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-2.5 py-1 text-[10px] font-medium text-forest-800">
-                <Sparkles size={11} className="text-gold-600" />
+                <Truck size={11} className="text-gold-600" />
                 Handwritten note
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-forest-900/10 bg-cream-50 px-2.5 py-1 text-[10px] font-medium text-forest-800">

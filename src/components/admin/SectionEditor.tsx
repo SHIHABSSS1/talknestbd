@@ -3,14 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  Eye,
-  RotateCcw,
-  Save,
-  Sparkles,
-} from "lucide-react";
+  ArrowLeft, ArrowRight, Check, Eye, RotateCcw, Save, Type } from "lucide-react";
 import type { SectionContent } from "@/lib/section-content";
 
 const fieldClass =
@@ -188,7 +181,7 @@ export function SectionEditor({
             <div className="brand-wash p-4 sm:p-6">
               <div className="rounded-[10px] border border-line bg-white p-5">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-brand-700">
-                  <Sparkles size={10} /> {form.eyebrow || "Eyebrow"}
+                  <Type size={10} /> {form.eyebrow || "Eyebrow"}
                 </span>
                 <h3 className="mt-3 font-display text-xl font-bold leading-snug text-ink">
                   {form.title || "Section title"}

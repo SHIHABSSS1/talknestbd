@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  CheckCircle2,
-  HeartHandshake,
-  Repeat2,
-  Sparkles,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, HeartHandshake, Repeat2, CircleHelp, XCircle } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -176,7 +169,7 @@ export function SellUsedBooksPageContent() {
               <SellUsedBookCalculator />
               <div className="rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">
                 <p className="flex items-center gap-1.5 text-[11px] font-semibold text-forest-950">
-                  <Sparkles size={13} className="text-gold-600" /> How selling works
+                  <CircleHelp size={13} className="text-gold-600" /> How selling works
                 </p>
                 <p className="mt-1 text-[9px] leading-relaxed text-muted">
                   {page.sellingNote}{" "}

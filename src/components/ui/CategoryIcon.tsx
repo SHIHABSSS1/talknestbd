@@ -1,14 +1,4 @@
-import {
-  BookOpen,
-  Feather,
-  Globe2,
-  GraduationCap,
-  Headphones,
-  Landmark,
-  Sparkles,
-  Users,
-  type LucideIcon,
-} from "lucide-react";
+import { BookOpen, Feather, Globe2, GraduationCap, Headphones, Landmark, BadgeCheck, Users, type LucideIcon } from "lucide-react";
 import type { CategoryIconKey } from "@/lib/category-content";
 
 const icons: Record<CategoryIconKey, LucideIcon> = {
@@ -19,7 +9,7 @@ const icons: Record<CategoryIconKey, LucideIcon> = {
   graduation: GraduationCap,
   globe: Globe2,
   headphones: Headphones,
-  sparkles: Sparkles,
+  sparkles: BadgeCheck,
 };
 
 export function CategoryIcon({
@@ -33,7 +23,7 @@ export function CategoryIcon({
   className?: string;
   strokeWidth?: number;
 }) {
-  const Component = icons[icon] ?? Sparkles;
+  const Component = icons[icon] ?? BadgeCheck;
   return (
     <Component size={size} strokeWidth={strokeWidth} className={className} />
   );

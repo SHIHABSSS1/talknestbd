@@ -1,15 +1,5 @@
 import Link from "next/link";
-import {
-  BookOpen,
-  Clock3,
-  Gift,
-  Mail,
-  MapPin,
-  PenLine,
-  Phone,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
+import { BookOpen, Clock3, Gift, Mail, MapPin, PenLine, Phone, ShieldCheck, Heart } from "lucide-react";
 import { footerLinks } from "@/lib/navigation";
 import { siteConfig } from "@/lib/utils";
 import { Container } from "@/components/ui/Container";
@@ -42,7 +32,7 @@ export function Footer() {
             <div className="relative grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12">
               <div>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.12em] text-white/80">
-                  <Sparkles size={11} className="text-sale" />
+                  <Heart size={11} className="text-sale" />
                   The TalkNest Letter
                 </span>
                 <h2 className="mt-3 max-w-2xl text-[22px] font-bold leading-tight text-white sm:text-[30px]">

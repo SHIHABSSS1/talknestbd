@@ -581,7 +581,7 @@ export function ReviewsEditor({ label }: { label: string }) {
           )}
 
           {notice && (
-            <div className={cn("flex items-start gap-2 rounded-[8px] border px-3 py-2.5", notice.error ? "border-gold-300 bg-gold-300/15" : "border-brand-100 bg-brand-50")}>
+            <div role="status" aria-live="polite" className={cn("flex items-start gap-2 rounded-[8px] border px-3 py-2.5", notice.error ? "border-gold-300 bg-gold-300/15" : "border-brand-100 bg-brand-50")}>
               {notice.error ? <AlertCircle size={13} className="mt-0.5 shrink-0 text-gold-600" /> : <Check size={13} className="mt-0.5 shrink-0 text-brand-700" />}
               <p className="text-[10px] leading-relaxed text-ink">{notice.text}</p>
             </div>

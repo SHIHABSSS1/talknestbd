@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  BookHeart,
-  CheckCircle2,
-  HandCoins,
-  MapPin,
-  MessagesSquare,
-  Recycle,
-  ShieldCheck,
-  Sparkles,
-  Truck,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, BookHeart, CheckCircle2, HandCoins, MapPin, MessagesSquare, Recycle, ShieldCheck, BookMarked, Truck } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { UsedBookSellForm, UsedBooksMarket } from "@/components/used-books/UsedBooksMarket";
@@ -112,7 +100,7 @@ export default function UsedBooksPage() {
             <div className="space-y-4">
               <section className="rounded-3xl border border-forest-900/8 bg-cream-50 p-5 sm:p-6">
                 <div className="flex items-center gap-2">
-                  <Sparkles size={17} className="text-clay-600" />
+                  <BookMarked size={17} className="text-clay-600" />
                   <h2 className="font-display text-lg font-bold text-forest-950">How it works</h2>
                 </div>
                 <div className="mt-4 space-y-3">

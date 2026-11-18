@@ -3,55 +3,55 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { MessagesSquare, Phone, X } from "lucide-react";
-import { cn, siteConfig } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import {
   FacebookIcon,
   TelegramIcon,
   WhatsAppIcon,
 } from "@/components/layout/SocialLinks";
 
-const messengerUrl = "https://m.me/talknestbd";
-
-const channels = [
-  {
-    key: "whatsapp",
-    label: "WhatsApp",
-    description: "Fastest way to reach us",
-    href: siteConfig.whatsapp,
-    external: true,
-    tint: "bg-[#25D366]",
-    icon: WhatsAppIcon,
-  },
-  {
-    key: "messenger",
-    label: "Messenger",
-    description: "Chat with us on Facebook",
-    href: messengerUrl,
-    external: true,
-    tint: "bg-clay-600",
-    icon: FacebookIcon,
-  },
-  {
-    key: "telegram",
-    label: "Telegram",
-    description: "Join our reader channel",
-    href: siteConfig.telegram,
-    external: true,
-    tint: "bg-[#229ED9]",
-    icon: TelegramIcon,
-  },
-  {
-    key: "live-chat",
-    label: "Live chat",
-    description: "Talk to customer care",
-    href: "/contact",
-    external: false,
-    tint: "bg-brand-600",
-    icon: MessagesSquare,
-  },
-] as const;
-
 export function LiveChatDock() {
+  const { settings } = useSiteSettings();
+  const channels = [
+    {
+      key: "whatsapp",
+      label: "WhatsApp",
+      description: "Fastest way to reach us",
+      href: settings.identity.whatsapp,
+      external: true,
+      tint: "bg-[#25D366]",
+      icon: WhatsAppIcon,
+    },
+    {
+      key: "messenger",
+      label: "Messenger",
+      description: "Chat with us on Facebook",
+      href: settings.social.messenger,
+      external: true,
+      tint: "bg-clay-600",
+      icon: FacebookIcon,
+    },
+    {
+      key: "telegram",
+      label: "Telegram",
+      description: "Join our reader channel",
+      href: settings.social.telegram,
+      external: true,
+      tint: "bg-[#229ED9]",
+      icon: TelegramIcon,
+    },
+    {
+      key: "live-chat",
+      label: "Live chat",
+      description: "Talk to customer care",
+      href: "/contact",
+      external: false,
+      tint: "bg-brand-600",
+      icon: MessagesSquare,
+    },
+  ].filter((channel) => channel.href.trim().length > 0);
+
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -179,11 +179,11 @@ export function LiveChatDock() {
           <div className="border-t border-line bg-canvas/70 px-4 py-2.5 text-center text-[10px] text-muted">
             Prefer to call?{" "}
             <a
-              href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
+              href={`tel:${settings.identity.phone.replace(/\s/g, "")}`}
               className="inline-flex items-center gap-1 font-semibold text-brand-700 hover:text-brand-800"
             >
               <Phone size={10} />
-              {siteConfig.phone}
+              {settings.identity.phone}
             </a>
           </div>
         </div>

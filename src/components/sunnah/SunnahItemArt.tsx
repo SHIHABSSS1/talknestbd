@@ -1,18 +1,9 @@
-import {
-  CircleDot,
-  Droplets,
-  Gem,
-  Gift,
-  Moon,
-  PenLine,
-  Sparkles,
-  Sun,
-} from "lucide-react";
+import { CircleDot, Droplets, Gem, Gift, Moon, PenLine, BadgeCheck, Sun } from "lucide-react";
 import type { SunnahIcon, SunnahItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const icons = {
-  sparkles: Sparkles,
+  sparkles: BadgeCheck,
   "circle-dot": CircleDot,
   droplets: Droplets,
   moon: Moon,
@@ -20,7 +11,7 @@ const icons = {
   gem: Gem,
   gift: Gift,
   sun: Sun,
-} satisfies Record<SunnahIcon, typeof Sparkles>;
+} satisfies Record<SunnahIcon, typeof BadgeCheck>;
 
 /**
  * CSS-generated product art keeps the Sunnah catalogue consistent with the

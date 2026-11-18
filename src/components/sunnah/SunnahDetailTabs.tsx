@@ -3,21 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  CheckCircle2,
-  ChevronDown,
-  Globe2,
-  Layers3,
-  Lock,
-  MessageCircle,
-  PackageCheck,
-  RefreshCcw,
-  Share2,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  Tag,
-  Truck,
-} from "lucide-react";
+  CheckCircle2, ChevronDown, Globe2, Layers3, Lock, MessageCircle, PackageCheck, RefreshCcw, Share2, ShieldCheck, Moon, Star, Tag, Truck } from "lucide-react";
 import type { SunnahItem } from "@/lib/types";
 import { siteConfig, toBn } from "@/lib/utils";
 import { SunnahDeliveryInfo } from "./SunnahDeliveryInfo";
@@ -80,7 +66,7 @@ export function SunnahDetailTabs({ item }: { item: SunnahItem }) {
           <div className="max-w-3xl">
             <div className="flex items-center gap-2">
               <span className="grid h-8 w-8 place-items-center rounded-lg bg-forest-100 text-forest-700">
-                <Sparkles size={15} />
+                <Moon size={15} />
               </span>
               <div>
                 <h3 className="font-display text-lg font-bold text-forest-950">

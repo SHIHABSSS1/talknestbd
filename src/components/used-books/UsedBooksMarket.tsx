@@ -2,17 +2,7 @@
 
 import { useMemo, useState } from "react";
 import {
-  ArrowRight,
-  BookOpen,
-  CheckCircle2,
-  MapPin,
-  MessageCircle,
-  Recycle,
-  Search,
-  Sparkles,
-  Upload,
-  UserRound,
-} from "lucide-react";
+  ArrowRight, BookOpen, CheckCircle2, MapPin, MessageCircle, Recycle, Search, Tag, Upload, UserRound } from "lucide-react";
 import type { UsedBook } from "@/lib/types";
 import { usedBooks } from "@/data/community";
 import { cn, formatPrice, toBn } from "@/lib/utils";
@@ -339,7 +329,7 @@ export function UsedBookSellForm() {
           </p>
         </div>
         <Button type="submit" size="sm" className="w-full">
-          <Sparkles size={13} /> List my book for sale
+          <Tag size={13} /> List my book for sale
         </Button>
         <p className="text-center text-[8px] text-muted">Demo form · No real transaction takes place</p>
       </div>
