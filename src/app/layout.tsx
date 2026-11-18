@@ -17,6 +17,8 @@ import {
   WholesaleRequestsProvider,
 } from "@/components/providers/WholesaleProviders";
 import { AudioContentProvider } from "@/components/providers/AudioContentProvider";
+import { AuthorContentProvider } from "@/components/providers/AuthorContentProvider";
+import { PublisherContentProvider } from "@/components/providers/PublisherContentProvider";
 import "./globals.css";
 
 const roboto = Roboto({
@@ -89,7 +91,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                               <WholesaleContentProvider>
                                 <WholesaleRequestsProvider>
                                   <AdminAccessProvider>
-                            <AudioContentProvider>{children}</AudioContentProvider>
+                            <AudioContentProvider>
+                            <AuthorContentProvider>
+                              <PublisherContentProvider>{children}</PublisherContentProvider>
+                            </AuthorContentProvider>
+                          </AudioContentProvider>
                           </AdminAccessProvider>
                                 </WholesaleRequestsProvider>
                               </WholesaleContentProvider>

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AudioEditor } from "@/components/admin/AudioEditor";
+import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
+import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
@@ -121,6 +123,12 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   }
   if (slug === "audio") {
     return <AudioEditor label={label} />;
+  }
+  if (slug === "authors") {
+    return <AuthorsEditor label={label} />;
+  }
+  if (slug === "publishers") {
+    return <PublishersEditor label={label} />;
   }
 
   return (

@@ -101,6 +101,8 @@ export interface Publisher {
   initials: string;
   accent: string;
   featured: boolean;
+  /** Optional uploaded logo/image (compressed data URL). */
+  imageSrc?: string;
 }
 
 export interface Review {

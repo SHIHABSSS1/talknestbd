@@ -14,7 +14,7 @@ import {
   Tag,
 } from "lucide-react";
 import { categoryLabel } from "@/data/categories";
-import { getAuthor } from "@/data/authors";
+import { useAuthorContent } from "@/components/providers/AuthorContentProvider";
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useAudioContent } from "@/components/providers/AudioContentProvider";
 import { relatedFromAll } from "@/lib/book-content";
@@ -35,6 +35,7 @@ import { discountPercent, formatCount, toBn } from "@/lib/utils";
 export function BookDetailContent({ slug }: { slug: string }) {
   const { getBook, books, hydrated } = useBookContent();
   const { content: audioContent } = useAudioContent();
+  const { getAuthor } = useAuthorContent();
   const book = getBook(slug);
 
   if (!hydrated) {

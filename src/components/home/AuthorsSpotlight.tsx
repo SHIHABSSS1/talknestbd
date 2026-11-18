@@ -1,70 +1,61 @@
+"use client";
+
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
-import { featuredAuthors } from "@/data/authors";
-import { books } from "@/data/books";
-import { formatCount, initials } from "@/lib/utils";
+import { useAuthorContent } from "@/components/providers/AuthorContentProvider";
+import { useBookContent } from "@/components/providers/BookContentProvider";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
+import { formatCount, initials } from "@/lib/utils";
 
 export function AuthorsSpotlight() {
+  const { content } = useAuthorContent();
+  const { books } = useBookContent();
+  const featured = content.authors.filter((author) => author.featured);
+
+  if (featured.length === 0) return null;
+
   return (
-    <section className="bg-white py-8 sm:py-10">
+    <section className="border-b border-line bg-white py-8 sm:py-10">
       <Container>
         <SectionHeader
-          eyebrow="Meet the authors"
-          title="The voices behind the shelves"
-          description="Get closer to the writers, thinkers and storytellers shaping what Bangladesh reads."
+          eyebrow={content.section.eyebrow}
+          title={content.section.title}
+          description={content.section.description}
           href="/authors"
-          linkLabel="All authors"
-          className="mb-6 sm:mb-7"
+          linkLabel={content.section.linkLabel}
+          className="mb-6"
         />
 
         <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6">
-          {featuredAuthors.map((author) => {
-            const authorBooks = books.filter(
-              (book) => book.authorSlug === author.slug,
-            );
+          {featured.map((author) => {
+            const authorBooks = books.filter((book) => book.authorSlug === author.slug);
             return (
               <Link
                 key={author.slug}
                 href={`/authors/${author.slug}`}
-                className="group flex flex-col items-center rounded-[8px] border border-line bg-white p-3 text-center transition-colors hover:border-brand-300 sm:p-4"
+                className="flex flex-col items-center rounded-xl border border-forest-900/8 bg-cream-50 px-2 py-4 text-center transition-all hover:-translate-y-0.5 hover:border-brand-300"
               >
-                <div className="relative h-20 w-20 overflow-hidden rounded-full bg-brand-50 sm:h-24 sm:w-24">
+                <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-brand-100 font-display text-lg text-brand-700 sm:h-16 sm:w-16">
                   {author.image ? (
-                    <img
-                      src={author.image}
-                      alt={author.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={author.image} alt={author.name} loading="lazy" className="h-full w-full object-cover" />
                   ) : (
-                    <span className="grid h-full place-items-center text-xl font-bold text-brand-700">
-                      {initials(author.name)}
-                    </span>
+                    initials(author.name)
                   )}
-                </div>
-                <h3 className="mt-2.5 line-clamp-1 text-[11px] font-medium leading-snug text-ink transition-colors group-hover:text-brand-700 sm:text-[12px]">
-                  {author.name}
-                </h3>
-                <p className="mt-0.5 line-clamp-1 text-[9px] text-muted sm:text-[10px]">
-                  {author.title}
-                </p>
-                <p className="mt-1.5 inline-flex items-center gap-1 text-[9px] text-brand-600">
-                  <BookOpen size={9} />
-                  {formatCount(authorBooks.length)} books
-                </p>
+                </span>
+                <span className="mt-3 block text-[11px] font-semibold text-forest-950">{author.name}</span>
+                <span className="mt-0.5 block text-[9px] text-muted">{author.title}</span>
+                <span className="mt-2 inline-flex items-center gap-1 text-[9px] text-brand-700">
+                  <BookOpen size={10} /> {formatCount(authorBooks.length)} books
+                </span>
               </Link>
             );
           })}
         </div>
 
-        <ViewAllRow
-          href="/authors"
-          label="All authors"
-          count={`${featuredAuthors.length} featured`}
-        />
+        <ViewAllRow href="/authors" label={content.section.linkLabel} count={`${featured.length} featured`} />
       </Container>
     </section>
   );
