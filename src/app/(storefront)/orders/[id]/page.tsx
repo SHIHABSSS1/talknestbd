@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Container } from "@/components/ui/Container";
 import { OrderReceipt } from "@/components/orders/OrderReceipt";
+import { requireUser } from "@/lib/auth-guards";
+
+export const instant = false;
 
 export const metadata: Metadata = {
   title: "Order Receipt",
@@ -39,6 +42,7 @@ async function OrderReceiptContent({
 }) {
   const { id } = await params;
   if (!id) notFound();
+  await requireUser(`/orders/${id}`);
 
   return <OrderReceipt orderId={id} />;
 }

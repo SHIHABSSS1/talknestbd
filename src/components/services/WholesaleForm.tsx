@@ -16,7 +16,8 @@ import {
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import { useWholesaleRequests } from "@/components/providers/WholesaleProviders";
-import { readAddresses, readProfile } from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import type { Profile, SavedAddress } from "@/lib/orders";
 import type { WholesaleRequest } from "@/lib/wholesale-requests";
 
 const inputClass =
@@ -49,11 +50,14 @@ export function WholesaleForm() {
   const [reference, setReference] = useState<string | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const loginWithProfile = () => {
-    const profile = readProfile();
-    const saved = readAddresses();
-    const address = saved.find((item) => item.isDefault) ?? saved[0];
-    setValues((current) => ({
+  const loginWithProfile = async () => {
+    try {
+      const [profile, saved] = await Promise.all([
+        accountFetch<Profile>("/api/account/profile"),
+        accountFetch<SavedAddress[]>("/api/account/addresses"),
+      ]);
+      const address = saved.find((item) => item.isDefault) ?? saved[0];
+      setValues((current) => ({
       ...current,
       organization: current.organization || "My organisation",
       contact: address?.name || profile.name,
@@ -65,8 +69,11 @@ export function WholesaleForm() {
             .join(", ")
         : profile.city,
     }));
-    setLoggedIn(true);
-    setErrors({});
+      setLoggedIn(true);
+      setErrors({});
+    } catch {
+      setErrors({ contact: "Please sign in to fill this form from your account." });
+    }
   };
 
   const update = (patch: Partial<WholesaleValues>) =>

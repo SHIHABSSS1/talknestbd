@@ -3,6 +3,7 @@
 import { updateTag } from "next/cache";
 import { eq } from "drizzle-orm";
 
+import { getServerSession, isAdminSession } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
@@ -18,14 +19,12 @@ function expireHero(): void {
   updateTag("content");
 }
 
-/**
- * Replaces the hero document.
- *
- * TODO(auth): add requireAdmin() here before Better Auth lands. Right now any
- * caller can invoke this action from the admin editor. See AGENTS.md
- * "Accepted-risk workarounds must be tracked with TODO(auth)".
- */
+/** Replaces the hero document. Requires a real admin session. */
 export async function saveHeroContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+
   const parsed = heroContentSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -66,12 +65,12 @@ export async function saveHeroContent(input: unknown): Promise<SaveResult> {
   };
 }
 
-/**
- * Removes the stored document so the built-in sample slides are used again.
- *
- * TODO(auth): add requireAdmin() here before Better Auth lands.
- */
+/** Removes the stored document so the built-in sample slides are used again. */
 export async function resetHeroContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the section." };
+  }
+
   try {
     await db.delete(contentBlocks).where(eq(contentBlocks.key, HERO_CONTENT_KEY));
   } catch (error) {

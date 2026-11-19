@@ -51,6 +51,37 @@ npm run build
 npm start
 ```
 
+## Admin access (setup)
+
+The admin panel uses real Better Auth sessions. Only accounts with `role = "admin"`
+can sign in at `/admin/login`. Google sign-in creates regular reader accounts;
+an admin account is created once with the seed script below.
+
+1. Copy `.env.example` to `.env.local` and fill in `DATABASE_URL`,
+   `DATABASE_URL_UNPOOLED`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` and the
+   `SEED_ADMIN_*` values. Use a password of at least 8 characters.
+2. Apply the database migrations (they create the identity tables, `roles` and
+   `user_roles`):
+
+   ```bash
+   npm run db:migrate
+   ```
+
+3. Create (or rotate the password of) the admin account. The script is
+   idempotent and also seeds the built-in roles, assigning **Super Admin** to
+   the seeded account:
+
+   ```bash
+   npm run db:seed:admin
+   ```
+
+4. Start the app with `npm run dev` and sign in at
+   [http://localhost:3000/admin/login](http://localhost:3000/admin/login).
+
+Other database commands: `npm run db:seed` (content demo data),
+`npm run db:generate` (new migration from `src/lib/db/schema.ts`),
+`npm run db:studio` (Drizzle Studio). Never commit real secrets from `.env.local`.
+
 ## Project structure
 
 ```text

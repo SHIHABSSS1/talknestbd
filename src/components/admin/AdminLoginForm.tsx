@@ -4,38 +4,78 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  ArrowLeft, ArrowRight, Eye, EyeOff, Layers3, LayoutDashboard, Lock, Mail, ShieldCheck, BookOpen } from "lucide-react";
-import { loginAdmin } from "@/lib/admin-auth";
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Layers3,
+  LayoutDashboard,
+  Lock,
+  Mail,
+  ShieldCheck,
+  BookOpen,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/Button";
+import { authClient } from "@/lib/auth-client";
 
 const highlights = [
-  { icon: Layers3, title: "Page sections", text: "Edit every homepage title & description" },
+  { icon: Layers3, title: "Page sections", text: "Edit every homepage title and description" },
   { icon: LayoutDashboard, title: "Live overview", text: "Stats and shortcuts at a glance" },
-  { icon: ShieldCheck, title: "Demo safe", text: "Nothing is sent to a server" },
+  { icon: ShieldCheck, title: "Secure access", text: "Only accounts with the admin role can enter" },
 ];
 
 export function AdminLoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("admin@talknestbd.com");
-  const [password, setPassword] = useState("demo1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitting(true);
-    // Demo mode: credentials are decorative — any click signs you in.
-    loginAdmin();
-    router.push("/admin");
-  };
 
   const inputClass =
     "h-12 w-full rounded-[4px] border border-line bg-white pl-11 pr-4 text-[13px] text-ink placeholder:text-muted/50 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/20";
 
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setSubmitting(true);
+    const { error: signInError } = await authClient.signIn.email({
+      email: email.trim().toLowerCase(),
+      password,
+      callbackURL: "/admin",
+    });
+
+    if (signInError) {
+      setError("Incorrect email or password.");
+      setSubmitting(false);
+      return;
+    }
+
+    const { data: session } = await authClient.getSession();
+    if (session?.user.role !== "admin") {
+      await authClient.signOut();
+      setError("This account does not have admin access.");
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/admin");
+    router.refresh();
+  }
+
   return (
     <div className="mx-auto max-w-5xl overflow-hidden rounded-[16px] border border-line bg-white shadow-[0_30px_70px_-55px_rgba(11,61,122,0.5)]">
       <div className="grid lg:grid-cols-[0.92fr_1.08fr]">
-        {/* Brand panel */}
         <div className="relative hidden overflow-hidden bg-brand-950 p-9 text-white lg:block">
           <div aria-hidden="true" className="absolute inset-0 paper-texture opacity-[0.08]" />
           <div
@@ -80,16 +120,15 @@ export function AdminLoginForm() {
 
             <div className="mt-auto rounded-[10px] border border-white/10 bg-white/[0.04] p-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-200">
-                Demo environment
+                Secure sign in
               </p>
               <p className="mt-1.5 text-[10px] leading-relaxed text-white/50">
-                No passwords are verified and no data leaves your browser.
+                Sessions are stored in HTTP-only cookies and verified on the server.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Form panel */}
         <div className="p-6 sm:p-10">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -99,9 +138,7 @@ export function AdminLoginForm() {
               <h2 className="mt-1 font-display text-2xl font-bold text-ink sm:text-[28px]">
                 Welcome back
               </h2>
-              <p className="mt-1 text-[11px] text-muted">
-                Sign in to open your dashboard.
-              </p>
+              <p className="mt-1 text-[11px] text-muted">Sign in to open your dashboard.</p>
             </div>
             <span className="grid h-11 w-11 shrink-0 place-items-center rounded-[10px] bg-brand-50 text-brand-700">
               <LayoutDashboard size={20} />
@@ -153,10 +190,11 @@ export function AdminLoginForm() {
               </span>
             </label>
 
-            <label className="flex items-center gap-2 text-[11px] text-muted">
-              <input type="checkbox" defaultChecked className="h-3.5 w-3.5 accent-brand-600" />
-              Keep me signed in
-            </label>
+            {error ? (
+              <p className="rounded-[8px] border border-clay-500/20 bg-clay-500/5 px-3 py-2 text-[10px] text-clay-600">
+                {error}
+              </p>
+            ) : null}
 
             <Button type="submit" size="lg" className="w-full" disabled={submitting}>
               {submitting ? "Signing in…" : "Sign in to dashboard"}
@@ -164,11 +202,10 @@ export function AdminLoginForm() {
             </Button>
           </form>
 
-          <div className="mt-5 rounded-[8px] border border-brand-100 bg-brand-50 px-3.5 py-3">
-            <p className="text-[10px] leading-relaxed text-brand-800">
-              <span className="font-semibold">Demo mode:</span> fields are optional — just
-              click <span className="font-semibold">Sign in to dashboard</span> and you&apos;re in.
-            </p>
+          <div className="mt-5 flex justify-center">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-100 bg-brand-50 px-3 py-1.5 text-[9px] font-medium text-brand-800">
+              <ShieldCheck size={11} /> Admin-only access · secured by Better Auth
+            </span>
           </div>
 
           <Link

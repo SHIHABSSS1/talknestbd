@@ -1,12 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bell, Lock, Mail, MapPin, Phone, Save, UserRound } from "lucide-react";
-import {
-  readProfile,
-  saveProfile,
-  type Profile,
-} from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import { authClient } from "@/lib/auth-client";
+import type { Profile } from "@/lib/orders";
 import { useStore } from "@/lib/store";
 import { cn, initials } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -28,13 +27,17 @@ const defaultPreferences: Preferences = {
 };
 
 export function ProfileSettings() {
+  const router = useRouter();
   const { notify } = useStore();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [preferences, setPreferences] = useState<Preferences>(defaultPreferences);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setProfile(readProfile());
+    accountFetch<Profile>("/api/account/profile")
+      .then(setProfile)
+      .catch(() => notify("Could not load your profile."));
     try {
       const raw = window.localStorage.getItem(PREF_KEY);
       if (raw) {
@@ -43,16 +46,17 @@ export function ProfileSettings() {
     } catch {
       // ignore malformed preference data
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!profile) {
     return <div className="h-80 animate-pulse rounded-3xl bg-cream-100" />;
   }
 
-  const save = () => {
+  async function save() {
+    if (!profile || saving) return;
     const next: Record<string, string> = {};
-    if (!profile.name.trim()) next.name = "Enter your name";
-    if (!/^\S+@\S+\.\S+$/.test(profile.email)) next.email = "Enter a valid email address";
+    if (profile.name.trim().length < 2) next.name = "Enter your name";
     if (profile.phone.replace(/\D/g, "").length < 11) {
       next.phone = "Enter an 11-digit mobile number";
     }
@@ -60,15 +64,37 @@ export function ProfileSettings() {
       setErrors(next);
       return;
     }
+
     setErrors({});
-    saveProfile(profile);
+    setSaving(true);
     try {
-      window.localStorage.setItem(PREF_KEY, JSON.stringify(preferences));
-    } catch {
-      // ignore
+      const updated = await accountFetch<Profile>("/api/account/profile", {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: profile.name.trim(),
+          phone: profile.phone.trim(),
+          city: profile.city.trim(),
+        }),
+      });
+      setProfile(updated);
+      try {
+        window.localStorage.setItem(PREF_KEY, JSON.stringify(preferences));
+      } catch {
+        // ignore
+      }
+      notify("Profile and settings saved");
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "Could not save your profile.");
+    } finally {
+      setSaving(false);
     }
-    notify("Profile and settings saved");
-  };
+  }
+
+  async function signOut() {
+    await authClient.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   const inputClass =
     "h-11 w-full rounded-xl border border-forest-900/12 bg-cream-50 px-3.5 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25";
@@ -78,7 +104,7 @@ export function ProfileSettings() {
       <div>
         <h1 className="font-display text-xl font-bold text-forest-950">Profile and settings</h1>
         <p className="mt-0.5 text-[10px] text-muted">
-          Update your details, contact number and notification preferences.
+          Update your details and notification preferences.
         </p>
       </div>
 
@@ -91,7 +117,7 @@ export function ProfileSettings() {
             <p className="text-sm font-semibold text-forest-950">{profile.name}</p>
             <p className="text-[10px] text-muted">{profile.email}</p>
             <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-forest-100 px-2 py-0.5 text-[8px] font-semibold text-forest-700">
-              Demo account
+              Signed in
             </span>
           </div>
         </div>
@@ -116,10 +142,12 @@ export function ProfileSettings() {
             <input
               type="email"
               value={profile.email}
-              onChange={(event) => setProfile({ ...profile, email: event.target.value })}
-              className={cn(inputClass, errors.email && "border-clay-500/70")}
+              disabled
+              className={cn(inputClass, "bg-cream-100 text-muted")}
             />
-            {errors.email && <span className="mt-1 block text-[10px] text-clay-600">{errors.email}</span>}
+            <span className="mt-1 block text-[9px] text-muted">
+              Email changes require verification — contact support.
+            </span>
           </label>
 
           <label className="block">
@@ -187,22 +215,26 @@ export function ProfileSettings() {
           Security
         </h2>
         <p className="mt-1 text-[10px] leading-relaxed text-muted">
-          This is a front-end demo account. No real password or login details
-          are stored. Secure authentication will be added with the live payment
-          and order system in the future.
+          Your session is stored in a secure HTTP-only cookie. Use the links below to
+          manage your password or sign out.
         </p>
-        <Button href="/login" variant="outline" size="sm" className="mt-3">
-          View login page
-        </Button>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Button href="/forgot-password" variant="outline" size="sm">
+            Change password
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={signOut}>
+            Sign out
+          </Button>
+        </div>
       </section>
 
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3">
         <p className="text-[9px] text-muted">
-          Changes are saved only in this browser.
+          Profile changes are saved to your account. Preferences stay in this browser.
         </p>
-        <Button type="button" size="sm" onClick={save}>
+        <Button type="button" size="sm" onClick={save} disabled={saving}>
           <Save size={13} />
-          Save settings
+          {saving ? "Saving…" : "Save settings"}
         </Button>
       </div>
     </div>

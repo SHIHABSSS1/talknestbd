@@ -135,7 +135,7 @@ Only scan code and paths the user owns or is authorised to scan.
   `cacheLife` + `cacheTag`; `revalidateTag(tag, profile)` takes a second argument.
 - `images.qualities` is **required** in Next 16 (default `[75]`).
 - The `<Image priority>` prop is **deprecated** in v16 — use `preload`.
-- All user-facing copy is **Bengali-first**; keep new strings in Bengali.
+- **English only:** new pages, UI strings, emails and agent responses must be in English. Pre-existing Bengali content is out of scope unless a full translation is requested.
 - Book covers are CSS-generated unless an image was uploaded. Do not introduce external
   cover URLs.
 - There is one book detail page: `/books/[slug]`. Never add a shelf-specific detail page.

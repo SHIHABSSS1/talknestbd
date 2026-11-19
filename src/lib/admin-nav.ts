@@ -1,4 +1,4 @@
-import { BadgeCheck, BadgePercent, Bell, BookMarked, BookOpen, Building2, Flame, Gift, Globe2, GraduationCap, Headphones, HeartHandshake, Image as ImageIcon, LayoutDashboard, LayoutGrid, LibraryBig, LogIn, Mic, Moon, Newspaper, PlayCircle, Repeat2, Settings, ShieldCheck, ShoppingBag, Package, TrendingUp, Users, UsersRound, UserRound, type LucideIcon } from "lucide-react";
+import { BadgeCheck, BadgePercent, Bell, BookMarked, BookOpen, Building2, Flame, Gift, Globe2, GraduationCap, Headphones, HeartHandshake, Image as ImageIcon, LayoutDashboard, LayoutGrid, LibraryBig, Mic, Moon, Newspaper, PlayCircle, Repeat2, Settings, ShieldCheck, ShoppingBag, Package, TrendingUp, Users, UsersRound, UserRound, type LucideIcon } from "lucide-react";
 
 export interface AdminNavItem {
   label: string;
@@ -59,7 +59,6 @@ export const adminNavGroups: AdminNavGroup[] = [
     items: [
       { label: "Users & roles", href: "/admin/users", icon: ShieldCheck },
       { label: "Site settings", href: "/admin/settings", icon: Settings },
-      { label: "Sign in", href: "/admin/login", icon: LogIn },
     ],
   },
 ];

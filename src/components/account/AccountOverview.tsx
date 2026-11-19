@@ -13,17 +13,15 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { books } from "@/data/books";
+import { accountFetch } from "@/lib/account-client";
 import { useStore, useHydrated } from "@/lib/store";
 import {
   formatOrderDate,
-  readAddresses,
-  readOrders,
-  readProfile,
   type Order,
   type Profile,
   type SavedAddress,
 } from "@/lib/orders";
-import { freeAudioSlugs, readUnlockedAudio } from "@/lib/audio";
+import { freeAudioSlugs } from "@/lib/audio";
 import { formatPrice, initials, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
 import { Badge } from "@/components/ui/Badge";
@@ -38,10 +36,26 @@ export function AccountOverview() {
   const [audioCount, setAudioCount] = useState(0);
 
   useEffect(() => {
-    setProfile(readProfile());
-    setOrders(readOrders());
-    setAddresses(readAddresses());
-    setAudioCount(new Set([...freeAudioSlugs, ...readUnlockedAudio()]).size);
+    let alive = true;
+    Promise.all([
+      accountFetch<Profile>("/api/account/profile"),
+      accountFetch<Order[]>("/api/account/orders"),
+      accountFetch<SavedAddress[]>("/api/account/addresses"),
+      accountFetch<string[]>("/api/account/audio"),
+    ])
+      .then(([nextProfile, nextOrders, nextAddresses, unlocked]) => {
+        if (!alive) return;
+        setProfile(nextProfile);
+        setOrders(nextOrders);
+        setAddresses(nextAddresses);
+        setAudioCount(new Set([...freeAudioSlugs, ...unlocked]).size);
+      })
+      .catch(() => {
+        // The account layout already redirects anonymous visitors.
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   if (!hydrated || !profile) {

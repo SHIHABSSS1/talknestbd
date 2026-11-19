@@ -1,3 +1,6 @@
+// This page sits behind requireAdmin(); a redirect during prefetch is expected.
+export const instant = false;
+
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";

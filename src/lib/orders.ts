@@ -1,3 +1,9 @@
+/**
+ * Shared order/address types and formatting helpers.
+ *
+ * Data is no longer stored in localStorage. Account data lives in Postgres and
+ * is read/written through /api/account/** with the Better Auth session cookie.
+ */
 export type PaymentMethod = "cod" | "bkash" | "nagad";
 export type DeliveryMethod = "standard" | "express" | "pickup";
 
@@ -59,96 +65,6 @@ export const deliveryLabels: Record<DeliveryMethod, string> = {
   express: "Express delivery",
   pickup: "Store pickup",
 };
-
-export const ORDERS_KEY = "talknestbd-orders-v1";
-const ADDRESS_KEY = "talknestbd-addresses-v1";
-const PROFILE_KEY = "talknestbd-profile-v1";
-
-export const defaultProfile: Profile = {
-  name: "Tanha Rahman",
-  email: "tanha@example.com",
-  phone: "+880 1712-000000",
-  city: "Dhaka",
-};
-
-function read<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-  try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function write<T>(key: string, value: T) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // localStorage may be unavailable in private mode.
-  }
-}
-
-export function readOrders(): Order[] {
-  const orders = read<Order[]>(ORDERS_KEY, []);
-  return Array.isArray(orders) ? orders : [];
-}
-
-export function saveOrder(order: Order) {
-  const orders = readOrders();
-  write(ORDERS_KEY, [order, ...orders]);
-}
-
-export function readOrder(id: string): Order | undefined {
-  return readOrders().find((order) => order.id === id);
-}
-
-export function readAddresses(): SavedAddress[] {
-  const addresses = read<SavedAddress[]>(ADDRESS_KEY, []);
-  return Array.isArray(addresses) ? addresses : [];
-}
-
-export function saveAddress(address: Omit<SavedAddress, "id">): SavedAddress {
-  const addresses = readAddresses();
-  const entry: SavedAddress = {
-    ...address,
-    id:
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `addr-${Date.now()}`,
-  };
-  const next = address.isDefault
-    ? [entry, ...addresses.map((item) => ({ ...item, isDefault: false }))]
-    : [entry, ...addresses];
-  write(ADDRESS_KEY, next);
-  return entry;
-}
-
-export function removeAddress(id: string) {
-  write(
-    ADDRESS_KEY,
-    readAddresses().filter((address) => address.id !== id),
-  );
-}
-
-export function makeDefaultAddress(id: string) {
-  write(
-    ADDRESS_KEY,
-    readAddresses().map((address) => ({
-      ...address,
-      isDefault: address.id === id,
-    })),
-  );
-}
-
-export function readProfile(): Profile {
-  return { ...defaultProfile, ...read<Partial<Profile>>(PROFILE_KEY, {}) };
-}
-
-export function saveProfile(profile: Profile) {
-  write(PROFILE_KEY, profile);
-}
 
 export function generateOrderId(): string {
   const now = new Date();

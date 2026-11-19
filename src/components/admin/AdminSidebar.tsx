@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { BookOpen, ShieldCheck, X } from "lucide-react";
+import { BookOpen, LogIn, LogOut, ShieldCheck, X } from "lucide-react";
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
+import { authClient } from "@/lib/auth-client";
 import { initials } from "@/lib/admin-access";
 
 export function AdminSidebar({
@@ -15,11 +16,19 @@ export function AdminSidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
-  const { visibleNavGroups, currentUser, currentRole, isSuperAdmin } = useAdminAccess();
+  const router = useRouter();
+  const { visibleNavGroups, currentUser, isSuperAdmin } = useAdminAccess();
 
   useEffect(() => {
     onClose();
   }, [pathname, onClose]);
+
+  const signOut = async () => {
+    await authClient.signOut();
+    onClose();
+    router.push("/admin/login");
+    router.refresh();
+  };
 
   return (
     <>
@@ -96,16 +105,16 @@ export function AdminSidebar({
           ))}
         </nav>
 
-        {/* Signed-in admin identity / batch */}
-        <div className="shrink-0 border-t border-line px-3 py-3">
+        {/* Signed-in identity and session actions */}
+        <div className="shrink-0 space-y-1.5 border-t border-line px-3 py-3">
           <Link
             href="/admin/profile"
             className="flex items-center gap-2.5 rounded-[6px] border border-line bg-brand-50/50 px-2.5 py-2 transition-colors hover:border-brand-200 hover:bg-brand-50"
           >
             <span className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-600 text-[10px] font-bold text-white">
-              {currentUser?.avatar ? (
+              {currentUser?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" />
+                <img src={currentUser.image} alt="" className="h-full w-full object-cover" />
               ) : (
                 initials(currentUser?.name ?? "Admin")
               )}
@@ -115,12 +124,27 @@ export function AdminSidebar({
                 {currentUser?.name ?? "Admin"}
               </span>
               <span className="block truncate text-[9px] text-muted">
-                {currentRole?.name ?? "Admin"}
-                {currentUser?.batch ? ` · ${currentUser.batch}` : ""}
+                {currentUser?.roleName ?? "Admin"}
               </span>
             </span>
             {isSuperAdmin && <ShieldCheck size={14} className="shrink-0 text-brand-600" />}
           </Link>
+          {currentUser ? (
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="flex w-full items-center gap-2.5 rounded-[5px] px-2.5 py-2 text-[11px] font-medium text-muted transition-colors hover:bg-clay-500/5 hover:text-clay-600"
+            >
+              <LogOut size={14} /> Sign out
+            </button>
+          ) : (
+            <Link
+              href="/admin/login"
+              className="flex w-full items-center gap-2.5 rounded-[5px] px-2.5 py-2 text-[11px] font-medium text-muted transition-colors hover:bg-brand-50 hover:text-brand-700"
+            >
+              <LogIn size={14} /> Sign in
+            </Link>
+          )}
         </div>
       </aside>
     </>

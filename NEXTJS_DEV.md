@@ -1,7 +1,8 @@
 # Next.js development workflow (TalkNest BD)
 
 This project runs Next.js 16 (App Router), React 19 and Tailwind CSS v4. The
-rules in `AGENTS.md` are authoritative — keep user-facing UI copy Bengali-first.
+rules in `AGENTS.md` are authoritative — all new UI copy, emails and agent
+responses must be in English (the old Bengali-first rule is overridden).
 
 ## Use the connected MCP servers
 

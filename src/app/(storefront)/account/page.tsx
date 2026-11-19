@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { AccountOverview } from "@/components/account/AccountOverview";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Dashboard",
 };

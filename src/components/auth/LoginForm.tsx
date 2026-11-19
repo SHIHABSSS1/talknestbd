@@ -3,250 +3,158 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  ArrowRight,
-  Eye,
-  EyeOff,
-  Heart,
-  Lock,
-  Mail,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
-import { useStore } from "@/lib/store";
-import { defaultProfile, readProfile, saveProfile } from "@/lib/orders";
-import { cn } from "@/lib/utils";
+import { ArrowRight, Eye, EyeOff, Lock, LogIn, Mail } from "lucide-react";
+
+import { GoogleButton } from "@/components/auth/GoogleButton";
+import { AuthShell } from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/Button";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export function LoginForm() {
   const router = useRouter();
-  const { notify } = useStore();
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (mode === "register" && name.trim().length < 3) {
-      setError("Enter your full name");
-      return;
-    }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError("Enter a valid email address");
-      return;
-    }
-    if (password.length < 4) {
-      setError("Enter a password with at least 4 characters (demo)");
-      return;
-    }
-    setError("");
-    if (mode === "register") {
-      saveProfile({
-        ...defaultProfile,
-        name: name.trim(),
-        email: email.trim(),
-        phone: readProfile().phone,
-      });
-      notify("Demo account created");
-    } else {
-      notify("Demo login successful");
-    }
-    router.push("/account");
-  };
+  const [submitting, setSubmitting] = useState(false);
 
   const inputClass =
     "h-12 w-full rounded-xl border border-forest-900/12 bg-cream-50 pl-11 pr-4 text-[13px] text-forest-950 placeholder:text-muted/50 focus:border-forest-700/40 focus:outline-none focus:ring-2 focus:ring-gold-500/25";
 
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    setSubmitting(true);
+    const { error: signInError } = await authClient.signIn.email({
+      email: email.trim().toLowerCase(),
+      password,
+      rememberMe,
+      callbackURL: "/account",
+    });
+
+    if (signInError) {
+      setError(
+        signInError.status === 403
+          ? "Please verify your email address first."
+          : "Incorrect email or password. Please try again.",
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/account");
+    router.refresh();
+  }
+
   return (
-    <div className="grid overflow-hidden rounded-[2rem] border border-forest-900/8 bg-cream-50 shadow-[0_30px_70px_-55px_rgba(10,33,24,0.5)] lg:grid-cols-[1fr_1.05fr]">
-      <div className="relative hidden overflow-hidden bg-forest-950 p-8 text-cream-50 lg:block">
-        <div aria-hidden="true" className="absolute inset-0 paper-texture opacity-[0.1]" />
-        <div
-          aria-hidden="true"
-          className="absolute -right-16 -top-20 h-56 w-56 rounded-full border border-gold-400/15"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full border border-gold-400/10"
-        />
-        <div className="relative flex h-full flex-col">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-gold-400/25 bg-white/5 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.18em] text-gold-300">
-            TalkNest Reader Club
-          </span>
-          <h2 className="mt-6 max-w-sm font-display text-3xl font-bold leading-snug">
-            Your reading world,
-            <br />
-            <span className="text-gold-300">in one account.</span>
-          </h2>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-cream-100/55">
-            Keep order tracking, saved addresses, your wishlist and audio
-            library together in one place.
-          </p>
-
-          <div className="mt-8 space-y-3">
-            {[
-              { icon: Heart, title: "Synced wishlist", text: "Save books you want to read" },
-              { icon: ShieldCheck, title: "Secure orders", text: "Addresses and order history" },
-              { icon: UserRound, title: "Reader profile", text: "Reviews and community activity" },
-            ].map((item) => (
-              <div key={item.title} className="flex items-center gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 text-gold-300">
-                  <item.icon size={15} />
-                </span>
-                <div>
-                  <p className="text-[11px] font-semibold text-cream-50">{item.title}</p>
-                  <p className="text-[9px] text-cream-100/40">{item.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-auto rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-            <p className="font-display text-sm font-semibold text-gold-300">
-              &ldquo;Every book opens the door to another life.&rdquo;
-            </p>
-            <p className="mt-1 text-[9px] text-cream-100/40">— A TalkNest reader</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-5 sm:p-8">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-clay-500">
-              {mode === "login" ? "Welcome Back" : "Create Account"}
-            </p>
-            <h1 className="mt-1 font-display text-2xl font-bold text-forest-950 sm:text-3xl">
-              {mode === "login" ? "Welcome back" : "Create an account"}
-            </h1>
-            <p className="mt-1 text-[11px] text-muted">
-              {mode === "login"
-                ? "Log in to view your orders and wishlist."
-                : "Create a demo account to get started."}
-            </p>
-          </div>
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-forest-100 text-forest-700">
-            <UserRound size={20} />
-          </span>
-        </div>
-
-        <form onSubmit={submit} className="mt-5 space-y-3" noValidate>
-          {mode === "register" && (
-            <label className="block">
-              <span className="mb-1 block text-[11px] font-semibold text-forest-900">Full name</span>
-              <span className="relative block">
-                <UserRound size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
-                <input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  placeholder="Your name"
-                  autoComplete="name"
-                  className={inputClass}
-                />
-              </span>
-            </label>
-          )}
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Email</span>
-            <span className="relative block">
-              <Mail size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
-              <input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@example.com"
-                autoComplete="email"
-                className={inputClass}
-              />
-            </span>
-          </label>
-
-          <label className="block">
-            <span className="mb-1 block text-[11px] font-semibold text-forest-900">Password</span>
-            <span className="relative block">
-              <Lock size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40" />
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="••••••••"
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                className={cn(inputClass, "pr-11")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((value) => !value)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-forest-700/40 hover:text-forest-800"
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </span>
-          </label>
-
-          {error && (
-            <p className="rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2 text-[10px] text-clay-600">
-              {error}
-            </p>
-          )}
-
-          <div className="flex items-center justify-between gap-3 text-[10px]">
-            <label className="flex items-center gap-1.5 text-muted">
-              <input type="checkbox" defaultChecked className="h-3.5 w-3.5 accent-forest-900" />
-              Remember me
-            </label>
-            <span className="font-medium text-clay-600">Forgot password?</span>
-          </div>
-
-          <Button type="submit" size="lg" className="w-full">
-            {mode === "login" ? "Log in" : "Create account"}
-            <ArrowRight size={15} />
-          </Button>
-        </form>
-
-        <div className="my-4 flex items-center gap-3 text-[9px] text-muted">
-          <span className="h-px flex-1 bg-forest-900/10" />
-          Or
-          <span className="h-px flex-1 bg-forest-900/10" />
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={() => {
-            notify("Demo guest login — opening your account");
-            router.push("/account");
-          }}
-        >
-          Continue as guest
-        </Button>
-
-        <p className="mt-4 text-center text-[10px] text-muted">
-          {mode === "login" ? "New reader?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "login" ? "register" : "login");
-              setError("");
-            }}
+    <AuthShell
+      eyebrow="Welcome Back"
+      title="Welcome back"
+      subtitle="Log in to view your orders and wishlist."
+      icon={<LogIn size={20} />}
+      footer={
+        <p className="text-center text-[10px] text-muted">
+          New reader?{" "}
+          <Link
+            href="/register"
             className="font-semibold text-clay-600 hover:text-clay-500"
           >
-            {mode === "login" ? "Create an account" : "Log in"}
-          </button>
-        </p>
-
-        <p className="mt-4 rounded-xl bg-cream-100/70 px-3 py-2 text-center text-[9px] leading-relaxed text-muted">
-          Demo login — there is no real password verification or server connection.{" "}
-          <Link href="/privacy" className="font-semibold text-forest-800">
-            Privacy
+            Create an account
           </Link>
         </p>
+      }
+    >
+      <form onSubmit={submit} className="space-y-3" noValidate>
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-semibold text-forest-900">Email</span>
+          <span className="relative block">
+            <Mail
+              size={16}
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40"
+            />
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+              className={inputClass}
+            />
+          </span>
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-[11px] font-semibold text-forest-900">Password</span>
+          <span className="relative block">
+            <Lock
+              size={16}
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-forest-700/40"
+            />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              className={cn(inputClass, "pr-11")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full text-forest-700/40 hover:text-forest-800"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </span>
+        </label>
+
+        {error ? (
+          <p className="rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2 text-[10px] text-clay-600">
+            {error}
+          </p>
+        ) : null}
+
+        <div className="flex items-center justify-between gap-3 text-[10px]">
+          <label className="flex items-center gap-1.5 text-muted">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) => setRememberMe(event.target.checked)}
+              className="h-3.5 w-3.5 accent-forest-900"
+            />
+            Remember me
+          </label>
+          <Link href="/forgot-password" className="font-medium text-clay-600 hover:text-clay-500">
+            Forgot password?
+          </Link>
+        </div>
+
+        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+          {submitting ? "Logging in…" : "Log in"}
+          <ArrowRight size={15} />
+        </Button>
+      </form>
+
+      <div className="my-4 flex items-center gap-3 text-[9px] text-muted">
+        <span className="h-px flex-1 bg-forest-900/10" />
+        Or
+        <span className="h-px flex-1 bg-forest-900/10" />
       </div>
-    </div>
+
+      <GoogleButton />
+    </AuthShell>
   );
 }

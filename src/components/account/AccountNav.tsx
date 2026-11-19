@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Headphones,
   Heart,
   LayoutDashboard,
+  LogOut,
   MapPin,
   Package,
   Settings,
   UserRound,
 } from "lucide-react";
-import { readProfile, type Profile } from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import { authClient } from "@/lib/auth-client";
+import type { Profile } from "@/lib/orders";
 import { cn, initials } from "@/lib/utils";
 
 const links = [
@@ -25,12 +28,21 @@ const links = [
 ];
 
 export function AccountNav() {
+  const router = useRouter();
   const pathname = usePathname();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    setProfile(readProfile());
+    accountFetch<Profile>("/api/account/profile")
+      .then(setProfile)
+      .catch(() => setProfile(null));
   }, []);
+
+  async function signOut() {
+    await authClient.signOut();
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <aside className="lg:sticky lg:top-[88px]">
@@ -41,10 +53,10 @@ export function AccountNav() {
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-forest-950">
-              {profile?.name ?? "Guest reader"}
+              {profile?.name ?? "Loading…"}
             </p>
             <p className="truncate text-[9px] text-muted">
-              {profile?.email ?? "Sign in to view your profile"}
+              {profile?.email ?? "Your account"}
             </p>
           </div>
         </div>
@@ -62,9 +74,7 @@ export function AccountNav() {
                 href={link.href}
                 className={cn(
                   "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[11px] font-medium transition-colors",
-                  active
-                    ? "bg-forest-900 text-cream-50"
-                    : "text-forest-800 hover:bg-cream-100",
+                  active ? "bg-forest-900 text-cream-50" : "text-forest-800 hover:bg-cream-100",
                 )}
               >
                 <Icon size={15} className={active ? "text-gold-300" : "text-forest-600"} />
@@ -73,6 +83,14 @@ export function AccountNav() {
             );
           })}
         </nav>
+
+        <button
+          type="button"
+          onClick={signOut}
+          className="mt-3 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[11px] font-medium text-clay-600 transition-colors hover:bg-cream-100"
+        >
+          <LogOut size={15} /> Sign out
+        </button>
       </div>
 
       <div className="mt-3 rounded-2xl border border-gold-500/20 bg-gold-500/8 p-4">

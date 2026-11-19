@@ -2,13 +2,18 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
+import { requireUser } from "@/lib/auth-guards";
+import { Suspense } from "react";
+
+export const instant = false;
 
 export const metadata: Metadata = {
   title: "Checkout",
   description: "Choose your delivery address, shipping method and payment option at TalkNest BD.",
 };
 
-export default function CheckoutPage() {
+async function CheckoutContent() {
+  await requireUser("/checkout");
   return (
     <>
       <PageHeader
@@ -23,5 +28,13 @@ export default function CheckoutPage() {
         </Container>
       </section>
     </>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[50vh]" />}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

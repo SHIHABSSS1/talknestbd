@@ -1,0 +1,21 @@
+# Normalize line endings: store LF in the repo, check out LF everywhere.
+# Prevents whole-file "changes" caused by CRLF working trees.
+* text=auto eol=lf
+
+# Explicit binaries (never converted, never diffed as text)
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.otf  binary
+*.mp3  binary
+*.mp4  binary
+*.webm binary

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 
+import { auth } from "@/lib/auth";
 import { saveImageDataUrl } from "@/lib/storage/local";
 
 /** JSON body ceiling: base64 of a 4 MB image plus envelope. */
 const MAX_BODY_BYTES = 6_000_000;
 
 /** Folders the browser is allowed to write into. */
-const ALLOWED_FOLDERS = new Set(["hero"]);
+const ALLOWED_FOLDERS = new Set(["hero", "avatars"]);
 
 /**
  * Local image upload for the admin editors.
@@ -15,23 +16,27 @@ const ALLOWED_FOLDERS = new Set(["hero"]);
  * posts a base64 data URL. The server validates the bytes, writes the file to
  * UPLOAD_DIR and returns a /media URL — the database only ever stores that URL.
  *
- * TODO(auth): this is the one endpoint that must not ship open. Writes are
- * refused in production until `requireAdmin()` exists (Better Auth phase); in
- * development the editor works without a session. Add the session check as the
- * first statement, before the body is read, and delete the NODE_ENV branch.
- * See AGENTS.md and docs/ARCHITECTURE.md §9.1.
+ * Requires a real Better Auth admin session. The check runs before the body is
+ * read, so an anonymous caller cannot make the server buffer an image.
  */
-function isUploadAllowed(): boolean {
-  // Read only to gate the handler — no env value is ever returned to the client.
-  return process.env.NODE_ENV !== "production";
-}
-
 export async function POST(request: Request) {
-  if (!isUploadAllowed()) {
-    return NextResponse.json(
-      { error: "Uploads are disabled until admin authentication is implemented." },
-      { status: 403 },
-    );
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  }
+  if (session.user.role !== "admin") {
+    return NextResponse.json({ error: "Admin access required." }, { status: 403 });
+  }
+
+  // Cookie-authenticated write endpoint: reject cross-site POSTs explicitly.
+  const origin = request.headers.get("origin");
+  if (origin) {
+    const appOrigin = new URL(
+      process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+    ).origin;
+    if (origin !== appOrigin) {
+      return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+    }
   }
 
   const declaredLength = Number(request.headers.get("content-length") ?? "0");

@@ -16,16 +16,13 @@ import {
   Zap,
 } from "lucide-react";
 import { useStore, useHydrated } from "@/lib/store";
-import { unlockAudio } from "@/lib/audio";
-import {
-  readAddresses,
-  saveAddress,
-  saveOrder,
-  generateOrderId,
-  type AddressFormValues,
-  type DeliveryMethod,
-  type PaymentMethod,
-  type SavedAddress,
+import { accountFetch } from "@/lib/account-client";
+import type {
+  AddressFormValues,
+  DeliveryMethod,
+  Order,
+  PaymentMethod,
+  SavedAddress,
 } from "@/lib/orders";
 import { cn, formatPrice, siteConfig, toBn } from "@/lib/utils";
 import { Badge } from "@/components/ui/Badge";
@@ -89,13 +86,18 @@ export function CheckoutForm() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const addresses = readAddresses();
-    setSavedAddresses(addresses);
-    if (addresses.length > 0) {
-      const preferred = addresses.find((address) => address.isDefault) ?? addresses[0];
-      setSelectedId(preferred.id);
-      setMode("saved");
-    }
+    accountFetch<SavedAddress[]>("/api/account/addresses")
+      .then((addresses) => {
+        setSavedAddresses(addresses);
+        if (addresses.length > 0) {
+          const preferred = addresses.find((address) => address.isDefault) ?? addresses[0];
+          setSelectedId(preferred.id);
+          setMode("saved");
+        }
+      })
+      .catch(() => {
+        // The form still works with a new address.
+      });
   }, []);
 
   const selectedAddress = savedAddresses.find((address) => address.id === selectedId);
@@ -164,7 +166,7 @@ export function CheckoutForm() {
     return next;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (items.length === 0 || submitting) return;
     const nextErrors = validate();
@@ -176,45 +178,51 @@ export function CheckoutForm() {
     setErrors({});
     setSubmitting(true);
 
-    const order = {
-      id: generateOrderId(),
-      createdAt: new Date().toISOString(),
-      items: items.map(({ slug, kind, title, price, meta, quantity }) => ({
-        slug,
-        kind,
-        title,
-        price,
-        meta,
-        quantity,
-      })),
-      subtotal: cartTotal,
-      deliveryCharge,
-      total,
-      paymentMethod,
-      deliveryMethod,
-      address: {
-        ...activeAddress,
-        email: activeAddress.email?.trim() || undefined,
-      },
-      note: note.trim() || undefined,
-      paymentNumber: paymentMethod === "cod" ? undefined : paymentNumber.trim(),
-      status: "Confirmed" as const,
-    };
-
-    saveOrder(order);
-    items
-      .filter((item) => item.kind === "audio")
-      .forEach((item) => unlockAudio(item.slug));
-    if (mode === "new" && saveNewAddress) {
-      saveAddress({
-        ...values,
-        email: values.email?.trim() || undefined,
-        isDefault: savedAddresses.length === 0,
+    try {
+      const order = await accountFetch<Order>("/api/account/orders", {
+        method: "POST",
+        body: JSON.stringify({
+          items: items.map(({ slug, kind, title, price, meta, quantity }) => ({
+            slug,
+            kind,
+            title,
+            price,
+            meta,
+            quantity,
+          })),
+          subtotal: cartTotal,
+          deliveryCharge,
+          total,
+          paymentMethod,
+          deliveryMethod,
+          address: {
+            ...activeAddress,
+            email: activeAddress.email?.trim() || undefined,
+          },
+          note: note.trim() || undefined,
+          paymentNumber: paymentMethod === "cod" ? undefined : paymentNumber.trim(),
+          status: "Confirmed",
+        }),
       });
+
+      if (mode === "new" && saveNewAddress) {
+        await accountFetch("/api/account/addresses", {
+          method: "POST",
+          body: JSON.stringify({
+            ...values,
+            email: values.email?.trim() || undefined,
+            isDefault: savedAddresses.length === 0,
+          }),
+        });
+      }
+
+      notify("Order placed successfully");
+      clearCart();
+      router.push(`/orders/${order.id}`);
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "Could not place the order.");
+      setSubmitting(false);
     }
-    notify("Order placed successfully");
-    clearCart();
-    router.push(`/orders/${order.id}`);
   };
 
   return (
@@ -222,8 +230,8 @@ export function CheckoutForm() {
       <div className="mb-5 flex items-start gap-2.5 rounded-2xl border border-gold-500/25 bg-gold-500/8 px-4 py-3">
         <ShieldCheck size={17} className="mt-0.5 shrink-0 text-gold-600" />
         <p className="text-[11px] leading-relaxed text-forest-800">
-          <strong>Demo checkout:</strong> This is a front-end demo. No real
-          payment will be taken, and your order will be stored only in this browser.
+          <strong>Demo checkout:</strong> No real payment will be taken. Your
+          order is saved to your account so you can view the receipt later.
         </p>
       </div>
 

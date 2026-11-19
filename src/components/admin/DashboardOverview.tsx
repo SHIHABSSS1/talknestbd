@@ -40,7 +40,8 @@ import { useWholesaleRequests } from "@/components/providers/WholesaleProviders"
 import { useReviews } from "@/components/providers/ReviewsProvider";
 import { useStories } from "@/components/providers/StoriesProvider";
 import { adminNavGroups } from "@/lib/admin-nav";
-import { ORDERS_KEY, readOrders, type Order } from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import type { Order } from "@/lib/orders";
 import { formatPrice } from "@/lib/utils";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -211,7 +212,14 @@ export function DashboardOverview() {
   const stories = useStories();
 
   useEffect(() => {
-    setOrders(readOrders());
+    let alive = true;
+    accountFetch<Order[]>("/api/admin/orders")
+      .then((data) => {
+        if (alive) setOrders(data);
+      })
+      .catch(() => {
+        if (alive) setOrders([]);
+      });
     setNow(Date.now());
     setToday(
       new Intl.DateTimeFormat("en-GB", {
@@ -221,11 +229,9 @@ export function DashboardOverview() {
         year: "numeric",
       }).format(new Date()),
     );
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === ORDERS_KEY || event.key === null) setOrders(readOrders());
+    return () => {
+      alive = false;
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const sections =

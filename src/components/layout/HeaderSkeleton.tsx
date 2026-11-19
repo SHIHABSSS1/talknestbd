@@ -36,13 +36,13 @@ export function HeaderSkeleton() {
             </div>
           </div>
         </div>
-        <div className="mx-auto w-full max-w-[1425px] px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto w-full max-w-2xl pb-3">
+        <div className="mx-auto w-full max-w-[1425px] px-4 pb-3 sm:px-6 lg:hidden">
+          <div className="mx-auto w-full max-w-2xl">
             <div className="h-11 rounded-full border border-hairline bg-white" />
           </div>
         </div>
         <div className="hidden bg-brand-600 lg:block">
-          <div className="mx-auto flex h-10 w-full max-w-[1425px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto flex h-11 w-full max-w-[1425px] items-center gap-4 px-4 sm:px-6 lg:px-8">
             {Array.from({ length: 6 }).map((_, index) => (
               <span
                 key={index}

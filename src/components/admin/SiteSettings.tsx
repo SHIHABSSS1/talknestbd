@@ -28,8 +28,8 @@ import {
 import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
 import { cloneSiteSettings, type SiteSettings } from "@/lib/site-settings";
-import { logoutAdmin } from "@/lib/admin-auth";
-import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
+import { authClient } from "@/lib/auth-client";
+import { fileToDataUrl } from "@/lib/image";
 import { cn, formatCount } from "@/lib/utils";
 
 const fieldClass =
@@ -49,6 +49,22 @@ function Section({ title, description, children }: { title: string; description?
       <div className="space-y-3 p-4 sm:p-5">{children}</div>
     </section>
   );
+}
+
+async function uploadAvatar(file: File): Promise<string> {
+  const src = await fileToDataUrl(file);
+  const response = await fetch("/api/uploads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ src, folder: "avatars" }),
+  });
+  const payload = (await response.json().catch(() => null)) as
+    | { url?: string; error?: string }
+    | null;
+  if (!response.ok || !payload?.url) {
+    throw new Error(payload?.error ?? "The image could not be uploaded.");
+  }
+  return payload.url;
 }
 
 function StringList({ label, values, onChange, placeholder }: { label: string; values: string[]; onChange: (values: string[]) => void; placeholder?: string }) {
@@ -102,14 +118,7 @@ function Toggle({ label, hint, checked, onChange }: { label: string; hint?: stri
 
 export function SiteSettings() {
   const { settings, save, reset } = useSiteSettings();
-  const {
-    currentUser,
-    isSuperAdmin,
-    updateProfile,
-    changePassword,
-    setAvatar,
-    resetDemo,
-  } = useAdminAccess();
+  const { currentUser, updateProfile, changePassword, setAvatar } = useAdminAccess();
   const [draft, setDraft] = useState<SiteSettings>(settings);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [tab, setTab] = useState<Tab>("general");
@@ -143,12 +152,21 @@ export function SiteSettings() {
     setNotice({ text: result.message, error: !result.ok });
   };
 
-  const handlePassword = () => {
+  const handleSaveProfile = async () => {
+    const result = await updateProfile({ name: profileName, email: profileEmail });
+    setNotice({ text: result.message, error: !result.ok });
+  };
+
+  const handlePassword = async () => {
     if (passwords.next !== passwords.confirm) {
       setPasswordNotice({ error: true, text: "New passwords do not match." });
       return;
     }
-    const result = changePassword(passwords.current, passwords.next);
+    if (passwords.next.length < 8) {
+      setPasswordNotice({ error: true, text: "New password must be at least 8 characters." });
+      return;
+    }
+    const result = await changePassword(passwords.current, passwords.next);
     setPasswordNotice({ text: result.message, error: !result.ok });
     if (result.ok) setPasswords({ current: "", next: "", confirm: "" });
   };
@@ -157,9 +175,9 @@ export function SiteSettings() {
     if (!file) return;
     setUploading(true);
     try {
-      const avatar = await fileToDataUrl(file);
-      setAvatar(avatar);
-      setNotice({ text: `Avatar updated (${dataUrlSizeLabel(avatar)}).` });
+      const url = await uploadAvatar(file);
+      const result = await setAvatar(url);
+      setNotice({ text: result.message, error: !result.ok });
     } catch (error) {
       setNotice({ error: true, text: error instanceof Error ? error.message : "Could not read image." });
     } finally {
@@ -368,30 +386,29 @@ export function SiteSettings() {
                   <label className="block"><span className={subLabel}>Name</span><input value={profileName} onChange={(event) => setProfileName(event.target.value)} className={fieldClass} /></label>
                   <label className="block"><span className={subLabel}>Email</span><input type="email" value={profileEmail} onChange={(event) => setProfileEmail(event.target.value)} className={fieldClass} /></label>
                 </div>
-                <button type="button" onClick={() => { updateProfile({ name: profileName, email: profileEmail }); setNotice({ text: "Profile saved in this browser." }); }} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
+                <button type="button" onClick={() => void handleSaveProfile()} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
                   <Save size={13} aria-hidden="true" /> Save profile
                 </button>
               </Section>
-              <Section title="Change password" description="Demo password stored in this browser.">
+              <Section title="Change password" description="Updates your Better Auth credential.">
                 <div className="grid gap-2 sm:grid-cols-3">
                   <label className="block"><span className={subLabel}>Current password</span><input type="password" value={passwords.current} onChange={(event) => setPasswords({ ...passwords, current: event.target.value })} autoComplete="current-password" className={fieldClass} /></label>
-                  <label className="block"><span className={subLabel}>New password</span><input type="password" value={passwords.next} minLength={6} onChange={(event) => setPasswords({ ...passwords, next: event.target.value })} autoComplete="new-password" className={fieldClass} /></label>
-                  <label className="block"><span className={subLabel}>Confirm password</span><input type="password" value={passwords.confirm} minLength={6} onChange={(event) => setPasswords({ ...passwords, confirm: event.target.value })} autoComplete="new-password" className={fieldClass} /></label>
+                  <label className="block"><span className={subLabel}>New password</span><input type="password" value={passwords.next} minLength={8} onChange={(event) => setPasswords({ ...passwords, next: event.target.value })} autoComplete="new-password" className={fieldClass} /></label>
+                  <label className="block"><span className={subLabel}>Confirm password</span><input type="password" value={passwords.confirm} minLength={8} onChange={(event) => setPasswords({ ...passwords, confirm: event.target.value })} autoComplete="new-password" className={fieldClass} /></label>
                 </div>
-                <button type="button" onClick={handlePassword} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
+                <button type="button" onClick={() => void handlePassword()} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
                   <KeyRound size={13} aria-hidden="true" /> Update password
                 </button>
                 {passwordNotice && (
                   <p role="status" className={cn("text-[10px] leading-relaxed", passwordNotice.error ? "text-gold-600" : "text-brand-700")}>{passwordNotice.text}</p>
                 )}
-                <p className="text-[9px] text-muted">Default demo password: demo1234</p>
               </Section>
-              <Section title="Profile photo" description="Compressed and stored in this browser.">
+              <Section title="Profile photo" description="Compressed in the browser, stored on the server.">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-brand-100 text-sm font-bold text-brand-700">
-                    {currentUser?.avatar ? (
+                    {currentUser?.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" />
+                      <img src={currentUser.image} alt="" className="h-full w-full object-cover" />
                     ) : (
                       (profileName || "A").charAt(0)
                     )}
@@ -400,19 +417,14 @@ export function SiteSettings() {
                     <ImagePlus size={12} aria-hidden="true" /> {uploading ? "Compressing…" : "Upload photo"}
                     <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploading} onChange={(event) => handleAvatar(event.target.files?.[0])} />
                   </label>
-                  <button type="button" onClick={() => setAvatar(null)} className="text-[10px] font-medium text-muted hover:text-brand-700">Remove</button>
+                  <button type="button" onClick={() => void setAvatar(null)} className="text-[10px] font-medium text-muted hover:text-brand-700">Remove</button>
                 </div>
               </Section>
               <Section title="Session">
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" onClick={() => { logoutAdmin(); window.location.href = "/admin/login"; }} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300">
+                  <button type="button" onClick={async () => { await authClient.signOut(); window.location.assign("/admin/login"); }} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300">
                     <LogOut size={13} aria-hidden="true" /> Sign out
                   </button>
-                  {isSuperAdmin && (
-                    <button type="button" onClick={() => { resetDemo(); setNotice({ text: "Demo admin data restored." }); }} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300">
-                      <RefreshCcw size={13} aria-hidden="true" /> Reset admin demo
-                    </button>
-                  )}
                 </div>
               </Section>
             </>

@@ -9,14 +9,8 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import {
-  makeDefaultAddress,
-  readAddresses,
-  removeAddress,
-  saveAddress,
-  type AddressFormValues,
-  type SavedAddress,
-} from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import type { AddressFormValues, SavedAddress } from "@/lib/orders";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { AddressFields, emptyAddress } from "@/components/forms/AddressFields";
@@ -32,11 +26,16 @@ export function AddressManager() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [makeDefault, setMakeDefault] = useState(false);
 
-  const refresh = () => setAddresses(readAddresses());
+  const refresh = async () => {
+    try {
+      setAddresses(await accountFetch<SavedAddress[]>("/api/account/addresses"));
+    } catch {
+      // Keep the existing list if the refresh fails.
+    }
+  };
 
   useEffect(() => {
-    refresh();
-    setLoaded(true);
+    void refresh().then(() => setLoaded(true));
   }, []);
 
   const resetForm = () => {
@@ -46,7 +45,7 @@ export function AddressManager() {
     setFormOpen(false);
   };
 
-  const save = () => {
+  const save = async () => {
     const next: Record<string, string> = {};
     if (!values.name.trim()) next.name = "Enter the recipient's name";
     if (values.phone.replace(/\D/g, "").length < 11) {
@@ -64,14 +63,21 @@ export function AddressManager() {
       return;
     }
 
-    saveAddress({
-      ...values,
-      email: values.email?.trim() || undefined,
-      isDefault: makeDefault || addresses.length === 0,
-    });
-    refresh();
-    notify("Address saved");
-    resetForm();
+    try {
+      await accountFetch<SavedAddress>("/api/account/addresses", {
+        method: "POST",
+        body: JSON.stringify({
+          ...values,
+          email: values.email?.trim() || undefined,
+          isDefault: makeDefault || addresses.length === 0,
+        }),
+      });
+      await refresh();
+      notify("Address saved");
+      resetForm();
+    } catch (error) {
+      notify(error instanceof Error ? error.message : "Could not save the address.");
+    }
   };
 
   if (!loaded) {
@@ -137,10 +143,17 @@ export function AddressManager() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => {
-                      makeDefaultAddress(address.id);
-                      refresh();
-                      notify("Default address updated");
+                    onClick={async () => {
+                      try {
+                        await accountFetch(`/api/account/addresses/${address.id}`, {
+                          method: "PATCH",
+                          body: JSON.stringify({ ...address, isDefault: true }),
+                        });
+                        await refresh();
+                        notify("Default address updated");
+                      } catch (error) {
+                        notify(error instanceof Error ? error.message : "Could not update the address.");
+                      }
                     }}
                     className="text-[9px] font-medium text-clay-600 hover:text-clay-500"
                   >
@@ -158,10 +171,14 @@ export function AddressManager() {
               <div className="mt-3 flex items-center justify-end border-t border-forest-900/8 pt-2.5">
                 <button
                   type="button"
-                  onClick={() => {
-                    removeAddress(address.id);
-                    refresh();
-                    notify("Address removed");
+                  onClick={async () => {
+                    try {
+                      await accountFetch(`/api/account/addresses/${address.id}`, { method: "DELETE" });
+                      await refresh();
+                      notify("Address removed");
+                    } catch (error) {
+                      notify(error instanceof Error ? error.message : "Could not remove the address.");
+                    }
                   }}
                   className="inline-flex items-center gap-1 text-[9px] font-medium text-clay-600 hover:text-clay-500"
                 >

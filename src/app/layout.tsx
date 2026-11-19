@@ -10,7 +10,6 @@ import { SellRequestsProvider } from "@/components/providers/SellRequestsProvide
 import { UpSaleBooksProvider } from "@/components/providers/UpSaleBooksProvider";
 import { UsedContentProvider } from "@/components/providers/UsedContentProvider";
 import { NotificationsProvider } from "@/components/providers/NotificationsProvider";
-import { AdminAccessProvider } from "@/components/providers/AdminAccessProvider";
 import {
   WholesaleContentProvider,
   WholesaleRequestsProvider,
@@ -97,24 +96,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                           <NotificationsProvider>
                             <WholesaleContentProvider>
                               <WholesaleRequestsProvider>
-                                <AdminAccessProvider>
-                          <AudioContentProvider>
-                          <AuthorContentProvider>
-                            <PublisherContentProvider>
-                              <ReviewsProvider>
-                                <VideoQuizProvider>
-                                  <StoriesProvider>
-                                    <SiteSettingsProvider>
-                                      <SiteScripts />
-                                      {children}
-                                    </SiteSettingsProvider>
-                                  </StoriesProvider>
-                                </VideoQuizProvider>
-                              </ReviewsProvider>
-                            </PublisherContentProvider>
-                          </AuthorContentProvider>
-                        </AudioContentProvider>
-                        </AdminAccessProvider>
+                                <AudioContentProvider>
+                                  <AuthorContentProvider>
+                                    <PublisherContentProvider>
+                                      <ReviewsProvider>
+                                        <VideoQuizProvider>
+                                          <StoriesProvider>
+                                            <SiteSettingsProvider>
+                                              <SiteScripts />
+                                              {children}
+                                            </SiteSettingsProvider>
+                                          </StoriesProvider>
+                                        </VideoQuizProvider>
+                                      </ReviewsProvider>
+                                    </PublisherContentProvider>
+                                  </AuthorContentProvider>
+                                </AudioContentProvider>
                               </WholesaleRequestsProvider>
                             </WholesaleContentProvider>
                           </NotificationsProvider>

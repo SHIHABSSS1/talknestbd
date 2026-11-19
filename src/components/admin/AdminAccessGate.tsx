@@ -2,31 +2,72 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LockKeyhole } from "lucide-react";
+import { LockKeyhole, RefreshCw } from "lucide-react";
+
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
-import { allPageHrefs, SUPER_ADMIN_USER_ID } from "@/lib/admin-access";
+import { allPageHrefs } from "@/lib/admin-access";
 
 /**
- * Front-end demo guard: hides admin pages that the signed-in role has not been
- * granted. This is a UX preview only — there is no server to enforce it.
+ * Client-side UX gate. The server layout already requires an admin session;
+ * this component only hides pages the signed-in admin's role cannot open.
  */
 export function AdminAccessGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const {
-    hydrated,
-    isSuperAdmin,
-    canAccessPage,
-    currentRole,
-    currentUser,
-    switchUser,
-  } = useAdminAccess();
+  const { hydrated, error, refresh, isSuperAdmin, canAccessPage, currentRole, currentUser } =
+    useAdminAccess();
 
   const isKnownPage =
     allPageHrefs().includes(pathname) || pathname.startsWith("/admin/sections/");
   const isProfile = pathname === "/admin/profile";
 
+  if (!hydrated) {
+    return <p className="p-4 text-[12px] text-muted">Loading your access…</p>;
+  }
+
+  if (error) {
+    return (
+      <section className="mx-auto max-w-xl">
+        <div className="rounded-[10px] border border-line bg-white p-6 sm:p-8">
+          <h1 className="font-display text-xl font-bold text-ink">
+            Could not load admin access
+          </h1>
+          <p className="mt-2 text-[12px] text-muted">{error}</p>
+          <button
+            type="button"
+            onClick={() => void refresh()}
+            className="mt-5 inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700"
+          >
+            <RefreshCw size={13} /> Try again
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!currentRole && !isProfile) {
+    return (
+      <section className="mx-auto max-w-xl">
+        <div className="rounded-[10px] border border-line bg-white p-6 sm:p-8">
+          <LockKeyhole size={20} className="text-brand-700" />
+          <h1 className="mt-4 font-display text-xl font-bold text-ink">
+            No admin role assigned
+          </h1>
+          <p className="mt-2 text-[12px] leading-relaxed text-muted">
+            Your account can open the panel, but no role has been granted to it yet.
+            Ask a super admin to assign one on the Users &amp; roles page.
+          </p>
+          <Link
+            href="/admin/profile"
+            className="mt-5 inline-flex h-9 items-center rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300"
+          >
+            Admin profile
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
   const allowed =
-    !hydrated ||
     isProfile ||
     (pathname === "/admin/users"
       ? isSuperAdmin
@@ -44,14 +85,12 @@ export function AdminAccessGate({ children }: { children: React.ReactNode }) {
           You don&apos;t have access to this page
         </h1>
         <p className="mt-2 text-[12px] leading-relaxed text-muted">
-          Your current role (
-          <span className="font-semibold text-ink">{currentRole?.name ?? "Admin"}</span>)
+          Your role (<span className="font-semibold text-ink">{currentRole?.name ?? "Admin"}</span>)
           has not been granted access to this page. A super admin can grant it on
           the Users &amp; roles page.
         </p>
         <p className="mt-1 text-[10px] text-muted">
-          Signed in as: {currentUser?.name ?? "Admin"} ·{" "}
-          {currentUser?.batch ?? "—"}
+          Signed in as: {currentUser?.name ?? "Admin"}
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           <Link
@@ -66,20 +105,7 @@ export function AdminAccessGate({ children }: { children: React.ReactNode }) {
           >
             My profile
           </Link>
-          {!isSuperAdmin && (
-            <button
-              type="button"
-              onClick={() => switchUser(SUPER_ADMIN_USER_ID)}
-              className="inline-flex h-9 items-center rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300"
-            >
-              Back to super admin
-            </button>
-          )}
         </div>
-        <p className="mt-5 border-t border-line pt-3 text-[9px] leading-relaxed text-muted">
-          Demo note: this control only applies in this browser; there is no server
-          enforcing access.
-        </p>
       </div>
     </section>
   );

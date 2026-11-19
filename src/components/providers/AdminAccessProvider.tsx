@@ -9,23 +9,29 @@ import {
   useState,
   type ReactNode,
 } from "react";
+
 import {
-  ADMIN_ACCESS_KEY,
-  SUPER_ADMIN_ROLE_ID,
-  SUPER_ADMIN_USER_ID,
   adminNavGroups,
   canRoleAccess,
-  defaultAdminAccessState,
   findRole,
-  readAdminAccess,
-  writeAdminAccess,
-  type AdminAccessState,
   type AdminRole,
   type AdminUser,
+  type AdminUserInput,
+  type SaveResult,
 } from "@/lib/admin-access";
+
+type AccessResponse = {
+  currentUser: AdminUser | null;
+  currentRole: AdminRole | null;
+  roles: AdminRole[];
+  users: AdminUser[];
+};
+
+type RoleInput = Pick<AdminRole, "name" | "description" | "permissions"> & { id?: string };
 
 interface AdminAccessContextValue {
   hydrated: boolean;
+  error: string | null;
   users: AdminUser[];
   roles: AdminRole[];
   currentUser: AdminUser | undefined;
@@ -33,51 +39,74 @@ interface AdminAccessContextValue {
   isSuperAdmin: boolean;
   canAccessPage: (href: string) => boolean;
   visibleNavGroups: typeof adminNavGroups;
-  updateProfile: (values: { name: string; email: string }) => void;
-  changePassword: (current: string, next: string) => { ok: boolean; message: string };
-  setAvatar: (dataUrl: string | null) => void;
-  saveRole: (role: AdminRole) => void;
-  deleteRole: (id: string) => void;
-  saveUser: (user: AdminUser) => void;
-  deleteUser: (id: string) => void;
-  switchUser: (id: string) => void;
-  resetDemo: () => void;
+  refresh: () => Promise<void>;
+  updateProfile: (values: { name: string; email: string }) => Promise<SaveResult>;
+  changePassword: (current: string, next: string) => Promise<SaveResult>;
+  setAvatar: (url: string | null) => Promise<SaveResult>;
+  saveRole: (role: RoleInput) => Promise<SaveResult>;
+  deleteRole: (id: string) => Promise<SaveResult>;
+  saveUser: (user: AdminUserInput) => Promise<SaveResult>;
+  deleteUser: (id: string) => Promise<SaveResult>;
 }
 
 const AdminAccessContext = createContext<AdminAccessContextValue | null>(null);
 
+async function apiRequest<T>(url: string, init?: RequestInit): Promise<SaveResult & { data?: T }> {
+  try {
+    const response = await fetch(url, {
+      ...init,
+      cache: "no-store",
+      headers: { "Content-Type": "application/json", ...init?.headers },
+    });
+    const payload = (await response.json().catch(() => null)) as
+      | (T & { error?: string })
+      | { error?: string }
+      | null;
+    if (!response.ok) {
+      const message =
+        payload && "error" in payload && typeof payload.error === "string"
+          ? payload.error
+          : "The request could not be completed.";
+      return { ok: false, message };
+    }
+    return { ok: true, message: "Saved.", data: payload as T };
+  } catch {
+    return { ok: false, message: "Could not reach the server. Check your connection." };
+  }
+}
+
 export function AdminAccessProvider({ children }: { children: ReactNode }) {
-  // Start from the same defaults on server and client; load localStorage after
-  // hydration so the rendered markup always matches.
-  const [state, setState] = useState<AdminAccessState>(() => defaultAdminAccessState());
+  const [data, setData] = useState<AccessResponse>({
+    currentUser: null,
+    currentRole: null,
+    roles: [],
+    users: [],
+  });
   const [hydrated, setHydrated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    const result = await apiRequest<AccessResponse>("/api/admin/access");
+    if (result.ok && result.data) {
+      setData(result.data);
+      setError(null);
+      setHydrated(true);
+      return;
+    }
+    setError(result.message);
+    setHydrated(true);
+    if (result.message === "Sign in required." || result.message === "Admin access required.") {
+      window.location.assign("/admin/login");
+    }
+  }, []);
 
   useEffect(() => {
-    setState(readAdminAccess());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === ADMIN_ACCESS_KEY || event.key === null) {
-        setState(readAdminAccess());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+    void refresh();
+  }, [refresh]);
 
-  const persist = useCallback((next: AdminAccessState) => {
-    writeAdminAccess(next);
-    setState(next);
-  }, []);
-
-  const currentUser = useMemo(
-    () => state.users.find((user) => user.id === state.currentUserId),
-    [state.users, state.currentUserId],
-  );
-  const currentRole = useMemo(
-    () => (currentUser ? findRole(state, currentUser.roleId) : undefined),
-    [currentUser, state],
-  );
-  const isSuperAdmin = currentUser?.roleId === SUPER_ADMIN_ROLE_ID;
+  const currentUser = data.currentUser ?? undefined;
+  const currentRole = data.currentRole ?? undefined;
+  const isSuperAdmin = currentRole?.permissions.includes("*") ?? false;
 
   const canAccessPage = useCallback(
     (href: string) => canRoleAccess(currentRole, href),
@@ -96,156 +125,109 @@ export function AdminAccessProvider({ children }: { children: ReactNode }) {
   );
 
   const updateProfile = useCallback(
-    (values: { name: string; email: string }) => {
-      setState((current) => {
-        const next = {
-          ...current,
-          users: current.users.map((user) =>
-            user.id === current.currentUserId ? { ...user, ...values } : user,
-          ),
-        };
-        writeAdminAccess(next);
-        return next;
+    async (values: { name: string; email: string }) => {
+      const result = await apiRequest("/api/admin/profile", {
+        method: "PATCH",
+        body: JSON.stringify({ ...values, image: data.currentUser?.image ?? null }),
       });
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Profile saved." : result.message };
     },
-    [],
+    [data.currentUser?.image, refresh],
   );
 
-  const changePassword = useCallback(
-    (currentPassword: string, nextPassword: string) => {
-      if (!currentUser) return { ok: false, message: "No admin is signed in." };
-      if (currentPassword !== currentUser.password) {
-        return { ok: false, message: "Current password does not match." };
-      }
-      if (nextPassword.length < 6) {
-        return { ok: false, message: "New password must be at least 6 characters." };
-      }
-      persist({
-        ...state,
-        users: state.users.map((user) =>
-          user.id === currentUser.id ? { ...user, password: nextPassword } : user,
-        ),
-      });
-      return { ok: true, message: "Password updated in this browser." };
-    },
-    [currentUser, persist, state],
-  );
+  const changePassword = useCallback(async (current: string, next: string) => {
+    const result = await apiRequest("/api/admin/profile/password", {
+      method: "POST",
+      body: JSON.stringify({ currentPassword: current, newPassword: next }),
+    });
+    return { ok: result.ok, message: result.ok ? "Password updated." : result.message };
+  }, []);
 
   const setAvatar = useCallback(
-    (dataUrl: string | null) => {
-      setState((current) => {
-        const next = {
-          ...current,
-          users: current.users.map((user) =>
-            user.id === current.currentUserId
-              ? { ...user, avatar: dataUrl ?? undefined }
-              : user,
-          ),
-        };
-        writeAdminAccess(next);
-        return next;
+    async (url: string | null) => {
+      const result = await apiRequest("/api/admin/profile", {
+        method: "PATCH",
+        body: JSON.stringify({
+          name: data.currentUser?.name ?? "Admin",
+          email: data.currentUser?.email ?? "",
+          image: url,
+        }),
       });
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Profile picture saved." : result.message };
     },
-    [],
+    [data.currentUser?.name, data.currentUser?.email, refresh],
   );
 
   const saveRole = useCallback(
-    (role: AdminRole) => {
-      setState((current) => {
-        const exists = current.roles.some(
-          (item) => item.id === role.id && item.id !== SUPER_ADMIN_ROLE_ID,
-        );
-        const next = {
-          ...current,
-          roles: exists
-            ? current.roles.map((item) => (item.id === role.id ? role : item))
-            : [...current.roles, role],
-        };
-        writeAdminAccess(next);
-        return next;
-      });
+    async (role: RoleInput) => {
+      const result = await apiRequest(
+        role.id ? `/api/admin/roles/${encodeURIComponent(role.id)}` : "/api/admin/roles",
+        {
+          method: role.id ? "PATCH" : "POST",
+          body: JSON.stringify({
+            name: role.name,
+            description: role.description,
+            permissions: role.permissions,
+          }),
+        },
+      );
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Role saved." : result.message };
     },
-    [],
+    [refresh],
   );
 
   const deleteRole = useCallback(
-    (id: string) => {
-      setState((current) => {
-        if (id === SUPER_ADMIN_ROLE_ID) return current;
-        const next = {
-          ...current,
-          roles: current.roles.filter((role) => role.id !== id),
-          users: current.users.map((user) =>
-            user.roleId === id ? { ...user, roleId: SUPER_ADMIN_ROLE_ID } : user,
-          ),
-        };
-        writeAdminAccess(next);
-        return next;
+    async (id: string) => {
+      const result = await apiRequest(`/api/admin/roles/${encodeURIComponent(id)}`, {
+        method: "DELETE",
       });
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Role deleted." : result.message };
     },
-    [],
+    [refresh],
   );
 
   const saveUser = useCallback(
-    (user: AdminUser) => {
-      setState((current) => {
-        const exists = current.users.some((item) => item.id === user.id);
-        const next = {
-          ...current,
-          users: exists
-            ? current.users.map((item) => (item.id === user.id ? user : item))
-            : [...current.users, user],
-        };
-        writeAdminAccess(next);
-        return next;
-      });
+    async (user: AdminUserInput) => {
+      const result = await apiRequest(
+        user.id ? `/api/admin/users/${encodeURIComponent(user.id)}` : "/api/admin/users",
+        {
+          method: user.id ? "PATCH" : "POST",
+          body: JSON.stringify(user),
+        },
+      );
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Admin user saved." : result.message };
     },
-    [],
+    [refresh],
   );
 
   const deleteUser = useCallback(
-    (id: string) => {
-      setState((current) => {
-        if (id === SUPER_ADMIN_USER_ID) return current;
-        const next = {
-          ...current,
-          users: current.users.filter((user) => user.id !== id),
-          currentUserId:
-            current.currentUserId === id ? SUPER_ADMIN_USER_ID : current.currentUserId,
-        };
-        writeAdminAccess(next);
-        return next;
+    async (id: string) => {
+      const result = await apiRequest(`/api/admin/users/${encodeURIComponent(id)}`, {
+        method: "DELETE",
       });
+      if (result.ok) await refresh();
+      return { ok: result.ok, message: result.ok ? "Admin user deleted." : result.message };
     },
-    [],
+    [refresh],
   );
-
-  const switchUser = useCallback(
-    (id: string) => {
-      setState((current) => {
-        if (!current.users.some((user) => user.id === id)) return current;
-        const next = { ...current, currentUserId: id };
-        writeAdminAccess(next);
-        return next;
-      });
-    },
-    [],
-  );
-
-  const resetDemo = useCallback(() => {
-    persist(defaultAdminAccessState());
-  }, [persist]);
 
   const value = useMemo<AdminAccessContextValue>(
     () => ({
       hydrated,
-      users: state.users,
-      roles: state.roles,
+      error,
+      users: data.users,
+      roles: data.roles,
       currentUser,
       currentRole,
       isSuperAdmin,
       canAccessPage,
       visibleNavGroups,
+      refresh,
       updateProfile,
       changePassword,
       setAvatar,
@@ -253,18 +235,18 @@ export function AdminAccessProvider({ children }: { children: ReactNode }) {
       deleteRole,
       saveUser,
       deleteUser,
-      switchUser,
-      resetDemo,
     }),
     [
       hydrated,
-      state.users,
-      state.roles,
+      error,
+      data.users,
+      data.roles,
       currentUser,
       currentRole,
       isSuperAdmin,
       canAccessPage,
       visibleNavGroups,
+      refresh,
       updateProfile,
       changePassword,
       setAvatar,
@@ -272,8 +254,6 @@ export function AdminAccessProvider({ children }: { children: ReactNode }) {
       deleteRole,
       saveUser,
       deleteUser,
-      switchUser,
-      resetDemo,
     ],
   );
 
@@ -288,4 +268,10 @@ export function useAdminAccess(): AdminAccessContextValue {
     throw new Error("useAdminAccess must be used within an AdminAccessProvider");
   }
   return context;
+}
+
+/** Convenience for components that only need to find a role in the loaded list. */
+export function useAdminRole(id: string | null | undefined): AdminRole | undefined {
+  const { roles } = useAdminAccess();
+  return findRole(roles, id);
 }

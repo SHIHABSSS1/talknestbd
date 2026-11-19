@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronRight,
   Heart,
+  LogOut,
   MapPin,
   Menu,
   Package,
@@ -21,6 +22,7 @@ import {
 import { categoryLinks, mainNav, moreLinks } from "@/lib/navigation";
 import { siteConfig, cn } from "@/lib/utils";
 import { useStore, useHydrated } from "@/lib/store";
+import { authClient, useSession } from "@/lib/auth-client";
 import { Logo } from "./Logo";
 import { SearchForm } from "./SearchForm";
 import { SocialLinks } from "./SocialLinks";
@@ -37,6 +39,7 @@ export function Header() {
   const pathname = usePathname();
   const { cartCount, wishlist } = useStore();
   const hydrated = useHydrated();
+  const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [regionHeight, setRegionHeight] = useState(0);
@@ -77,6 +80,13 @@ export function Header() {
    * header changes state, so the header needs a deliberate scroll before it
    * reacts. Without that band, slow scrolling and rubber-banding flip the
    * header on and off over and over.
+   *
+   * The collapsible rows are absolutely positioned (see the spacer below), so
+   * toggling them never changes the document height. That is essential: when
+   * the header used to reclaim its space with a negative margin, the page
+   * shrank, the browser compensated the scroll offset, this handler read that
+   * compensation as an upward scroll and re-opened the header, which made the
+   * search row bounce up and down in a loop.
    */
   useEffect(() => {
     let frame = 0;
@@ -90,9 +100,9 @@ export function Header() {
         const maxScroll =
           document.documentElement.scrollHeight - window.innerHeight;
 
-        // Collapsing the header shortens the page. Near the bottom the
-        // browser then clamps the scroll position, which is a layout artefact
-        // rather than an upward scroll and must not re-open the header.
+        // Near the bottom, rubber-banding or late-loading content can clamp
+        // the scroll position. That is a layout artefact rather than an
+        // upward scroll and must not re-open the header.
         if (y >= maxScroll - 2 && y < anchorY) {
           anchorY = y;
           return;
@@ -204,13 +214,36 @@ export function Header() {
               </div>
 
               <div className="ml-auto flex items-center gap-1 sm:gap-2">
-                <Link
-                  href="/login"
-                  className="hidden items-center gap-1.5 px-2 text-xs font-medium text-body transition-colors hover:text-brand-600 xl:flex"
-                >
-                  <User size={17} />
-                  Login
-                </Link>
+                {session ? (
+                  <>
+                    <Link
+                      href="/account"
+                      className="hidden max-w-[140px] items-center gap-1.5 px-2 text-xs font-medium text-body transition-colors hover:text-brand-600 xl:flex"
+                    >
+                      <User size={17} />
+                      <span className="truncate">{session.user.name.split(" ")[0]}</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        await authClient.signOut();
+                        window.location.href = "/";
+                      }}
+                      aria-label="Sign out"
+                      className="hidden h-10 w-10 place-items-center rounded-full text-body transition-colors hover:bg-brand-50 hover:text-brand-600 xl:grid"
+                    >
+                      <LogOut size={17} />
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="hidden items-center gap-1.5 px-2 text-xs font-medium text-body transition-colors hover:text-brand-600 xl:flex"
+                  >
+                    <User size={17} />
+                    Login
+                  </Link>
+                )}
                 <Link
                   href="/account"
                   aria-label="My account"
@@ -252,13 +285,19 @@ export function Header() {
           </div>
         </div>
 
-        {/* Search + navigation rows: hidden while scrolling down, sticky again on scroll up. */}
+        {/*
+          Search + navigation rows: hidden while scrolling down, sticky again
+          on scroll up. They sit on top of the page instead of taking part in
+          the header's height, so the collapse is a pure transform and never
+          reflows the document (a reflow here feeds back into the scroll
+          position and makes the rows bounce).
+        */}
         <div
           ref={regionRef}
-          className="relative z-10 transition-[transform,margin-bottom] duration-300 ease-out"
+          inert={collapsed}
+          className="absolute inset-x-0 top-full z-10 bg-white shadow-[0_1px_0_rgba(17,24,39,0.06)] transition-transform duration-300 ease-out motion-reduce:transition-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-line after:content-['']"
           style={{
             transform: collapsed ? "translateY(-100%)" : "translateY(0)",
-            marginBottom: collapsed ? -regionHeight : 0,
           }}
         >
           <div className="mx-auto w-full max-w-[1425px] px-4 pb-3 sm:px-6 lg:hidden">
@@ -357,6 +396,18 @@ export function Header() {
           </nav>
         </div>
       </header>
+
+      {/*
+        Reserves the collapsible rows' space at the top of the document. The
+        rows themselves overlay the page (absolute), so this spacer is what
+        keeps the first section from starting underneath them. It scrolls away
+        with the page, so a collapsed header never leaves a gap behind.
+      */}
+      <div
+        aria-hidden="true"
+        className="print-hide h-14 lg:h-11"
+        style={regionHeight > 0 ? { height: regionHeight } : undefined}
+      />
 
       {menuOpen && (
         <div className="fixed inset-0 z-[70] lg:hidden">

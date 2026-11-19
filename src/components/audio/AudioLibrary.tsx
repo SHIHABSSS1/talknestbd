@@ -8,7 +8,8 @@ import {
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useAudioContent } from "@/components/providers/AudioContentProvider";
 import { useStore } from "@/lib/store";
-import { audioChapters, audioPrice, readUnlockedAudio } from "@/lib/audio";
+import { audioChapters, audioPrice } from "@/lib/audio";
+import { accountFetch } from "@/lib/account-client";
 import { cn, formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
 import { Badge } from "@/components/ui/Badge";
@@ -41,7 +42,9 @@ export function AudioLibrary() {
   const playRequested = useRef(false);
 
   useEffect(() => {
-    setUnlocked(readUnlockedAudio());
+    accountFetch<string[]>("/api/account/audio")
+      .then(setUnlocked)
+      .catch(() => setUnlocked([]));
   }, []);
 
   const book = audioBooks.find((entry) => entry.slug === selectedSlug) ?? audioBooks[0];

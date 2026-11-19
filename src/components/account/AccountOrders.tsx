@@ -8,11 +8,8 @@ import {
   RotateCcw,
   ShoppingBag,
 } from "lucide-react";
-import {
-  formatOrderDate,
-  readOrders,
-  type Order,
-} from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import { formatOrderDate, type Order } from "@/lib/orders";
 import { books } from "@/data/books";
 import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
@@ -28,7 +25,17 @@ export function AccountOrders() {
   const [orders, setOrders] = useState<Order[] | null>(null);
 
   useEffect(() => {
-    setOrders(readOrders());
+    let alive = true;
+    accountFetch<Order[]>("/api/account/orders")
+      .then((data) => {
+        if (alive) setOrders(data);
+      })
+      .catch(() => {
+        if (alive) setOrders([]);
+      });
+    return () => {
+      alive = false;
+    };
   }, []);
 
   if (orders === null) {

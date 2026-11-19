@@ -13,7 +13,7 @@ import {
   Settings2,
   UserRound,
 } from "lucide-react";
-import { logoutAdmin } from "@/lib/admin-auth";
+import { authClient } from "@/lib/auth-client";
 import { useNotifications } from "@/components/providers/NotificationsProvider";
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
 import { initials } from "@/lib/admin-access";
@@ -25,10 +25,11 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
   const { currentUser, currentRole, isSuperAdmin } = useAdminAccess();
 
-  const signOut = () => {
-    logoutAdmin();
+  const signOut = async () => {
+    await authClient.signOut();
     setMenuOpen(false);
     router.push("/admin/login");
+    router.refresh();
   };
 
   return (
@@ -157,9 +158,9 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
             className="flex h-9 items-center gap-2 rounded-[4px] border border-line pl-1.5 pr-2 transition-colors hover:bg-brand-50"
           >
             <span className="grid h-6 w-6 place-items-center overflow-hidden rounded-full bg-brand-600 text-[8px] font-bold text-white">
-              {currentUser?.avatar ? (
+              {currentUser?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={currentUser.avatar} alt="" className="h-full w-full object-cover" />
+                <img src={currentUser.image} alt="" className="h-full w-full object-cover" />
               ) : (
                 initials(currentUser?.name ?? "Admin")
               )}
@@ -189,8 +190,7 @@ export function AdminHeader({ onMenuClick }: { onMenuClick: () => void }) {
                     {currentUser?.name ?? "Admin"}
                   </p>
                   <p className="text-[9px] text-muted">
-                    {currentRole?.name ?? "Admin role"}
-                    {currentUser?.batch ? ` · ${currentUser.batch}` : ""}
+                    {currentUser?.roleName ?? currentRole?.name ?? "Admin role"}
                   </p>
                 </div>
                 <Link

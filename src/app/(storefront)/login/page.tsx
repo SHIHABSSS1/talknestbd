@@ -5,6 +5,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 export const metadata: Metadata = {
   title: "Log In",
   description: "Log in to your TalkNest BD account — orders, wishlist and audio library.",
+  robots: { index: false, follow: false },
 };
 
 export default function LoginPage() {

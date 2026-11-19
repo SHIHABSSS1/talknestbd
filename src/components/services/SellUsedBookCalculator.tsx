@@ -13,7 +13,8 @@ import {
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useSellContent } from "@/components/providers/SellContentProvider";
 import { useSellRequests } from "@/components/providers/SellRequestsProvider";
-import { readAddresses, readProfile } from "@/lib/orders";
+import { accountFetch } from "@/lib/account-client";
+import type { Profile, SavedAddress } from "@/lib/orders";
 import { formatPrice, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import type { SellRequest } from "@/lib/sell-requests";
@@ -51,11 +52,14 @@ export function SellUsedBookCalculator() {
     setFormError("");
   };
 
-  const loginWithProfile = () => {
-    const profile = readProfile();
-    const saved = readAddresses();
-    const defaultAddress = saved.find((entry) => entry.isDefault) ?? saved[0];
-    setForm({
+  const loginWithProfile = async () => {
+    try {
+      const [profile, saved] = await Promise.all([
+        accountFetch<Profile>("/api/account/profile"),
+        accountFetch<SavedAddress[]>("/api/account/addresses"),
+      ]);
+      const defaultAddress = saved.find((entry) => entry.isDefault) ?? saved[0];
+      setForm({
       name: defaultAddress?.name || profile.name,
       phone: defaultAddress?.phone || profile.phone,
       email: defaultAddress?.email || profile.email,
@@ -71,8 +75,11 @@ export function SellUsedBookCalculator() {
             .join(", ")
         : profile.city || "",
     });
-    setLoggedIn(true);
-    setFormError("");
+      setLoggedIn(true);
+      setFormError("");
+    } catch {
+      setFormError("Please sign in to fill this form from your account.");
+    }
   };
 
   const submitRequest = () => {

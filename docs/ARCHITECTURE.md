@@ -75,7 +75,7 @@ These map 1:1 onto tables. This is the migration checklist.
 | `talknestbd-addresses-v1` | `SavedAddress[]` | `addresses` |
 | `talknestbd-profile-v1` | `Profile` | `users` |
 | `talknestbd-cart-v1` / `-wishlist-v1` | ids | keep local (optional `wishlists` table) |
-| `talknest-admin-access-v1` | users/roles/permissions | `users`, `roles`, `role_permissions` |
+| `talknest-admin-access-v1` | users/roles/permissions | **Migrated:** `users`, `roles`, `user_roles` via `/api/admin/*` |
 | `talknest_admin_session` | `"active"` | real session cookie |
 
 > **Do not copy this denormalised shape into Postgres wholesale.** The list above is
@@ -964,7 +964,7 @@ every other section.
 | **0. Decide** | Locked: **Neon Postgres + VPS with a persistent volume**, all media on local disk. Copy `.env.example` → `.env.local` and fill it. | App boots with `DATABASE_URL` + `STORAGE_DRIVER=local` + `UPLOAD_DIR`; `.env.example` is committed |
 | **1. Schema + seed** | Drizzle schema, migrations, seed from `src/data/*` | `drizzle-kit migrate` then `npm run db:seed` reproduces the demo catalogue |
 | **2. Read path** | `src/lib/db/queries`, `"use cache"` + tags, server-render catalogue, book/authors/publishers/categories pages | No client provider reads catalogue data; pages prerender; tags invalidate |
-| **3. Auth** | *Deferred — planned, not next.* Better Auth (`/api/auth/[...all]`), Google OAuth, email/password for admin, `roles`/`user_roles`, admin gate | Google sign-in returns a real session cookie; admin login works; `canRoleAccess()` reads DB |
+| **3. Auth** | **Implemented (Nov 2026).** Self-hosted Better Auth, `/api/auth/[...all]`, email/password, Google OAuth, email OTP via Resend, `user.role`, server `requireAdmin()`/`requireUser()` gates. DB-backed rate limiting. Admin users and roles live in `roles`/`user_roles` behind `/api/admin/*`. | Google sign-in returns a real session cookie; admin login works; uploads + hero actions are server-gated; `/admin/users` is a database-backed CRUD screen; `grep -rn "TODO(auth)" src` is empty |
 | **4. Writes** | Server actions for every admin editor + `revalidateTag` | Editing a book in `/admin/books` updates `/books/<slug>` after revalidate |
 | **5. Media** | `/api/uploads` (streamed), sharp derivatives, `ffmpeg` for audio/video, `media` table, `next/image` everywhere | No `<img>` for local uploads; no base64 in DB; video uploads survive a 200 MB file without OOM; LCP is `preload`ed |
 | **6. Orders** | Checkout server action, price re-validation, stock decrement in a transaction | Tampering with a client price cannot change the order total |
@@ -986,14 +986,14 @@ already allowed to do this". That is acceptable **only** while it is tracked. Th
 is defined in `AGENTS.md` ("Accepted-risk workarounds must be tracked with `TODO(auth)`"):
 every bypass carries a `// TODO(auth): ...` comment naming the replacement.
 
-| # | Location | Bypass in place | Closes with |
+| # | Location | Bypass in place | Status |
 | --- | --- | --- | --- |
-| 1 | `src/app/api/uploads/route.ts` | **In place now.** Fail-closed: development writes are allowed, every production request gets `403` until the auth check exists. Marked `TODO(auth)`. | `requireAdmin()` at the top of the handler, before reading the body |
-| 2 | `src/lib/actions/hero.ts` | **In place now.** `saveHeroContent` / `resetHeroContent` are callable by anyone. Marked `TODO(auth)`. | `requireAdmin()` before validation |
-| 2 | `orders.user_id`, `reviews.user_id`, `audio_unlocks.user_id` | Nullable `text`, no FK | `references users(id)`, populated from `session.user.id` |
-| 3 | `src/app/(storefront)/account/**` | Client-side demo state | `requireUser()` in the account layout, then delete the demo flag |
-| 4 | `src/app/(admin)/admin/(panel)/layout.tsx` | Client `AdminAccessGate` only | Server `requireAdmin()`; keep the gate for UI only |
-| 5 | `src/lib/admin-access.ts` | Role + permissions from localStorage | Read `roles` / `user_roles` / `role_permissions` from the DB |
+| 1 | `src/app/api/uploads/route.ts` | Dev-only write access | **Closed.** Better Auth session + `role === "admin"` checked before the body is read; cross-site POSTs rejected by Origin check. |
+| 2 | `src/lib/actions/hero.ts` | `saveHeroContent` / `resetHeroContent` callable by anyone | **Closed.** Both call `isAdminSession(await getServerSession())` first and fail with a friendly message. |
+| 2 | `orders.user_id`, `reviews.user_id`, `audio_unlocks.user_id` | Nullable `text`, no FK | **Partly closed.** `orders.user_id` and `audio_unlocks.user_id` now reference `users(id)` and are populated from `session.user.id`; `reviews.user_id` remains deferred with the reviews migration. |
+| 3 | `src/app/(storefront)/account/**` | Client-side demo state | **Closed.** `requireUser()` guards the account layout, checkout and receipt routes. Profile, addresses, orders and audio unlocks are DB-backed via `/api/account/**`. |
+| 4 | `src/app/(admin)/admin/(panel)/layout.tsx` | Client `AdminAccessGate` only | **Closed.** `await requireAdmin()` runs in a Suspense-wrapped guard; the client gate stays for UI only. |
+| 5 | `src/lib/admin-access.ts` | Role + permissions from localStorage | **Closed.** `src/lib/admin-access.ts` is now client-safe helpers only; roles/users/permissions come from `roles` + `user_roles` via `/api/admin/access`, `/api/admin/users` and `/api/admin/roles` with `requireSuperAdmin()` on writes. |
 
 Gate before any public deploy:
 
@@ -1011,7 +1011,7 @@ look. Closing these is part of the auth task itself, not a follow-up ticket.
 | Risk | Mitigation |
 | --- | --- |
 | Price tampering at checkout | Re-read prices server-side; ignore client totals |
-| Admin password is demo-only (`demo1234` in localStorage) | Move to Better Auth before any real admin use; force password reset |
+| Admin credential rotation | Seeded via `npm run db:seed:admin`; self-service password change lives in `/admin/profile` and uses Better Auth's `changePassword` |
 | Base64 uploads blow the 5 MB localStorage quota | Move to `media` + disk/R2; cap image size server-side |
 | Bengali search quality | Start with `pg_trgm`; evaluate Meilisearch if 2-char queries matter |
 | Vercel-style serverless host creeping back in | The decision is locked to a VPS with a persistent volume; Vercel cannot store 200 MB videos (§8.5) |

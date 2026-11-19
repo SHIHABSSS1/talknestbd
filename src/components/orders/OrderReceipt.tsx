@@ -16,11 +16,11 @@ import {
   ShoppingBag,
   Truck,
 } from "lucide-react";
+import { accountFetch } from "@/lib/account-client";
 import {
   deliveryLabels,
   formatOrderDate,
   paymentLabels,
-  readOrder,
   type Order,
 } from "@/lib/orders";
 import { books } from "@/data/books";
@@ -37,7 +37,17 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
 
   useEffect(() => {
-    setOrder(readOrder(orderId) ?? null);
+    let alive = true;
+    accountFetch<Order>(`/api/account/orders/${encodeURIComponent(orderId)}`)
+      .then((data) => {
+        if (alive) setOrder(data);
+      })
+      .catch(() => {
+        if (alive) setOrder(null);
+      });
+    return () => {
+      alive = false;
+    };
   }, [orderId]);
 
   if (order === undefined) {
@@ -54,7 +64,7 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
       <EmptyState
         icon={<ShoppingBag size={24} />}
         title="Order not found"
-        description="This order may not be saved in this browser, or the link may be incorrect. Demo orders are available only in the browser where they were placed."
+        description="This order could not be found in your account. Check the link or view your order history."
         action={
           <div className="flex flex-wrap justify-center gap-3">
             <Button href="/account/orders">My orders</Button>
@@ -309,8 +319,8 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
         <div className="border-t border-forest-900/8 bg-cream-100/40 px-5 py-4 text-[9px] leading-relaxed text-muted sm:px-7">
            <p className="font-semibold text-forest-800">Demo receipt</p>
           <p className="mt-0.5">
-             This is a front-end demo order. No real payment was taken, and the
-             order is saved only in your browser. For a live order, you could
+             No real payment was taken for this demo order. It is saved to your
+             account. For a live order, you could
              contact us within seven days of delivery for a return or exchange.
           </p>
           <p className="mt-1.5">

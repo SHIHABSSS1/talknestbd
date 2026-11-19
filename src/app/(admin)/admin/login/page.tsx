@@ -3,7 +3,8 @@ import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
 
 export const metadata: Metadata = {
   title: "Admin Sign In",
-  description: "Sign in to the TalkNest BD demo admin panel.",
+  description: "Sign in to the TalkNest BD admin panel.",
+  robots: { index: false, follow: false },
 };
 
 export default function AdminLoginPage() {

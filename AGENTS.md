@@ -86,7 +86,7 @@ and keep this section intact.
 
 ### About
 
-TalkNest BD is a Bengali-first demo bookstore and reader community built with Next.js App Router, React 19 and Tailwind CSS v4. Today there is no backend: cart, wishlist, orders, addresses, profile and audio unlocks live in browser `localStorage`. A PostgreSQL-backed architecture is designed and documented in `docs/ARCHITECTURE.md`; until it is implemented, do not assume a server, session, or database exists.
+TalkNest BD is a demo bookstore and reader community built with Next.js App Router, React 19 and Tailwind CSS v4. A real backend now exists: Neon Postgres + Drizzle for content, identity, profile, addresses, orders and audio unlocks, with self-hosted Better Auth sessions. Cart and wishlist still live in browser `localStorage`. See `docs/ARCHITECTURE.md` for the full data model and the remaining deferred debt.
 
 ### Commands
 
@@ -97,6 +97,7 @@ TalkNest BD is a Bengali-first demo bookstore and reader community built with Ne
 - `npm run db:generate` — generate a SQL migration from `src/lib/db/schema.ts`
 - `npm run db:migrate` — apply migrations to Neon (uses `DATABASE_URL_UNPOOLED`)
 - `npm run db:seed` — seed `content_blocks` from `src/data` (safe to re-run)
+- `npm run db:seed:admin` — create/rotate the admin account and seed built-in roles (see `README.md`)
 - `npm run db:studio` — Drizzle Studio
 
 ### Database (Neon Postgres + Drizzle) — first slice is live
@@ -111,9 +112,13 @@ TalkNest BD is a Bengali-first demo bookstore and reader community built with Ne
   `src/app/(storefront)/page.tsx`, written from `/admin/sections/hero`. Everything else in
   `src/lib/*-content.ts` is still localStorage — migrate it the same way, one section at a
   time, using the hero as the reference implementation.
-- **Uploads:** `POST /api/uploads` (base64 JSON, development only — production is
-  fail-closed with a `TODO(auth)`) writes to `UPLOAD_DIR`; `GET /media/*` serves it.
-  Never write into `public/`.
+- **Uploads:** `POST /api/uploads` (base64 JSON) requires a real Better Auth admin
+  session; `GET /media/*` serves the files. Never write into `public/`.
+- **Auth:** self-hosted Better Auth is live (`src/lib/auth.ts`, `/api/auth/[...all]`).
+  `requireUser()` / `requireAdmin()` live in `src/lib/auth-guards.ts`. Admin users and
+  roles are DB-backed (`roles`, `user_roles`) through `/api/admin/access`, `/api/admin/users`
+  and `/api/admin/roles`; `/admin/users` is super-admin only. See `docs/ARCHITECTURE.md`
+  §9.1 for the remaining deferred debt.
 - **Next 16 trap:** `export const runtime` in a route file is rejected when
   `cacheComponents: true` (build error). Omit it — route handlers are already Node.
 
@@ -127,7 +132,7 @@ TalkNest BD is a Bengali-first demo bookstore and reader community built with Ne
 
 ### Conventions
 
-- UI copy is Bengali-first; keep new user-facing text in Bengali.
+- **English only (overrides the old Bengali-first rule):** never create a Bengali-language page, email, or UI string. Every new page, label, error message, email template and agent response in this project must be in English. If you touch a file that still contains Bengali copy, convert the strings you touch to English. Pre-existing Bengali content elsewhere in the repo is out of scope unless the user asks for a full translation.
 - Use the existing palette/tokens (`forest-*`, `cream-*`, `gold-*`, `clay-*`) and the small UI primitives in `src/components/ui`.
 - Prefer server components for static pages; add `"use client"` only for interaction/localStorage/browser APIs.
 - Book covers are CSS-generated via `BookCover` (an optional uploaded `cover.imageSrc` is supported for admin-managed books); otherwise do not add external cover images.

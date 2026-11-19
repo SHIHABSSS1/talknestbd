@@ -4,13 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   Check,
-  ChevronRight,
-  KeyRound,
   Layers3,
   LockKeyhole,
   Pencil,
   Plus,
-  RotateCcw,
   Save,
   ShieldCheck,
   Trash2,
@@ -18,28 +15,30 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
+
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
 import {
   adminPageOptions,
-  createId,
   formatJoined,
   initials,
   isSuperOnlyPage,
   SUPER_ADMIN_ROLE_ID,
-  SUPER_ADMIN_USER_ID,
   type AdminRole,
   type AdminUser,
+  type AdminUserInput,
 } from "@/lib/admin-access";
 
 const inputClass =
   "w-full rounded-[4px] border border-line bg-white px-3 py-2.5 text-[12px] text-ink placeholder:text-muted/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15";
 const labelClass = "mb-1.5 block text-[11px] font-semibold text-ink";
 const primaryBtn =
-  "inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700";
+  "inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60";
 const secondaryBtn =
   "inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:bg-brand-50";
 const iconBtn =
   "grid h-7 w-7 place-items-center rounded-[4px] text-muted transition-colors hover:bg-brand-50 hover:text-brand-700";
+
+type Notice = { ok: boolean; text: string } | null;
 
 export function UsersRolesManager() {
   const {
@@ -52,8 +51,6 @@ export function UsersRolesManager() {
     deleteRole,
     saveUser,
     deleteUser,
-    switchUser,
-    resetDemo,
   } = useAdminAccess();
 
   // Role editor state
@@ -62,18 +59,19 @@ export function UsersRolesManager() {
   const [roleName, setRoleName] = useState("");
   const [roleDescription, setRoleDescription] = useState("");
   const [rolePermissions, setRolePermissions] = useState<string[]>([]);
-  const [roleNotice, setRoleNotice] = useState("");
+  const [roleNotice, setRoleNotice] = useState<Notice>(null);
+  const [roleBusy, setRoleBusy] = useState(false);
 
   // User editor state
   const [userFormOpen, setUserFormOpen] = useState(false);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userBatch, setUserBatch] = useState("Batch 03");
   const [userRoleId, setUserRoleId] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userStatus, setUserStatus] = useState<AdminUser["status"]>("active");
-  const [userNotice, setUserNotice] = useState("");
+  const [userNotice, setUserNotice] = useState<Notice>(null);
+  const [userBusy, setUserBusy] = useState(false);
 
   const closeRoleForm = () => {
     setRoleFormOpen(false);
@@ -81,7 +79,7 @@ export function UsersRolesManager() {
     setRoleName("");
     setRoleDescription("");
     setRolePermissions([]);
-    setRoleNotice("");
+    setRoleNotice(null);
   };
 
   const openRoleForm = (role?: AdminRole) => {
@@ -89,7 +87,7 @@ export function UsersRolesManager() {
     setRoleName(role?.name ?? "");
     setRoleDescription(role?.description ?? "");
     setRolePermissions(role ? [...role.permissions] : []);
-    setRoleNotice("");
+    setRoleNotice(null);
     setRoleFormOpen(true);
   };
 
@@ -98,22 +96,20 @@ export function UsersRolesManager() {
     setEditingUserId(null);
     setUserName("");
     setUserEmail("");
-    setUserBatch("Batch 03");
     setUserRoleId("");
     setUserPassword("");
     setUserStatus("active");
-    setUserNotice("");
+    setUserNotice(null);
   };
 
   const openUserForm = (user?: AdminUser) => {
     setEditingUserId(user?.id ?? null);
     setUserName(user?.name ?? "");
     setUserEmail(user?.email ?? "");
-    setUserBatch(user?.batch ?? "Batch 03");
     setUserRoleId(user?.roleId ?? roles[0]?.id ?? "");
     setUserPassword("");
     setUserStatus(user?.status ?? "active");
-    setUserNotice("");
+    setUserNotice(null);
     setUserFormOpen(true);
   };
 
@@ -124,7 +120,7 @@ export function UsersRolesManager() {
         ? current.filter((item) => item !== href)
         : [...current, href],
     );
-    setRoleNotice("");
+    setRoleNotice(null);
   };
 
   const selectAllPermissions = () => {
@@ -136,79 +132,71 @@ export function UsersRolesManager() {
     );
   };
 
-  const saveRoleForm = (event: React.FormEvent) => {
+  const saveRoleForm = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!roleName.trim()) {
-      setRoleNotice("Enter a role name.");
+    if (!roleName.trim() || rolePermissions.length === 0) {
+      setRoleNotice({ ok: false, text: "Enter a name and grant at least one page." });
       return;
     }
-    if (rolePermissions.length === 0) {
-      setRoleNotice("Select access to at least one page.");
-      return;
-    }
-    const existing = roles.find((role) => role.id === editingRoleId);
-    const role: AdminRole = {
-      id: existing?.id ?? createId("role"),
+    setRoleBusy(true);
+    const result = await saveRole({
+      id: editingRoleId ?? undefined,
       name: roleName.trim(),
-      description: roleDescription.trim() || "Custom admin role",
+      description: roleDescription.trim(),
       permissions: rolePermissions,
-      createdAt: existing?.createdAt ?? new Date().toISOString(),
-    };
-    saveRole(role);
-    closeRoleForm();
+    });
+    setRoleBusy(false);
+    setRoleNotice({ ok: result.ok, text: result.message });
+    if (result.ok) closeRoleForm();
   };
 
-  const saveUserForm = (event: React.FormEvent) => {
+  const saveUserForm = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!userName.trim() || !/^\S+@\S+\.\S+$/.test(userEmail.trim())) {
-      setUserNotice("Enter a valid name and email address.");
+      setUserNotice({ ok: false, text: "Enter a valid name and email address." });
       return;
     }
     if (!userRoleId) {
-      setUserNotice("Choose a role first.");
+      setUserNotice({ ok: false, text: "Choose a role first." });
       return;
     }
-    const existing = users.find((user) => user.id === editingUserId);
-    const user: AdminUser = {
-      id: existing?.id ?? createId("user"),
+    const payload: AdminUserInput = {
       name: userName.trim(),
-      email: userEmail.trim(),
-      avatar: existing?.avatar,
+      email: userEmail.trim().toLowerCase(),
       roleId: userRoleId,
-      batch: userBatch.trim() || "Batch —",
       status: userStatus,
-      joinedAt: existing?.joinedAt ?? new Date().toISOString(),
-      password: userPassword.trim() || existing?.password || "demo1234",
     };
-    saveUser(user);
-    closeUserForm();
+    if (editingUserId) payload.id = editingUserId;
+    if (userPassword) payload.password = userPassword;
+
+    setUserBusy(true);
+    const result = await saveUser(payload);
+    setUserBusy(false);
+    setUserNotice({ ok: result.ok, text: result.message });
+    if (result.ok) closeUserForm();
   };
 
+  if (!hydrated) {
+    return <p className="p-4 text-[12px] text-muted">Loading admin users…</p>;
+  }
+
   // Only the built-in super admin may manage users and roles.
-  if (hydrated && !isSuperAdmin) {
+  if (!isSuperAdmin) {
     return (
       <div className="mx-auto max-w-xl">
         <section className="rounded-[10px] border border-line bg-white p-6 sm:p-8">
           <span className="grid h-11 w-11 place-items-center rounded-[9px] bg-brand-50 text-brand-700">
             <LockKeyhole size={20} />
           </span>
-          <h1 className="mt-4 font-display text-xl font-bold text-ink">
-            Super admin only
-          </h1>
+          <h1 className="mt-4 font-display text-xl font-bold text-ink">Super admin only</h1>
           <p className="mt-2 text-[12px] leading-relaxed text-muted">
-            You are previewing as{" "}
-            <span className="font-semibold text-ink">
-              {currentUser?.name ?? "another user"}
-            </span>
-            . Return to the super admin account to manage users and roles.
+            The <span className="font-semibold text-ink">Super Admin</span> role is
+            required to manage admin users and roles. Ask a super admin to grant
+            it to your account.
           </p>
-          <button
-            type="button"
-            onClick={() => switchUser(SUPER_ADMIN_USER_ID)}
-            className={`${primaryBtn} mt-5`}
-          >
-            <RotateCcw size={13} /> Back to super admin
-          </button>
+          <Link href="/admin" className={`${primaryBtn} mt-5`}>
+            Back to dashboard
+          </Link>
         </section>
       </div>
     );
@@ -218,17 +206,13 @@ export function UsersRolesManager() {
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-1.5 text-[11px] text-muted">
-          <Link href="/admin" className="hover:text-brand-700">
-            Dashboard
-          </Link>
+          <Link href="/admin" className="hover:text-brand-700">Dashboard</Link>
           <span>/</span>
           <span className="font-semibold text-ink">Users &amp; roles</span>
         </div>
-        <h1 className="mt-2 font-display text-2xl font-bold text-ink">
-          Users &amp; roles
-        </h1>
+        <h1 className="mt-2 font-display text-2xl font-bold text-ink">Users &amp; roles</h1>
         <p className="mt-1 text-[12px] text-muted">
-          Create custom roles and grant each role access to specific admin pages.
+          Manage admin accounts and page permissions stored in the database.
         </p>
       </div>
 
@@ -238,30 +222,12 @@ export function UsersRolesManager() {
             <ShieldCheck size={16} />
           </span>
           <div>
-            <p className="text-[11px] font-semibold text-brand-900">
-              Signed in as super admin
-            </p>
+            <p className="text-[11px] font-semibold text-brand-900">Signed in as super admin</p>
             <p className="text-[9px] text-brand-800">
-              {currentUser?.name ?? "Admin"} · {currentUser?.batch ?? "Batch 01"} ·
-              full access to every page
+              {currentUser?.name ?? "Admin"} · {currentUser?.email ?? "—"}
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={resetDemo}
-          className={`${secondaryBtn} border-brand-200 bg-white`}
-        >
-          <RotateCcw size={12} /> Reset demo
-        </button>
-      </div>
-
-      <div className="rounded-[8px] border border-brand-100 bg-white px-4 py-3">
-        <p className="text-[10px] leading-relaxed text-muted">
-          <span className="font-semibold text-ink">Demo note:</span> users, roles
-          and permissions live only in this browser&apos;s localStorage. No
-          accounts are created on a server and no real login is used.
-        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -279,17 +245,12 @@ export function UsersRolesManager() {
             icon: ShieldCheck,
           },
         ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-[8px] border border-line bg-white px-3 py-3"
-          >
+          <div key={stat.label} className="rounded-[8px] border border-line bg-white px-3 py-3">
             <div className="flex items-center gap-2 text-muted">
               <stat.icon size={13} />
               <span className="text-[9px] font-medium">{stat.label}</span>
             </div>
-            <p className="mt-1.5 font-display text-lg font-bold text-ink">
-              {stat.value}
-            </p>
+            <p className="mt-1.5 font-display text-lg font-bold text-ink">{stat.value}</p>
           </div>
         ))}
       </div>
@@ -304,9 +265,7 @@ export function UsersRolesManager() {
               </span>
               <div>
                 <h2 className="text-[13px] font-semibold text-ink">Custom roles</h2>
-                <p className="text-[10px] text-muted">
-                  Set page-by-page permissions
-                </p>
+                <p className="text-[10px] text-muted">Set page-by-page permissions</p>
               </div>
             </div>
             <button
@@ -322,7 +281,7 @@ export function UsersRolesManager() {
           <div className="p-4 sm:p-5">
             {roleFormOpen && (
               <form
-                onSubmit={saveRoleForm}
+                onSubmit={(event) => void saveRoleForm(event)}
                 className="mb-5 rounded-[8px] border border-brand-100 bg-brand-50/40 p-4"
               >
                 <p className="mb-3 text-[11px] font-semibold text-ink">
@@ -330,12 +289,12 @@ export function UsersRolesManager() {
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block">
-                    <span className={labelClass}>Custom role name</span>
+                    <span className={labelClass}>Role name</span>
                     <input
                       value={roleName}
                       onChange={(event) => {
                         setRoleName(event.target.value);
-                        setRoleNotice("");
+                        setRoleNotice(null);
                       }}
                       placeholder="e.g. Inventory Manager"
                       className={inputClass}
@@ -393,11 +352,7 @@ export function UsersRolesManager() {
                                   ? "cursor-not-allowed text-muted"
                                   : "cursor-pointer text-body hover:bg-brand-50"
                               }`}
-                              title={
-                                locked
-                                  ? "Super admin access only"
-                                  : undefined
-                              }
+                              title={locked ? "Super admin access only" : undefined}
                             >
                               <input
                                 type="checkbox"
@@ -417,15 +372,19 @@ export function UsersRolesManager() {
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <button type="submit" className={primaryBtn}>
-                    <Save size={13} /> Save role
+                  <button type="submit" className={primaryBtn} disabled={roleBusy}>
+                    <Save size={13} /> {roleBusy ? "Saving…" : "Save role"}
                   </button>
                   <button type="button" onClick={closeRoleForm} className={secondaryBtn}>
                     Cancel
                   </button>
                   {roleNotice && (
-                    <span className="text-[10px] font-medium text-clay-600">
-                      {roleNotice}
+                    <span
+                      className={`text-[10px] font-medium ${
+                        roleNotice.ok ? "text-brand-700" : "text-clay-600"
+                      }`}
+                    >
+                      {roleNotice.text}
                     </span>
                   )}
                 </div>
@@ -451,18 +410,14 @@ export function UsersRolesManager() {
                     <div className="flex items-start gap-2.5">
                       <span
                         className={`grid h-8 w-8 shrink-0 place-items-center rounded-[7px] ${
-                          isSystem
-                            ? "bg-brand-100 text-brand-700"
-                            : "bg-canvas text-muted"
+                          isSystem ? "bg-brand-100 text-brand-700" : "bg-canvas text-muted"
                         }`}
                       >
                         {isSystem ? <ShieldCheck size={14} /> : <Layers3 size={14} />}
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[11px] font-semibold text-ink">
-                            {role.name}
-                          </p>
+                          <p className="text-[11px] font-semibold text-ink">{role.name}</p>
                           {isSystem && (
                             <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[8px] font-semibold text-brand-700">
                               Built-in
@@ -489,28 +444,26 @@ export function UsersRolesManager() {
                             ))}
                         </div>
                       </div>
-                      <div className="flex shrink-0 gap-0.5">
-                        {!isSystem && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => openRoleForm(role)}
-                              className={iconBtn}
-                              aria-label={`Edit ${role.name}`}
-                            >
-                              <Pencil size={13} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => deleteRole(role.id)}
-                              className={`${iconBtn} hover:bg-clay-500/5 hover:text-clay-600`}
-                              aria-label={`Delete ${role.name}`}
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </>
-                        )}
-                      </div>
+                      {!isSystem && (
+                        <div className="flex shrink-0 gap-0.5">
+                          <button
+                            type="button"
+                            onClick={() => openRoleForm(role)}
+                            className={iconBtn}
+                            aria-label={`Edit ${role.name}`}
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void deleteRole(role.id)}
+                            className={`${iconBtn} hover:bg-clay-500/5 hover:text-clay-600`}
+                            aria-label={`Delete ${role.name}`}
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -528,9 +481,7 @@ export function UsersRolesManager() {
               </span>
               <div>
                 <h2 className="text-[13px] font-semibold text-ink">Admin users</h2>
-                <p className="text-[10px] text-muted">
-                  Assign roles and batches
-                </p>
+                <p className="text-[10px] text-muted">Assign roles and access</p>
               </div>
             </div>
             <button
@@ -546,90 +497,60 @@ export function UsersRolesManager() {
           <div className="p-4 sm:p-5">
             {userFormOpen && (
               <form
-                onSubmit={saveUserForm}
+                onSubmit={(event) => void saveUserForm(event)}
                 className="mb-5 rounded-[8px] border border-brand-100 bg-brand-50/40 p-4"
               >
                 <p className="mb-3 text-[11px] font-semibold text-ink">
-                  {editingUserId ? "Edit user" : "Add a new admin"}
+                  {editingUserId ? "Edit admin user" : "Add a new admin"}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="block">
                     <span className={labelClass}>Name</span>
-                    <input
-                      value={userName}
-                      onChange={(event) => setUserName(event.target.value)}
-                      className={inputClass}
-                      required
-                    />
+                    <input value={userName} onChange={(event) => setUserName(event.target.value)} className={inputClass} required />
                   </label>
                   <label className="block">
                     <span className={labelClass}>Email</span>
-                    <input
-                      type="email"
-                      value={userEmail}
-                      onChange={(event) => setUserEmail(event.target.value)}
-                      className={inputClass}
-                      required
-                    />
-                  </label>
-                  <label className="block">
-                    <span className={labelClass}>Batch</span>
-                    <input
-                      value={userBatch}
-                      onChange={(event) => setUserBatch(event.target.value)}
-                      className={inputClass}
-                      placeholder="Batch 03"
-                    />
+                    <input type="email" value={userEmail} onChange={(event) => setUserEmail(event.target.value)} className={inputClass} required />
                   </label>
                   <label className="block">
                     <span className={labelClass}>Role</span>
-                    <select
-                      value={userRoleId}
-                      onChange={(event) => setUserRoleId(event.target.value)}
-                      className={inputClass}
-                      required
-                    >
+                    <select value={userRoleId} onChange={(event) => setUserRoleId(event.target.value)} className={inputClass} required>
                       <option value="">Select a role</option>
                       {roles.map((role) => (
-                        <option key={role.id} value={role.id}>
-                          {role.name}
-                        </option>
+                        <option key={role.id} value={role.id}>{role.name}</option>
                       ))}
                     </select>
                   </label>
                   <label className="block">
-                    <span className={labelClass}>Demo password</span>
-                    <input
-                      value={userPassword}
-                      onChange={(event) => setUserPassword(event.target.value)}
-                      className={inputClass}
-                      placeholder={editingUserId ? "Leave blank to keep" : "demo1234"}
-                    />
-                  </label>
-                  <label className="block">
                     <span className={labelClass}>Status</span>
-                    <select
-                      value={userStatus}
-                      onChange={(event) =>
-                        setUserStatus(event.target.value as AdminUser["status"])
-                      }
-                      className={inputClass}
-                    >
+                    <select value={userStatus} onChange={(event) => setUserStatus(event.target.value as AdminUser["status"])} className={inputClass}>
                       <option value="active">Active</option>
                       <option value="invited">Invited</option>
                     </select>
                   </label>
+                  <label className="block sm:col-span-2">
+                    <span className={labelClass}>Password</span>
+                    <input
+                      type="password"
+                      value={userPassword}
+                      onChange={(event) => setUserPassword(event.target.value)}
+                      className={inputClass}
+                      minLength={8}
+                      placeholder={editingUserId ? "Leave blank to keep the current password" : "At least 8 characters"}
+                    />
+                    <span className="mt-1 block text-[9px] text-muted">
+                      Hashed by Better Auth and stored on the server. Invited users can leave it blank.
+                    </span>
+                  </label>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <button type="submit" className={primaryBtn}>
-                    <Save size={13} /> Save user
+                  <button type="submit" className={primaryBtn} disabled={userBusy}>
+                    <Save size={13} /> {userBusy ? "Saving…" : "Save user"}
                   </button>
-                  <button type="button" onClick={closeUserForm} className={secondaryBtn}>
-                    Cancel
-                  </button>
+                  <button type="button" onClick={closeUserForm} className={secondaryBtn}>Cancel</button>
                   {userNotice && (
-                    <span className="text-[10px] font-medium text-clay-600">
-                      {userNotice}
+                    <span className={`text-[10px] font-medium ${userNotice.ok ? "text-brand-700" : "text-clay-600"}`}>
+                      {userNotice.text}
                     </span>
                   )}
                 </div>
@@ -639,32 +560,27 @@ export function UsersRolesManager() {
             <div className="space-y-3">
               {users.map((user) => {
                 const role = roles.find((item) => item.id === user.roleId);
-                const isSuperUser = user.id === SUPER_ADMIN_USER_ID;
                 const isCurrent = user.id === currentUser?.id;
                 return (
                   <div
                     key={user.id}
                     className={`rounded-[8px] border p-3.5 transition-colors ${
-                      isCurrent
-                        ? "border-brand-300 bg-brand-50/40"
-                        : "border-line hover:border-brand-200"
+                      isCurrent ? "border-brand-300 bg-brand-50/40" : "border-line hover:border-brand-200"
                     }`}
                   >
                     <div className="flex items-start gap-2.5">
                       <span className="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-600 text-[10px] font-bold text-white">
-                        {user.avatar ? (
+                        {user.image ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={user.avatar} alt="" className="h-full w-full object-cover" />
+                          <img src={user.image} alt="" className="h-full w-full object-cover" />
                         ) : (
                           initials(user.name)
                         )}
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-[11px] font-semibold text-ink">
-                            {user.name}
-                          </p>
-                          {isSuperUser && (
+                          <p className="text-[11px] font-semibold text-ink">{user.name}</p>
+                          {role?.id === SUPER_ADMIN_ROLE_ID && (
                             <span className="rounded-full bg-brand-100 px-2 py-0.5 text-[8px] font-semibold text-brand-700">
                               Super Admin
                             </span>
@@ -675,15 +591,10 @@ export function UsersRolesManager() {
                             </span>
                           )}
                         </div>
-                        <p className="mt-0.5 break-all text-[9px] text-muted">
-                          {user.email}
-                        </p>
+                        <p className="mt-0.5 break-all text-[9px] text-muted">{user.email}</p>
                         <div className="mt-2 flex flex-wrap items-center gap-1.5">
                           <span className="inline-flex items-center gap-1 rounded-full bg-canvas px-2 py-0.5 text-[8px] text-body">
-                            <UserCog size={10} /> {role?.name ?? "Unknown role"}
-                          </span>
-                          <span className="rounded-full bg-gold-500/10 px-2 py-0.5 text-[8px] font-medium text-gold-600">
-                            {user.batch}
+                            <UserCog size={10} /> {role?.name ?? "No role"}
                           </span>
                           <span className="text-[8px] text-muted">
                             Joined: {formatJoined(user.joinedAt)}
@@ -693,12 +604,18 @@ export function UsersRolesManager() {
                       <div className="flex shrink-0 flex-col items-end gap-1.5">
                         <select
                           value={user.status}
-                          onChange={(event) =>
-                            saveUser({
-                              ...user,
-                              status: event.target.value as AdminUser["status"],
-                            })
-                          }
+                          onChange={(event) => {
+                            const status = event.target.value as AdminUser["status"];
+                            if (user.roleId) {
+                              void saveUser({
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                roleId: user.roleId,
+                                status,
+                              }).then((result) => setUserNotice({ ok: result.ok, text: result.message }));
+                            }
+                          }}
                           className="rounded-[4px] border border-line bg-white px-2 py-1 text-[9px] text-ink focus:border-brand-400 focus:outline-none"
                           aria-label={`Status for ${user.name}`}
                         >
@@ -706,18 +623,13 @@ export function UsersRolesManager() {
                           <option value="invited">Invited</option>
                         </select>
                         <div className="flex gap-0.5">
-                          <button
-                            type="button"
-                            onClick={() => openUserForm(user)}
-                            className={iconBtn}
-                            aria-label={`Edit ${user.name}`}
-                          >
+                          <button type="button" onClick={() => openUserForm(user)} className={iconBtn} aria-label={`Edit ${user.name}`}>
                             <Pencil size={13} />
                           </button>
-                          {!isSuperUser && (
+                          {!isCurrent && (
                             <button
                               type="button"
-                              onClick={() => deleteUser(user.id)}
+                              onClick={() => void deleteUser(user.id)}
                               className={`${iconBtn} hover:bg-clay-500/5 hover:text-clay-600`}
                               aria-label={`Delete ${user.name}`}
                             >
@@ -727,26 +639,16 @@ export function UsersRolesManager() {
                         </div>
                       </div>
                     </div>
-                    {!isCurrent && (
-                      <button
-                        type="button"
-                        onClick={() => switchUser(user.id)}
-                        className="mt-2.5 inline-flex items-center gap-1 text-[9px] font-semibold text-brand-700 hover:underline"
-                      >
-                        Preview this role <ChevronRight size={11} />
-                      </button>
-                    )}
                   </div>
                 );
               })}
             </div>
 
-            <p className="mt-4 flex items-start gap-1.5 border-t border-line pt-3 text-[9px] leading-relaxed text-muted">
-              <KeyRound size={11} className="mt-0.5 shrink-0" />
-              Demo passwords are stored in this browser only. Use &quot;Preview
-              this role&quot; to test a role&apos;s page access; return to super
-              admin using the banner or the access-denied page.
-            </p>
+            {userNotice && (
+              <p className={`mt-4 border-t border-line pt-3 text-[10px] ${userNotice.ok ? "text-brand-700" : "text-clay-600"}`}>
+                {userNotice.text}
+              </p>
+            )}
           </div>
         </section>
       </div>
