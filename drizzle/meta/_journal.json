@@ -57,6 +57,13 @@
       "when": 1795183038263,
       "tag": "0007_past_havok",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795190205198,
+      "tag": "0008_odd_the_captain",
+      "breakpoints": true
     }
   ]
 }

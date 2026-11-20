@@ -129,6 +129,17 @@ export function toAddressDb(values: AddressFormValues & { isDefault?: boolean })
   };
 }
 
+/** DB rows store lowercase slugs; the UI uses title-case labels. */
+export function normaliseOrderStatus(status: string): Order["status"] {
+  const value = status.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (value === "out_for_delivery" || value === "outfordelivery") {
+    return "Out for delivery";
+  }
+  if (value === "processing") return "Processing";
+  if (value === "confirmed") return "Confirmed";
+  return "Confirmed";
+}
+
 export function mapOrder(
   row: {
     id: string;
@@ -157,7 +168,7 @@ export function mapOrder(
     address: row.addressSnapshot as AddressFormValues,
     note: row.note ?? undefined,
     paymentNumber: row.paymentNumber ?? undefined,
-    status: row.status as Order["status"],
+    status: normaliseOrderStatus(row.status),
   };
 }
 

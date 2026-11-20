@@ -10,64 +10,66 @@ import {
   type ReactNode,
 } from "react";
 import {
-  clearWholesaleContent,
+  resetWholesaleContent,
+  saveWholesaleContent,
+} from "@/lib/actions/wholesale";
+import type { SaveResult } from "@/lib/wholesale-content";
+import {
   cloneWholesaleDefaults,
-  readWholesaleContent,
-  WHOLESALE_STORAGE_KEY,
-  writeWholesaleContent,
-  type SaveResult,
   type WholesaleContent,
 } from "@/lib/wholesale-content";
-import {
-  addWholesaleRequest,
-  readWholesaleRequests,
-  removeWholesaleRequest,
-  updateWholesaleRequest,
-  WHOLESALE_REQUESTS_KEY,
-  type WholesaleRequest,
-} from "@/lib/wholesale-requests";
+import type { WholesaleRequest } from "@/lib/wholesale-requests";
 
 interface WholesaleContentContextValue {
   content: WholesaleContent;
+  /** Always true — the document arrives from the server, not localStorage. */
   hydrated: boolean;
-  save: (next: WholesaleContent) => SaveResult;
-  reset: () => SaveResult;
+  save: (next: WholesaleContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
 }
 
 const WholesaleContentContext = createContext<WholesaleContentContextValue | null>(null);
-const initialContent: WholesaleContent = cloneWholesaleDefaults();
 
-export function WholesaleContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<WholesaleContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
+export function WholesaleContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: WholesaleContent;
+}) {
+  const [content, setContent] = useState<WholesaleContent>(
+    initialContent ?? cloneWholesaleDefaults(),
+  );
 
-  useEffect(() => {
-    setContent(readWholesaleContent());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === WHOLESALE_STORAGE_KEY || event.key === null) {
-        setContent(readWholesaleContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+  const save = useCallback(async (next: WholesaleContent) => {
+    try {
+      const result = await saveWholesaleContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the content.",
+      };
+    }
   }, []);
 
-  const save = useCallback((next: WholesaleContent) => {
-    const result = writeWholesaleContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearWholesaleContent();
-    if (result.ok) setContent(cloneWholesaleDefaults());
-    return result;
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetWholesaleContent();
+      if (result.ok) setContent(cloneWholesaleDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the content.",
+      };
+    }
   }, []);
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset }),
-    [content, hydrated, save, reset],
+    () => ({ content, hydrated: true, save, reset }),
+    [content, save, reset],
   );
 
   return (
@@ -80,7 +82,9 @@ export function WholesaleContentProvider({ children }: { children: ReactNode }) 
 export function useWholesaleContent(): WholesaleContentContextValue {
   const context = useContext(WholesaleContentContext);
   if (!context) {
-    throw new Error("useWholesaleContent must be used within a WholesaleContentProvider");
+    throw new Error(
+      "useWholesaleContent must be used within a WholesaleContentProvider",
+    );
   }
   return context;
 }
@@ -88,9 +92,11 @@ export function useWholesaleContent(): WholesaleContentContextValue {
 interface WholesaleRequestsContextValue {
   requests: WholesaleRequest[];
   hydrated: boolean;
-  add: (request: WholesaleRequest) => void;
-  update: (id: string, patch: Partial<WholesaleRequest>) => void;
-  remove: (id: string) => void;
+  /** Public submit — the server owns id/status/createdAt/userId. */
+  add: (request: WholesaleRequest) => Promise<SaveResult>;
+  update: (id: string, patch: Partial<WholesaleRequest>) => Promise<SaveResult>;
+  remove: (id: string) => Promise<SaveResult>;
+  clear: () => void;
 }
 
 const WholesaleRequestsContext = createContext<WholesaleRequestsContextValue | null>(null);
@@ -99,47 +105,115 @@ export function WholesaleRequestsProvider({ children }: { children: ReactNode })
   const [requests, setRequests] = useState<WholesaleRequest[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    setRequests(readWholesaleRequests());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === WHOLESALE_REQUESTS_KEY || event.key === null) {
-        setRequests(readWholesaleRequests());
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch("/api/wholesale-requests", { cache: "no-store" });
+      if (!response.ok) {
+        setRequests([]);
+        return;
       }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+      const data = (await response.json()) as { requests?: WholesaleRequest[] };
+      setRequests(data.requests ?? []);
+    } catch {
+      setRequests([]);
+    } finally {
+      setHydrated(true);
+    }
   }, []);
 
-  const refresh = useCallback(() => setRequests(readWholesaleRequests()), []);
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
 
-  const add = useCallback(
-    (request: WholesaleRequest) => {
-      addWholesaleRequest(request);
-      refresh();
-    },
-    [refresh],
-  );
+  const add = useCallback(async (request: WholesaleRequest) => {
+    try {
+      const response = await fetch("/api/wholesale-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organization: request.organization,
+          contact: request.contact,
+          phone: request.phone,
+          email: request.email,
+          city: request.city,
+          quantity: request.quantity,
+          message: request.message,
+        }),
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { request?: WholesaleRequest; error?: string }
+        | null;
+      if (!response.ok) {
+        return { ok: false, message: data?.error ?? "Could not submit the request." };
+      }
+      if (data?.request) {
+        setRequests((current) => [data.request!, ...current]);
+      }
+      return { ok: true, message: "Request sent — we'll be in touch shortly." };
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not submit the request.",
+      };
+    }
+  }, []);
 
   const update = useCallback(
-    (id: string, patch: Partial<WholesaleRequest>) => {
-      updateWholesaleRequest(id, patch);
-      refresh();
+    async (id: string, patch: Partial<WholesaleRequest>) => {
+      try {
+        const response = await fetch("/api/wholesale-requests", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status: patch.status, adminNote: patch.adminNote }),
+        });
+        const data = (await response.json().catch(() => null)) as
+          | { request?: WholesaleRequest; error?: string }
+          | null;
+        if (!response.ok) {
+          return { ok: false, message: data?.error ?? "Could not update the request." };
+        }
+        if (data?.request) {
+          setRequests((current) =>
+            current.map((item) => (item.id === id ? data.request! : item)),
+          );
+        }
+        return { ok: true, message: "Request updated." };
+      } catch (error) {
+        return {
+          ok: false,
+          message: error instanceof Error ? error.message : "Could not update the request.",
+        };
+      }
     },
-    [refresh],
+    [],
   );
 
-  const remove = useCallback(
-    (id: string) => {
-      removeWholesaleRequest(id);
-      refresh();
-    },
-    [refresh],
-  );
+  const remove = useCallback(async (id: string) => {
+    try {
+      const response = await fetch("/api/wholesale-requests", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        return { ok: false, message: data?.error ?? "Could not delete the request." };
+      }
+      setRequests((current) => current.filter((item) => item.id !== id));
+      return { ok: true, message: "Request removed." };
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not delete the request.",
+      };
+    }
+  }, []);
+
+  const clear = useCallback(() => setRequests([]), []);
 
   const value = useMemo(
-    () => ({ requests, hydrated, add, update, remove }),
-    [requests, hydrated, add, update, remove],
+    () => ({ requests, hydrated, add, update, remove, clear }),
+    [requests, hydrated, add, update, remove, clear],
   );
 
   return (

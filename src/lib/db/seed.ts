@@ -66,6 +66,10 @@ import {
   USED_CONTENT_KEY,
   usedDefaults,
 } from "../used-content";
+import {
+  WHOLESALE_CONTENT_KEY,
+  wholesaleDefaults,
+} from "../wholesale-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -94,6 +98,7 @@ async function main() {
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
     [SELL_CONTENT_KEY]: sellDefaults,
     [USED_CONTENT_KEY]: usedDefaults,
+    [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
   };
 
   try {

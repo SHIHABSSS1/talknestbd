@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { WholesalePageContent } from "@/components/services/WholesalePageContent";
+import { getWholesaleContent } from "@/lib/db/queries/wholesale";
 
-export const metadata: Metadata = {
-  title: "Wholesale Orders",
-  description:
-    "Libraries, schools, mosques, clubs and businesses can order books in bulk with special commissions from 10 copies.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { page } = await getWholesaleContent();
+  return {
+    title: page.hero.title,
+    description: page.hero.description,
+  };
+}
 
 export default function WholesalePage() {
   return <WholesalePageContent />;

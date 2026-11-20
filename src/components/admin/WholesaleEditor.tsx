@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -37,7 +37,7 @@ const fieldClass =
 const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 
 type Notice = { text: string; error?: boolean };
-type Tab = "home" | "page" | "requests";
+type Tab = "home" | "page" | "freeOrder" | "requests";
 
 function Section({
   title,
@@ -113,6 +113,7 @@ export function WholesaleEditor({ label }: { label: string }) {
   const [draft, setDraft] = useState<WholesaleContent>(content);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [tab, setTab] = useState<Tab>("home");
+  const [pending, startTransition] = useTransition();
 
   useEffect(() => setDraft(content), [content]);
   const dirty = JSON.stringify(draft) !== JSON.stringify(content);
@@ -159,15 +160,53 @@ export function WholesaleEditor({ label }: { label: string }) {
     setNotice(null);
   };
 
+  const setFreeOrder = <K extends keyof WholesaleContent["freeOrderPage"]>(
+    key: K,
+    value: WholesaleContent["freeOrderPage"][K],
+  ) => {
+    setDraft((current) => ({
+      ...current,
+      freeOrderPage: { ...current.freeOrderPage, [key]: value },
+    }));
+    setNotice(null);
+  };
+
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const result = await save(draft);
+        setNotice({ text: result.message, error: !result.ok });
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the content.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(cloneWholesaleDefaults());
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) setDraft(cloneWholesaleDefaults());
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const handleStatus = (id: string, status: WholesaleRequest["status"]) => {
+    startTransition(async () => {
+      const result = await update(id, { status });
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const handleRemove = (id: string) => {
+    startTransition(async () => {
+      const result = await remove(id);
+      setNotice({ text: result.message, error: !result.ok });
+    });
   };
 
   return (
@@ -210,6 +249,7 @@ export function WholesaleEditor({ label }: { label: string }) {
           [
             { key: "home", label: "Homepage" },
             { key: "page", label: "Page content" },
+            { key: "freeOrder", label: "Free order page" },
             { key: "requests", label: "Requests", count: requests.length },
           ] as { key: Tab; label: string; count?: number }[]
         ).map((item) => (
@@ -739,6 +779,113 @@ export function WholesaleEditor({ label }: { label: string }) {
             </>
           )}
 
+          {tab === "freeOrder" && (
+            <>
+              <Section title="Page header">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="block">
+                    <span className={subLabel}>Eyebrow</span>
+                    <input value={draft.freeOrderPage.hero.eyebrow} onChange={(e) => setFreeOrder("hero", { ...draft.freeOrderPage.hero, eyebrow: e.target.value })} className={fieldClass} />
+                  </label>
+                  <label className="block">
+                    <span className={subLabel}>Title</span>
+                    <input value={draft.freeOrderPage.hero.title} onChange={(e) => setFreeOrder("hero", { ...draft.freeOrderPage.hero, title: e.target.value })} className={fieldClass} />
+                  </label>
+                </div>
+                <label className="mt-3 block">
+                  <span className={subLabel}>Description</span>
+                  <textarea value={draft.freeOrderPage.hero.description} onChange={(e) => setFreeOrder("hero", { ...draft.freeOrderPage.hero, description: e.target.value })} rows={3} className={fieldClass} />
+                </label>
+                <div className="mt-3">
+                  <StringList label="Header badges" values={draft.freeOrderPage.hero.badges} onChange={(values) => setFreeOrder("hero", { ...draft.freeOrderPage.hero, badges: values })} />
+                </div>
+              </Section>
+
+              <Section title="Intro">
+                <label className="block">
+                  <span className={subLabel}>Heading</span>
+                  <input value={draft.freeOrderPage.intro.heading} onChange={(e) => setFreeOrder("intro", { ...draft.freeOrderPage.intro, heading: e.target.value })} className={fieldClass} />
+                </label>
+                <label className="mt-3 block">
+                  <span className={subLabel}>Text</span>
+                  <textarea value={draft.freeOrderPage.intro.text} onChange={(e) => setFreeOrder("intro", { ...draft.freeOrderPage.intro, text: e.target.value })} rows={3} className={fieldClass} />
+                </label>
+                <label className="mt-3 block">
+                  <span className={subLabel}>Demo note</span>
+                  <input value={draft.freeOrderPage.intro.note} onChange={(e) => setFreeOrder("intro", { ...draft.freeOrderPage.intro, note: e.target.value })} className={fieldClass} />
+                </label>
+              </Section>
+
+              <Section title="How it works">
+                {draft.freeOrderPage.steps.map((step, index) => (
+                  <div key={step.id} className="mb-3 rounded-[8px] border border-line p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className="text-[10px] font-semibold text-muted">Step {index + 1}</span>
+                      <button type="button" onClick={() => setFreeOrder("steps", draft.freeOrderPage.steps.filter((_, i) => i !== index))} className="text-[10px] text-brand-700 hover:underline">Remove</button>
+                    </div>
+                    <input value={step.title} onChange={(e) => setFreeOrder("steps", draft.freeOrderPage.steps.map((item, i) => i === index ? { ...item, title: e.target.value } : item))} placeholder="Title" className={fieldClass} />
+                    <input value={step.text} onChange={(e) => setFreeOrder("steps", draft.freeOrderPage.steps.map((item, i) => i === index ? { ...item, text: e.target.value } : item))} placeholder="Text" className={`${fieldClass} mt-2`} />
+                  </div>
+                ))}
+                <button type="button" onClick={() => setFreeOrder("steps", [...draft.freeOrderPage.steps, { id: `fo-step-${Date.now()}`, title: "New step", text: "" }])} className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-brand-50 px-2.5 text-[10px] font-semibold text-brand-700 hover:bg-brand-100">
+                  <Plus size={12} /> Add step
+                </button>
+              </Section>
+
+              <Section title="Delivery charges">
+                <label className="block">
+                  <span className={subLabel}>Heading</span>
+                  <input value={draft.freeOrderPage.charges.heading} onChange={(e) => setFreeOrder("charges", { ...draft.freeOrderPage.charges, heading: e.target.value })} className={fieldClass} />
+                </label>
+                <label className="mt-3 block">
+                  <span className={subLabel}>Description</span>
+                  <input value={draft.freeOrderPage.charges.description} onChange={(e) => setFreeOrder("charges", { ...draft.freeOrderPage.charges, description: e.target.value })} className={fieldClass} />
+                </label>
+                <div className="mt-3">
+                  <StringList
+                    label="Zones (label = charge)"
+                    values={draft.freeOrderPage.charges.zones.map((zone) => `${zone.label} = ${zone.charge}`)}
+                    onChange={(values) => setFreeOrder("charges", {
+                      ...draft.freeOrderPage.charges,
+                      zones: values.map((value, i) => {
+                        const [label, charge] = value.split("=").map((part) => part?.trim() ?? "");
+                        return { id: draft.freeOrderPage.charges.zones[i]?.id ?? `zone-${i}-${Date.now()}`, label, charge };
+                      }),
+                    })}
+                  />
+                </div>
+              </Section>
+
+              <Section title="Good to know & CTA">
+                <label className="block">
+                  <span className={subLabel}>Heading</span>
+                  <input value={draft.freeOrderPage.goodToKnow.heading} onChange={(e) => setFreeOrder("goodToKnow", { ...draft.freeOrderPage.goodToKnow, heading: e.target.value })} className={fieldClass} />
+                </label>
+                <div className="mt-3">
+                  <StringList label="Notes" values={draft.freeOrderPage.goodToKnow.items} onChange={(items) => setFreeOrder("goodToKnow", { ...draft.freeOrderPage.goodToKnow, items })} />
+                </div>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <label className="block">
+                    <span className={subLabel}>CTA heading</span>
+                    <input value={draft.freeOrderPage.cta.heading} onChange={(e) => setFreeOrder("cta", { ...draft.freeOrderPage.cta, heading: e.target.value })} className={fieldClass} />
+                  </label>
+                  <label className="block">
+                    <span className={subLabel}>CTA text</span>
+                    <input value={draft.freeOrderPage.cta.text} onChange={(e) => setFreeOrder("cta", { ...draft.freeOrderPage.cta, text: e.target.value })} className={fieldClass} />
+                  </label>
+                  <label className="block">
+                    <span className={subLabel}>Primary label</span>
+                    <input value={draft.freeOrderPage.cta.primaryLabel} onChange={(e) => setFreeOrder("cta", { ...draft.freeOrderPage.cta, primaryLabel: e.target.value })} className={fieldClass} />
+                  </label>
+                  <label className="block">
+                    <span className={subLabel}>Secondary label</span>
+                    <input value={draft.freeOrderPage.cta.secondaryLabel} onChange={(e) => setFreeOrder("cta", { ...draft.freeOrderPage.cta, secondaryLabel: e.target.value })} className={fieldClass} />
+                  </label>
+                </div>
+              </Section>
+            </>
+          )}
+
           {tab === "requests" && (
             <>
               <div className="grid gap-2 sm:grid-cols-3">
@@ -807,9 +954,10 @@ export function WholesaleEditor({ label }: { label: string }) {
                             <select
                               value={request.status}
                               onChange={(event) =>
-                                update(request.id, {
-                                  status: event.target.value as WholesaleRequest["status"],
-                                })
+                                handleStatus(
+                                  request.id,
+                                  event.target.value as WholesaleRequest["status"],
+                                )
                               }
                               className="rounded-[4px] border border-line bg-white px-2 py-1.5 text-[10px] text-ink"
                             >
@@ -823,7 +971,7 @@ export function WholesaleEditor({ label }: { label: string }) {
                           <td className="px-2 py-2.5 text-right">
                             <button
                               type="button"
-                              onClick={() => remove(request.id)}
+                              onClick={() => handleRemove(request.id)}
                               className="rounded-[4px] p-1.5 text-muted hover:text-brand-700"
                             >
                               <Trash2 size={13} />
@@ -870,14 +1018,16 @@ export function WholesaleEditor({ label }: { label: string }) {
               <button
                 type="button"
                 onClick={handleSave}
-                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700"
+                disabled={pending}
+                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
               >
-                <Save size={13} /> Save changes
+                <Save size={13} /> {pending ? "Saving…" : "Save changes"}
               </button>
               <button
                 type="button"
                 onClick={handleReset}
-                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300"
+                disabled={pending}
+                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300 disabled:opacity-50"
               >
                 <RotateCcw size={13} /> Restore default
               </button>

@@ -1,6 +1,10 @@
 /**
- * Editable content for the homepage free-order/wholesale section and the
- * /wholesale page. Persisted in localStorage (demo only — no backend).
+ * Editable content for the homepage free-order/wholesale section, the
+ * /wholesale page and the /free-order page.
+ *
+ * The live document lives in Postgres (`content_blocks` key "wholesale").
+ * The localStorage helpers below remain only so an admin can import copy saved
+ * in this browser before the database existed.
  */
 
 export type WholesaleIconKey =
@@ -79,6 +83,22 @@ export interface WholesaleContent {
     whatsapp: { heading: string; text: string; linkLabel: string };
     bottomCta: { text: string; label: string };
   };
+  /** Copy for the separate /free-order page. */
+  freeOrderPage: FreeOrderPageContent;
+}
+
+/** Editable design/copy for the storefront /free-order page. */
+export interface FreeOrderPageContent {
+  hero: { eyebrow: string; title: string; description: string; badges: string[] };
+  intro: { heading: string; text: string; note: string };
+  steps: { id: string; title: string; text: string }[];
+  charges: {
+    heading: string;
+    description: string;
+    zones: { id: string; label: string; charge: string }[];
+  };
+  goodToKnow: { heading: string; items: string[] };
+  cta: { heading: string; text: string; primaryLabel: string; secondaryLabel: string };
 }
 
 export interface SaveResult {
@@ -86,6 +106,9 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const WHOLESALE_CONTENT_KEY = "wholesale";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const WHOLESALE_STORAGE_KEY = "talknestbd-wholesale-v1";
 
 export const wholesaleIconKeys: { key: WholesaleIconKey; label: string }[] = [
@@ -246,6 +269,49 @@ export const wholesaleDefaults: WholesaleContent = {
       label: "Talk to us",
     },
   },
+  freeOrderPage: {
+    hero: {
+      eyebrow: "Free Delivery",
+      title: "Free delivery nationwide on orders of ৳999+",
+      description:
+        "Shop the books you love and let us handle the delivery. Orders over ৳999 ship free anywhere in Bangladesh.",
+      badges: ["Nationwide delivery", "Save on shipping", "No hidden charges"],
+    },
+    intro: {
+      heading: "Good books, delivered without the extra cost",
+      text: "Fill your cart with titles over the free-delivery threshold and the shipping charge is on us — no coupon needed.",
+      note: "This is a demo storefront. No real payment or delivery takes place.",
+    },
+    steps: [
+      { id: "fo-step-1", title: "Pick your books", text: "Add titles to your cart from the catalogue." },
+      { id: "fo-step-2", title: "Reach ৳999", text: "Your cart qualifies for free nationwide delivery." },
+      { id: "fo-step-3", title: "We deliver", text: "Choose your preferred delivery method at checkout." },
+    ],
+    charges: {
+      heading: "Delivery charges at a glance",
+      description: "Indicative charges for orders below the free-delivery threshold.",
+      zones: [
+        { id: "zone-1", label: "Dhaka city", charge: "৳60" },
+        { id: "zone-2", label: "Outside Dhaka", charge: "৳120" },
+        { id: "zone-3", label: "Remote areas", charge: "৳150" },
+      ],
+    },
+    goodToKnow: {
+      heading: "Good to know",
+      items: [
+        "Free delivery applies automatically at checkout.",
+        "Delivery times vary by district and courier coverage.",
+        "Cash on delivery is available across Bangladesh.",
+        "Demo site — no real shipment is arranged.",
+      ],
+    },
+    cta: {
+      heading: "Ready to browse?",
+      text: "Find your next read and enjoy free delivery on orders over ৳999.",
+      primaryLabel: "Browse books",
+      secondaryLabel: "Ask a question",
+    },
+  },
 };
 
 export function cloneWholesaleDefaults(): WholesaleContent {
@@ -317,6 +383,10 @@ export function readWholesaleContent(): WholesaleContent {
         freeOrder: { ...defaults.home.freeOrder, ...parsed.home!.freeOrder },
       },
       page: { ...defaults.page, ...parsed.page },
+      freeOrderPage: {
+        ...defaults.freeOrderPage,
+        ...(parsed.freeOrderPage ?? {}),
+      },
     };
   } catch {
     return defaults;

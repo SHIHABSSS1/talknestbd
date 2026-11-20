@@ -323,3 +323,28 @@ export const sellRequests = pgTable(
 );
 
 export type SellRequestRow = typeof sellRequests.$inferSelect;
+
+/** Wholesale quote requests from the public /wholesale form. */
+export const wholesaleRequests = pgTable(
+  "wholesale_requests",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    organization: text("organization").notNull(),
+    contact: text("contact").notNull(),
+    phone: text("phone").notNull(),
+    email: text("email"),
+    city: text("city").notNull(),
+    quantity: text("quantity").notNull(),
+    message: text("message").notNull().default(""),
+    status: text("status").notNull().default("New"),
+    adminNote: text("admin_note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("wholesale_requests_status_created_idx").on(table.status, table.createdAt),
+    index("wholesale_requests_user_id_idx").on(table.userId),
+  ],
+);
+
+export type WholesaleRequestRow = typeof wholesaleRequests.$inferSelect;

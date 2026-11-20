@@ -79,7 +79,7 @@ export function WholesaleForm() {
   const update = (patch: Partial<WholesaleValues>) =>
     setValues((previous) => ({ ...previous, ...patch }));
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next: Record<string, string> = {};
     if (values.organization.trim().length < 2) next.organization = "Enter the organization name";
@@ -93,9 +93,8 @@ export function WholesaleForm() {
       return;
     }
     setErrors({});
-    const random = Math.floor(1000 + Math.random() * 9000);
     const request: WholesaleRequest = {
-      id: `ws-${Date.now()}`,
+      id: "pending",
       createdAt: new Date().toISOString(),
       organization: values.organization.trim(),
       contact: values.contact.trim(),
@@ -106,8 +105,12 @@ export function WholesaleForm() {
       message: values.message.trim(),
       status: "New",
     };
-    add(request);
-    setReference(`TN-WS-${random}`);
+    const result = await add(request);
+    if (!result.ok) {
+      setErrors({ submit: result.message });
+      return;
+    }
+    setReference(request.organization.slice(0, 3).toUpperCase());
   };
 
   if (reference) {
@@ -139,7 +142,7 @@ export function WholesaleForm() {
           </Button>
         </div>
         <p className="mt-4 text-[9px] text-muted">
-          This is a demo form — no information was sent to a server.
+          Your request is saved in the demo database. No real quote or payment is processed.
         </p>
       </div>
     );
@@ -283,6 +286,10 @@ export function WholesaleForm() {
           />
         </label>
       </div>
+
+      {errors.submit && (
+        <p role="alert" className="mt-3 text-[11px] text-clay-600">{errors.submit}</p>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-forest-900/8 pt-4">
         <p className="flex items-center gap-1.5 text-[9px] text-muted">

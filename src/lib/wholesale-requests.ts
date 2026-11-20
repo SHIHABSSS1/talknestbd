@@ -13,6 +13,8 @@ export interface WholesaleRequest {
   quantity: string;
   message: string;
   status: WholesaleRequestStatus;
+  /** Optional internal note added by an admin. */
+  adminNote?: string;
 }
 
 export const WHOLESALE_REQUESTS_KEY = "talknestbd-wholesale-requests-v1";

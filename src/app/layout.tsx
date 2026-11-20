@@ -8,6 +8,7 @@ import { getPublisherContent } from "@/lib/db/queries/publishers";
 import { getUpSaleShelfContent } from "@/lib/db/queries/shelves";
 import { getSellContent } from "@/lib/db/queries/sell";
 import { getUsedContent } from "@/lib/db/queries/used";
+import { getWholesaleContent } from "@/lib/db/queries/wholesale";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
@@ -82,15 +83,23 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Cached content block (content:categories); passed to the client provider so
   // every category surface shares one server-rendered source of truth.
-  const [categoryContent, authorContent, publisherContent, upSale, sellContent, usedContent] =
-    await Promise.all([
-      getCategoryContent(),
-      getAuthorContent(),
-      getPublisherContent(),
-      getUpSaleShelfContent(),
-      getSellContent(),
-      getUsedContent(),
-    ]);
+  const [
+    categoryContent,
+    authorContent,
+    publisherContent,
+    upSale,
+    sellContent,
+    usedContent,
+    wholesaleContent,
+  ] = await Promise.all([
+    getCategoryContent(),
+    getAuthorContent(),
+    getPublisherContent(),
+    getUpSaleShelfContent(),
+    getSellContent(),
+    getUsedContent(),
+    getWholesaleContent(),
+  ]);
 
   return (
     <html lang="en" className={roboto.variable} data-scroll-behavior="smooth">
@@ -110,7 +119,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       <UpSaleBooksProvider initialBooks={upSale.books}>
                         <UsedContentProvider initialContent={usedContent}>
                           <NotificationsProvider>
-                            <WholesaleContentProvider>
+                            <WholesaleContentProvider initialContent={wholesaleContent}>
                               <WholesaleRequestsProvider>
                                 <AudioContentProvider>
                                   <AuthorContentProvider initialContent={authorContent}>

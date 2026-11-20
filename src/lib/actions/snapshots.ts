@@ -54,6 +54,11 @@ import { SELL_CONTENT_KEY, sellDefaults } from "@/lib/sell-content";
 import { sellContentSchema } from "@/lib/sell-schema";
 import { USED_CONTENT_KEY, usedDefaults } from "@/lib/used-content";
 import { usedContentSchema } from "@/lib/used-schema";
+import {
+  WHOLESALE_CONTENT_KEY,
+  wholesaleDefaults,
+} from "@/lib/wholesale-content";
+import { wholesaleContentSchema } from "@/lib/wholesale-schema";
 import { authorContentSchema } from "@/lib/author-schema";
 import { publisherContentSchema } from "@/lib/publisher-schema";
 import {
@@ -82,6 +87,7 @@ const defaults: Record<string, unknown> = {
   [STUDENT_SHELF_KEY]: cloneStudentShelfDefaults(),
   [SELL_CONTENT_KEY]: sellDefaults,
   [USED_CONTENT_KEY]: usedDefaults,
+  [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
   [AUTHOR_CONTENT_KEY]: authorDefaults,
   [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
@@ -99,6 +105,7 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [STUDENT_SHELF_KEY]: viralShelfSchema,
   [SELL_CONTENT_KEY]: sellContentSchema,
   [USED_CONTENT_KEY]: usedContentSchema,
+  [WHOLESALE_CONTENT_KEY]: wholesaleContentSchema,
   [AUTHOR_CONTENT_KEY]: authorContentSchema,
   [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };
