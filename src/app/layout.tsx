@@ -1,8 +1,8 @@
 ﻿import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
-import { TrustContentProvider } from "@/components/providers/TrustContentProvider";
 import { CategoryContentProvider } from "@/components/providers/CategoryContentProvider";
+import { getCategoryContent } from "@/lib/db/queries/categories";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
@@ -74,7 +74,11 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Cached content block (content:categories); passed to the client provider so
+  // every category surface shares one server-rendered source of truth.
+  const categoryContent = await getCategoryContent();
+
   return (
     <html lang="en" className={roboto.variable} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-canvas font-sans text-ink antialiased">
@@ -85,9 +89,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         <StoreProvider>
-          <TrustContentProvider>
-            <CategoryContentProvider>
-              <BookContentProvider>
+          <CategoryContentProvider initialContent={categoryContent}>
+            <BookContentProvider>
                 <ShelfContentProvider>
                   <SellContentProvider>
                     <SellRequestsProvider>
@@ -120,9 +123,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     </SellRequestsProvider>
                   </SellContentProvider>
                 </ShelfContentProvider>
-              </BookContentProvider>
-            </CategoryContentProvider>
-          </TrustContentProvider>
+            </BookContentProvider>
+          </CategoryContentProvider>
         </StoreProvider>
       </body>
     </html>

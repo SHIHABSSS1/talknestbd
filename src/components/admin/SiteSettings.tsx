@@ -25,6 +25,8 @@ import {
   ShoppingBag,
   Upload,
 } from "lucide-react";
+import { DemoSnapshots } from "@/components/admin/DemoSnapshots";
+import type { SnapshotSummary } from "@/lib/snapshots";
 import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { useAdminAccess } from "@/components/providers/AdminAccessProvider";
 import { cloneSiteSettings, type SiteSettings } from "@/lib/site-settings";
@@ -116,7 +118,11 @@ function Toggle({ label, hint, checked, onChange }: { label: string; hint?: stri
   );
 }
 
-export function SiteSettings() {
+export function SiteSettings({
+  snapshots = [],
+}: {
+  snapshots?: SnapshotSummary[];
+}) {
   const { settings, save, reset } = useSiteSettings();
   const { currentUser, updateProfile, changePassword, setAvatar } = useAdminAccess();
   const [draft, setDraft] = useState<SiteSettings>(settings);
@@ -454,7 +460,8 @@ export function SiteSettings() {
 
           {tab === "data" && (
             <>
-              <Section title="Backup & restore" description="All demo data lives in this browser.">
+              <DemoSnapshots initialSnapshots={snapshots} />
+              <Section title="Browser backup & restore" description="Legacy demo data still stored in this browser.">
                 <div className="flex flex-wrap gap-2">
                   <button type="button" onClick={exportData} className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40">
                     <Download size={13} aria-hidden="true" /> Export all data
@@ -487,7 +494,7 @@ export function SiteSettings() {
               </Section>
               <Section title="Storage overview" description="Keys currently used by this demo.">
                 <ul className="grid gap-1.5 sm:grid-cols-2">
-                  {["cart / wishlist", "orders / addresses / profile", "hero / trust / categories", "books / shelves / audio / stories", "reviews / requests", "video quiz / comments", "site settings / admin access"].map((key) => (
+                  {["cart / wishlist", "orders / addresses / profile", "hero / trust / categories (now in the database)", "books / shelves / audio / stories", "reviews / requests", "video quiz / comments", "site settings / admin access"].map((key) => (
                     <li key={key} className="rounded-[6px] border border-line bg-white px-2.5 py-2 text-[10px] text-muted">{key}</li>
                   ))}
                 </ul>

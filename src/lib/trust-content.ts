@@ -1,6 +1,10 @@
 /**
  * Shared content for the four cards directly under the homepage hero.
- * Persisted in localStorage (demo only — there is no backend).
+ *
+ * The live document lives in Postgres (`content_blocks` key "trust-strip"),
+ * edited at /admin/sections/trust-strip and read by a cached server query.
+ * The localStorage helpers below are kept only so an admin can import cards
+ * saved in this browser before the database existed.
  */
 
 export type TrustIconKey =
@@ -45,7 +49,12 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const TRUST_CONTENT_KEY = "trust-strip";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const TRUST_STORAGE_KEY = "talknestbd-trust-strip-v1";
+/** Hard cap enforced by the server action, not just the editor UI. */
+export const MAX_TRUST_CARDS = 12;
 
 /** Static class strings (not interpolated) so Tailwind v4 keeps them. */
 export const trustTints: Record<TrustTintKey, { label: string; className: string }> = {

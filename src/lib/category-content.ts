@@ -1,6 +1,10 @@
 /**
  * Shared content for the homepage category showcase and the categories page.
- * Persisted in localStorage (demo only — there is no backend).
+ *
+ * The live document lives in Postgres (`content_blocks` key "categories"),
+ * edited at /admin/sections/categories and read by a cached server query.
+ * The localStorage helpers below are kept only so an admin can import tiles
+ * saved in this browser before the database existed.
  *
  * Counts are intentionally NOT stored: they are derived from the book data so
  * they stay accurate as the catalogue changes. Routes are generated from the
@@ -66,7 +70,13 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const CATEGORY_CONTENT_KEY = "categories";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const CATEGORY_STORAGE_KEY = "talknestbd-categories-v1";
+/** Hard caps enforced by the server action, not just the editor UI. */
+export const MAX_CATEGORY_TILES = 24;
+export const MAX_CATEGORY_SUBCATEGORIES = 30;
 
 export const categoryIconKeys: { key: CategoryIconKey; label: string }[] = [
   { key: "book", label: "Book" },
@@ -94,7 +104,7 @@ export function createSubcategory(name: string, used: string[]): CategorySubcate
   let index = 2;
   while (used.includes(slug)) slug = `${base}-${index++}`;
   return {
-    id: `sub-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    id: `sub-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`,
     name,
     slug,
   };

@@ -21,6 +21,7 @@ import { SellUsedBooksEditor } from "@/components/admin/SellUsedBooksEditor";
 import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
+import { getTrustContent } from "@/lib/db/queries/trust-strip";
 
 export const metadata: Metadata = {
   title: "Edit section",
@@ -58,7 +59,8 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     return <HeroEditor label={label} initialContent={hero} />;
   }
   if (slug === "trust-strip") {
-    return <TrustStripEditor label={label} />;
+    const trust = await getTrustContent();
+    return <TrustStripEditor label={label} initialContent={trust} />;
   }
   if (slug === "categories") {
     return <CategoryEditor label={label} />;

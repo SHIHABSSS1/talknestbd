@@ -16,15 +16,16 @@ import { ReviewsWall } from "@/components/home/ReviewsWall";
 import { VideoQuizSection } from "@/components/home/VideoQuizSection";
 import { StoryCommunity } from "@/components/home/StoryCommunity";
 import { getHeroContent } from "@/lib/db/queries/hero";
+import { getTrustContent } from "@/lib/db/queries/trust-strip";
 
 export default async function HomePage() {
-  // Cached with cacheTag "content:hero"; the admin save action expires it.
-  const hero = await getHeroContent();
+  // Cached content blocks; the admin save actions expire these tags.
+  const [hero, trust] = await Promise.all([getHeroContent(), getTrustContent()]);
 
   return (
     <>
       <Hero banners={hero.banners} />
-      <TrustStrip />
+      <TrustStrip content={trust} />
       <CategoryShowcase />
       <CategoryBookRails />
 

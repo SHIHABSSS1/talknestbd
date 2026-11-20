@@ -4,66 +4,74 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
+import { resetCategoryContent, saveCategoryContent } from "@/lib/actions/categories";
 import {
-  CATEGORY_STORAGE_KEY,
-  clearCategoryContent,
   cloneCategoryDefaults,
-  readCategoryContent,
-  writeCategoryContent,
-  type CategoryContent,
   type SaveResult,
+  type CategoryContent,
 } from "@/lib/category-content";
 
 interface CategoryContentContextValue {
   content: CategoryContent;
+  /** Always true: the initial document arrives from the server, not localStorage. */
   hydrated: boolean;
-  save: (next: CategoryContent) => SaveResult;
-  reset: () => SaveResult;
+  save: (next: CategoryContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
 }
 
 const CategoryContentContext = createContext<CategoryContentContextValue | null>(null);
 
-// Stable object for the first render (server + client) so hydration matches.
-const initialContent: CategoryContent = cloneCategoryDefaults();
+/**
+ * Shares the database-backed category document with the client surfaces that
+ * need it (the category pages, homepage rails, and the admin forms that offer
+ * a subcategory picker). The document is read once by a cached server query in
+ * the root layout and passed down here as a prop — there is no localStorage
+ * flash and no per-component fetch.
+ */
+export function CategoryContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: CategoryContent;
+}) {
+  const [content, setContent] = useState<CategoryContent>(
+    initialContent ?? cloneCategoryDefaults(),
+  );
 
-/** Single source of truth for the homepage showcase and the categories page. */
-export function CategoryContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<CategoryContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setContent(readCategoryContent());
-    setHydrated(true);
-
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === CATEGORY_STORAGE_KEY || event.key === null) {
-        setContent(readCategoryContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+  const save = useCallback(async (next: CategoryContent) => {
+    try {
+      const result = await saveCategoryContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the categories.",
+      };
+    }
   }, []);
 
-  const save = useCallback((next: CategoryContent) => {
-    const result = writeCategoryContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearCategoryContent();
-    if (result.ok) setContent(cloneCategoryDefaults());
-    return result;
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetCategoryContent();
+      if (result.ok) setContent(cloneCategoryDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the categories.",
+      };
+    }
   }, []);
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset }),
-    [content, hydrated, save, reset],
+    () => ({ content, hydrated: true, save, reset }),
+    [content, save, reset],
   );
 
   return (

@@ -39,8 +39,8 @@ export function CategoryDetail({ slug }: { slug: string }) {
               Category not found
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              This shelf may have been created in another browser. Demo categories are
-              stored locally — open the admin editor in this browser to create it.
+              This shelf may have been renamed or removed. Categories are managed in
+              the admin editor and published for every visitor.
             </p>
             <Link
               href="/categories"

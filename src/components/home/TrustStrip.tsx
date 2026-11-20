@@ -1,14 +1,14 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Container } from "@/components/ui/Container";
 import { TrustIcon } from "@/components/ui/TrustIcon";
-import { useTrustContent } from "@/components/providers/TrustContentProvider";
-import { trustTints } from "@/lib/trust-content";
+import { trustTints, type TrustContent } from "@/lib/trust-content";
 
-export function TrustStrip() {
-  const { content } = useTrustContent();
+/**
+ * Cards arrive from the cached `trust-strip` content block via the homepage
+ * server component, so the first paint already shows the published document.
+ */
+export function TrustStrip({ content }: { content: TrustContent }) {
   if (content.cards.length === 0) return null;
 
   return (

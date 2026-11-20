@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   AlertCircle,
   ArrowDown,
@@ -25,8 +25,11 @@ import {
   categoryAccentPresets,
   categoryDefaults,
   categoryIconKeys,
+  CATEGORY_STORAGE_KEY,
+  clearCategoryContent,
   cloneCategoryDefaults,
   createSubcategory,
+  readCategoryContent,
   type CategoryContent,
   type CategoryHeading,
   type CategoryIconKey,
@@ -41,6 +44,35 @@ const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
+
+/** Compressed data URL → { url } on disk. Keeps base64 out of Postgres. */
+async function postImageDataUrl(src: string): Promise<string> {
+  const response = await fetch("/api/uploads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ src, folder: "categories" }),
+  });
+  const result = (await response.json().catch(() => null)) as
+    | { url?: string; error?: string }
+    | null;
+  if (!response.ok || !result?.url) {
+    throw new Error(result?.error ?? "The image could not be uploaded.");
+  }
+  return result.url;
+}
+
+/** Uploads any tile still holding a base64 image, so only URLs reach the DB. */
+async function normaliseForSave(content: CategoryContent): Promise<CategoryContent> {
+  const tiles: CategoryTile[] = [];
+  for (const tile of content.tiles) {
+    if (tile.src?.startsWith("data:")) {
+      tiles.push({ ...tile, src: await postImageDataUrl(tile.src) });
+    } else {
+      tiles.push(tile);
+    }
+  }
+  return { ...content, tiles };
+}
 
 function createTile(index: number, usedSlugs: string[]): CategoryTile {
   const sample = categoryDefaults.tiles[index % categoryDefaults.tiles.length];
@@ -67,9 +99,23 @@ export function CategoryEditor({ label }: { label: string }) {
   const [draft, setDraft] = useState<CategoryContent>(content);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [legacy, setLegacy] = useState<CategoryContent | null>(null);
+  const [pending, startTransition] = useTransition();
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => setDraft(content), [content]);
+
+  // Tiles saved in this browser before the database existed cannot be read on
+  // the server; offer a one-click import like the hero editor does.
+  useEffect(() => {
+    try {
+      if (!window.localStorage.getItem(CATEGORY_STORAGE_KEY)) return;
+    } catch {
+      return;
+    }
+    const stored = readCategoryContent();
+    if (JSON.stringify(stored) !== JSON.stringify(content)) setLegacy(stored);
+  }, [content]);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(content);
   const [activeTab, setActiveTab] = useState<"categories" | "subcategories">(
@@ -182,15 +228,17 @@ export function CategoryEditor({ label }: { label: string }) {
     setBusyId(id);
     setNotice(null);
     try {
-      const src = await fileToDataUrl(file);
-      updateTile(id, { src });
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const url = await postImageDataUrl(dataUrl);
+      updateTile(id, { src: url });
       setNotice({
-        text: `${file.name} compressed (${dataUrlSizeLabel(src)}). Save changes to publish.`,
+        text: `${file.name} stored on the server (${size}) for this tile. Save changes to publish.`,
       });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that image.",
       });
     } finally {
       setBusyId(null);
@@ -199,14 +247,44 @@ export function CategoryEditor({ label }: { label: string }) {
   };
 
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const normalised = await normaliseForSave(draft);
+        const result = await save(normalised);
+        setNotice({ text: result.message, error: !result.ok });
+        if (result.ok) {
+          setDraft(normalised);
+          clearCategoryContent();
+          setLegacy(null);
+        }
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the categories.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(cloneCategoryDefaults());
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) {
+        setDraft(cloneCategoryDefaults());
+        setLegacy(null);
+      }
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const importLocal = () => {
+    if (!legacy) return;
+    setDraft(legacy);
+    setNotice({
+      text: "Loaded this browser's tiles into the editor. Save changes to publish them for everyone.",
+    });
   };
 
   return (
@@ -725,17 +803,29 @@ export function CategoryEditor({ label }: { label: string }) {
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
             >
-              <Save size={13} /> Save changes
+              <Save size={13} /> {pending ? "Saving…" : "Save changes"}
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:text-brand-700"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:text-brand-700 disabled:opacity-50"
             >
               <RotateCcw size={13} /> Restore sample
             </button>
+            {legacy && (
+              <button
+                type="button"
+                onClick={importLocal}
+                disabled={pending}
+                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-brand-50 px-3 text-[10px] font-semibold text-brand-700 transition-colors hover:bg-brand-100 disabled:opacity-50"
+              >
+                <UploadCloud size={13} /> Import from this browser
+              </button>
+            )}
             {dirty && (
               <span className="ml-auto text-[10px] font-semibold text-gold-600">
                 Unsaved changes
@@ -830,9 +920,10 @@ export function CategoryEditor({ label }: { label: string }) {
 
           <div className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3">
             <p className="text-[10px] leading-relaxed text-muted">
-              <span className="font-semibold text-ink">Demo note:</span> tiles are stored in
-              this browser (localStorage) only — no upload reaches a server. Book counts are
-              calculated from the catalogue, so they always stay correct.
+              <span className="font-semibold text-ink">Storage note:</span> tiles live in the
+              Neon database (content_blocks, key <code>categories</code>) and images are written
+              to local disk under <code>uploads/categories</code>, served at <code>/media</code>.
+              Book counts are calculated from the catalogue, so they always stay correct.
             </p>
           </div>
         </div>

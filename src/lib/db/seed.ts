@@ -1,27 +1,43 @@
 /**
- * One-time seed for the hero section.
+ * One-time seed for the editable homepage content and its demo snapshot.
  *
- * "Existing data" for the hero lives in two places, and only one of them is
- * reachable from the server:
+ * "Existing data" for these sections lives in two places, and only one of them
+ * is reachable from the server:
  *
- *   1. `heroDefaults` in src/lib/hero-content.ts — the 4 sample slides that
- *      every visitor saw before this change. This script writes those to the
- *      database.
- *   2. `localStorage["talknestbd-hero-v1"]` — real edits made in an admin
- *      browser. The server cannot read another machine's localStorage, so those
- *      are imported by the admin UI instead: open /admin/sections/hero, click
- *      "Import into editor", then "Save changes".
+ *   1. The built-in defaults in src/lib/*-content.ts — the documents every
+ *      visitor saw before these sections moved to the database. This script
+ *      writes those defaults to the database.
+ *   2. localStorage keys written by real admin edits. The server cannot read
+ *      another machine's localStorage, so each editor offers a one-click
+ *      "Import from this browser" action instead.
  *
- * Safe to re-run: an existing row is never overwritten.
+ * A `demo` snapshot is also seeded: it freezes the shipped demo documents so
+ * they can always be restored from /admin/settings (Data tab), even after an
+ * admin has overwritten the live blocks.
+ *
+ * Safe to re-run: existing rows are never overwritten.
  *
  *   npm run db:seed
  */
 import { config } from "dotenv";
 import postgres from "postgres";
 
-import { HERO_CONTENT_KEY, heroDefaults } from "../hero-content";
+import {
+  CATEGORY_CONTENT_KEY,
+  categoryDefaults,
+} from "../category-content";
+import {
+  HERO_CONTENT_KEY,
+  heroDefaults,
+} from "../hero-content";
+import {
+  TRUST_CONTENT_KEY,
+  trustDefaults,
+} from "../trust-content";
 
 config({ path: [".env.local", ".env"] });
+
+const DEMO_SNAPSHOT_ID = "snapshot-demo-v1";
 
 async function main() {
   const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
@@ -31,26 +47,48 @@ async function main() {
 
   const sql = postgres(url, { max: 1, prepare: false, onnotice: () => {} });
 
-  try {
-    const existing = await sql`
-      select key, updated_at from content_blocks where key = ${HERO_CONTENT_KEY}
-    `;
+  const demoDocuments: Record<string, unknown> = {
+    [HERO_CONTENT_KEY]: { banners: heroDefaults.banners },
+    [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
+    [CATEGORY_CONTENT_KEY]: categoryDefaults,
+  };
 
-    if (existing.length > 0) {
-      console.log(
-        `content_blocks["${HERO_CONTENT_KEY}"] already exists (updated ${existing[0].updated_at}) — left untouched.`,
-      );
-      return;
+  try {
+    const existing = await sql<{ key: string }[]>`
+      select key from content_blocks where key = any(${Object.keys(demoDocuments)})
+    `;
+    const present = new Set(existing.map((row) => row.key));
+
+    for (const [key, document] of Object.entries(demoDocuments)) {
+      if (present.has(key)) {
+        console.log(`content_blocks["${key}"] already exists — left untouched.`);
+        continue;
+      }
+      await sql`
+        insert into content_blocks (key, data)
+        values (${key}, ${sql.json(document as never)})
+      `;
+      console.log(`Seeded content_blocks["${key}"] with the built-in demo document.`);
     }
 
-    await sql`
-      insert into content_blocks (key, data)
-      values (${HERO_CONTENT_KEY}, ${sql.json({ banners: heroDefaults.banners })})
+    const snapshot = await sql`
+      select id from data_snapshots where id = ${DEMO_SNAPSHOT_ID}
     `;
-
-    console.log(
-      `Seeded content_blocks["${HERO_CONTENT_KEY}"] with ${heroDefaults.banners.length} sample slides.`,
-    );
+    if (snapshot.length > 0) {
+      console.log(`Snapshot "${DEMO_SNAPSHOT_ID}" already exists — left untouched.`);
+    } else {
+      await sql`
+        insert into data_snapshots (id, label, kind, data, note)
+        values (
+          ${DEMO_SNAPSHOT_ID},
+          ${"Demo data (initial)"},
+          ${"demo"},
+          ${sql.json(demoDocuments)},
+          ${"Frozen copy of the shipped demo content, seeded on first migration."}
+        )
+      `;
+      console.log(`Seeded demo snapshot "${DEMO_SNAPSHOT_ID}".`);
+    }
   } finally {
     await sql.end({ timeout: 5 });
   }

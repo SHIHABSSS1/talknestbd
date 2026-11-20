@@ -1,10 +1,19 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { categories, getCategory } from "@/data/categories";
 import { CategoryDetail } from "@/components/categories/CategoryDetail";
+import { getCategoryContent } from "@/lib/db/queries/categories";
 
-export function generateStaticParams() {
-  return categories.map((category) => ({ slug: category.slug }));
+/**
+ * Routes come from the database-backed category document, not the legacy
+ * static catalogue, so a shelf created in /admin/sections/categories gets a
+ * prerendered route on the next build (and is still rendered on demand before
+ * then — dynamic params remain enabled).
+ */
+export async function generateStaticParams() {
+  const content = await getCategoryContent();
+  return content.tiles
+    .filter((tile) => !tile.audio)
+    .map((tile) => ({ slug: tile.slug }));
 }
 
 export async function generateMetadata({
@@ -13,11 +22,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const category = getCategory(slug);
-  if (!category) return { title: "Category" };
+  const content = await getCategoryContent();
+  const tile = content.tiles.find((item) => item.slug === slug);
+  if (!tile) return { title: "Category" };
   return {
-    title: category.name,
-    description: category.description,
+    title: tile.name,
+    description: tile.description,
   };
 }
 

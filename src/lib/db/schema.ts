@@ -37,6 +37,7 @@ export const contentBlocks = pgTable("content_blocks", {
 export type ContentBlock = typeof contentBlocks.$inferSelect;
 export type NewContentBlock = typeof contentBlocks.$inferInsert;
 
+
 /**
  * ─────────────────────────────────────────────────────────────────────────────
  * Identity & access (Better Auth core schema, owned by this project)
@@ -263,3 +264,29 @@ export const audioUnlocks = pgTable(
   },
   (table) => [primaryKey({ columns: [table.userId, table.slug] })],
 );
+
+/**
+ * Point-in-time backups of the editable content blocks.
+ *
+ * The demo defaults are seeded as a `demo` snapshot on first run so the
+ * browser-only data can always be recovered after a migration. Admins can
+ * create their own snapshots from /admin/settings (Data tab) and restore any
+ * of them. Snapshots are admin-only: no `"use cache"` query reads this table.
+ */
+export const dataSnapshots = pgTable(
+  "data_snapshots",
+  {
+    id: text("id").primaryKey(),
+    label: text("label").notNull(),
+    /** `demo` (seeded, immutable) or `manual` (created by an admin). */
+    kind: text("kind").notNull().default("manual"),
+    /** Map of content_blocks key → document, frozen at snapshot time. */
+    data: jsonb("data").notNull(),
+    note: text("note"),
+    createdBy: text("created_by").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("data_snapshots_kind_created_idx").on(table.kind, table.createdAt)],
+);
+
+export type DataSnapshot = typeof dataSnapshots.$inferSelect;
