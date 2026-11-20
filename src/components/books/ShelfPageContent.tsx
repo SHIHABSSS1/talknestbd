@@ -6,22 +6,27 @@ import { BookGrid } from "@/components/books/BookGrid";
 import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useShelfContent } from "@/components/providers/ShelfContentProvider";
 import { toBn } from "@/lib/utils";
+import type { ViralShelfContent } from "@/lib/shelf-content";
 import type { BookTag } from "@/lib/types";
 
-/** Generic collection page for a tag-based shelf managed in the admin. */
+/** Generic collection page; `content` makes it DB-backed when provided. */
 export function ShelfPageContent({
   slug,
   tag,
   crumb,
+  content,
 }: {
   slug: string;
   tag: BookTag;
   crumb: string;
+  content?: ViralShelfContent;
 }) {
   const { books } = useBookContent();
   const { getHeading } = useShelfContent();
-  const heading = getHeading(slug);
-  const shelfBooks = books.filter((book) => book.tags.includes(tag));
+  const heading = content?.heading ?? getHeading(slug);
+  const shelfBooks = content
+    ? content.books
+    : books.filter((book) => book.tags.includes(tag));
 
   return (
     <>

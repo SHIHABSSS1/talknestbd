@@ -27,9 +27,11 @@ import {
 import { trustContentSchema } from "@/lib/trust-schema";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneNewArrivalsShelfDefaults,
+  cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
 } from "@/lib/shelf-content";
@@ -64,6 +66,7 @@ const defaults: Record<string, unknown> = {
   [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
   [UP_SALE_SHELF_KEY]: cloneUpSaleShelfDefaults(),
   [NEW_ARRIVALS_SHELF_KEY]: cloneNewArrivalsShelfDefaults(),
+  [TRENDING_SHELF_KEY]: cloneTrendingShelfDefaults(),
   [AUTHOR_CONTENT_KEY]: authorDefaults,
   [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
@@ -75,6 +78,7 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [VIRAL_SHELF_KEY]: viralShelfSchema,
   [UP_SALE_SHELF_KEY]: viralShelfSchema,
   [NEW_ARRIVALS_SHELF_KEY]: viralShelfSchema,
+  [TRENDING_SHELF_KEY]: viralShelfSchema,
   [AUTHOR_CONTENT_KEY]: authorContentSchema,
   [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };

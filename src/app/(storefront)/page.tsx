@@ -19,19 +19,22 @@ import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getNewArrivalsShelfContent,
+  getTrendingShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
 } from "@/lib/db/queries/shelves";
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust, viral, upSale, newArrivals] = await Promise.all([
-    getHeroContent(),
-    getTrustContent(),
-    getViralShelfContent(),
-    getUpSaleShelfContent(),
-    getNewArrivalsShelfContent(),
-  ]);
+  const [hero, trust, viral, upSale, newArrivals, trending] =
+    await Promise.all([
+      getHeroContent(),
+      getTrustContent(),
+      getViralShelfContent(),
+      getUpSaleShelfContent(),
+      getNewArrivalsShelfContent(),
+      getTrendingShelfContent(),
+    ]);
 
   return (
     <>
@@ -54,6 +57,7 @@ export default async function HomePage() {
         slug="trending"
         tag="trending"
         href="/trending"
+        content={trending}
       />
 
       <AudioShowcase />

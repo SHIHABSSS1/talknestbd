@@ -119,6 +119,19 @@ export function cloneViralShelfDefaults(): ViralShelfContent {
 /** Live content_blocks key for the 50% Up Sale shelf (heading + books). */
 export const UP_SALE_SHELF_KEY = "shelf:up-sale";
 
+/** Live content_blocks key for the Trending Now shelf (heading + books). */
+export const TRENDING_SHELF_KEY = "shelf:trending";
+
+/** The shipped trending shelf: original copy plus the demo trending books. */
+export function cloneTrendingShelfDefaults(): ViralShelfContent {
+  return JSON.parse(
+    JSON.stringify({
+      heading: shelfDefaults("trending"),
+      books: allBooks().filter((book) => book.tags.includes("trending")),
+    }),
+  ) as ViralShelfContent;
+}
+
 /** Live content_blocks key for the New Arrivals shelf (heading + books). */
 export const NEW_ARRIVALS_SHELF_KEY = "shelf:new-arrivals";
 

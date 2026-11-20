@@ -25,6 +25,7 @@ import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getNewArrivalsShelfContent,
+  getTrendingShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
 } from "@/lib/db/queries/shelves";
@@ -96,13 +97,18 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
+  if (slug === "trending") {
+    const trending = await getTrendingShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={trending}
+        variant="trending"
+      />
+    );
+  }
+
   const extraShelves: Record<string, ShelfConfig> = {
-    trending: {
-      slug: "trending",
-      tag: "trending",
-      href: "/trending",
-      shelfName: "Trending Now",
-    },
     sunnah: {
       slug: "sunnah",
       tag: "sunnah",

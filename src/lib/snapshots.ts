@@ -13,6 +13,7 @@ export const SNAPSHOT_KEYS = [
   "shelf:viral-books",
   "shelf:up-sale",
   "shelf:new-arrivals",
+  "shelf:trending",
   "authors",
   "publishers",
 ] as const;
@@ -25,6 +26,7 @@ export const SNAPSHOT_LABELS: Record<SnapshotKey, string> = {
   "shelf:viral-books": "Viral Books shelf",
   "shelf:up-sale": "50% Up Sale shelf",
   "shelf:new-arrivals": "New Arrivals shelf",
+  "shelf:trending": "Trending Now shelf",
   authors: "Authors spotlight",
   publishers: "Publishers strip",
 };

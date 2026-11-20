@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   type SaveResult,
@@ -118,4 +119,22 @@ export async function resetNewArrivalsShelfContent(): Promise<SaveResult> {
     return { ok: false, message: "Sign in as an admin to reset the shelf." };
   }
   return deleteShelf(NEW_ARRIVALS_SHELF_KEY, "new-arrivals");
+}
+
+/** Publishes the Trending Now shelf (heading + books). */
+export async function saveTrendingShelfContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+  const parsed = parseShelf(input);
+  if (!parsed.data) return { ok: false, message: parsed.error! };
+  return writeShelf(TRENDING_SHELF_KEY, parsed.data, "trending");
+}
+
+/** Removes the stored trending document so the built-in shelf is used again. */
+export async function resetTrendingShelfContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the shelf." };
+  }
+  return deleteShelf(TRENDING_SHELF_KEY, "trending");
 }

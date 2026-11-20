@@ -21,18 +21,22 @@ import { BookCover } from "@/components/books/BookCover";
 import { BookForm } from "@/components/admin/BookForm";
 import {
   resetNewArrivalsShelfContent,
+  resetTrendingShelfContent,
   resetUpSaleShelfContent,
   resetViralShelfContent,
   saveNewArrivalsShelfContent,
+  saveTrendingShelfContent,
   saveUpSaleShelfContent,
   saveViralShelfContent,
 } from "@/lib/actions/shelves";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneNewArrivalsShelfDefaults,
+  cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
   type ShelfHeading,
@@ -47,7 +51,7 @@ const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
-type ShelfVariant = "viral" | "up-sale" | "new-arrivals";
+type ShelfVariant = "viral" | "up-sale" | "new-arrivals" | "trending";
 
 const shelfVariants = {
   viral: {
@@ -76,6 +80,15 @@ const shelfVariants = {
     defaults: cloneNewArrivalsShelfDefaults,
     save: saveNewArrivalsShelfContent,
     reset: resetNewArrivalsShelfContent,
+  },
+  trending: {
+    key: TRENDING_SHELF_KEY,
+    tag: "trending" as BookTag,
+    href: "/trending",
+    tagline: "Books on this shelf appear in the Trending Now rail and page.",
+    defaults: cloneTrendingShelfDefaults,
+    save: saveTrendingShelfContent,
+    reset: resetTrendingShelfContent,
   },
 } as const;
 
