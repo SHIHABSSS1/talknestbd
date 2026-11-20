@@ -4,65 +4,71 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import {
-  clearSellContent,
+  resetSellContent,
+  saveSellContent,
+} from "@/lib/actions/sell";
+import {
   cloneSellDefaults,
-  readSellContent,
-  SELL_STORAGE_KEY,
-  writeSellContent,
   type SaveResult,
   type SellContent,
 } from "@/lib/sell-content";
 
 interface SellContentContextValue {
   content: SellContent;
+  /** Always true — the document arrives from the server, not localStorage. */
   hydrated: boolean;
-  save: (next: SellContent) => SaveResult;
-  reset: () => SaveResult;
+  save: (next: SellContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
 }
 
 const SellContentContext = createContext<SellContentContextValue | null>(null);
 
-// Stable first render (server + client) so hydration matches.
-const initialContent: SellContent = cloneSellDefaults();
+/** Database-backed sell-used-books document, fed by a cached server query. */
+export function SellContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: SellContent;
+}) {
+  const [content, setContent] = useState<SellContent>(
+    initialContent ?? cloneSellDefaults(),
+  );
 
-export function SellContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SellContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setContent(readSellContent());
-    setHydrated(true);
-
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === SELL_STORAGE_KEY || event.key === null) {
-        setContent(readSellContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+  const save = useCallback(async (next: SellContent) => {
+    try {
+      const result = await saveSellContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the content.",
+      };
+    }
   }, []);
 
-  const save = useCallback((next: SellContent) => {
-    const result = writeSellContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearSellContent();
-    if (result.ok) setContent(cloneSellDefaults());
-    return result;
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetSellContent();
+      if (result.ok) setContent(cloneSellDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the content.",
+      };
+    }
   }, []);
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset }),
-    [content, hydrated, save, reset],
+    () => ({ content, hydrated: true, save, reset }),
+    [content, save, reset],
   );
 
   return (

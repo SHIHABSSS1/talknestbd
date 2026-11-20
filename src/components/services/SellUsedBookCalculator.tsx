@@ -82,13 +82,14 @@ export function SellUsedBookCalculator() {
     }
   };
 
-  const submitRequest = () => {
+  const submitRequest = async () => {
     if (!form.name.trim() || !form.phone.trim() || !form.address.trim()) {
       setFormError("Please enter your name, phone number and address.");
       return;
     }
+    setFormError("");
     const request: SellRequest = {
-      id: `sell-${Date.now()}`,
+      id: `pending-${Date.now()}`,
       createdAt: new Date().toISOString(),
       name: form.name.trim(),
       phone: form.phone.trim(),
@@ -101,7 +102,11 @@ export function SellUsedBookCalculator() {
       amount,
       status: "New",
     };
-    add(request);
+    const result = await add(request);
+    if (!result.ok) {
+      setFormError(result.message);
+      return;
+    }
     setShowForm(false);
     setSubmitted(true);
   };

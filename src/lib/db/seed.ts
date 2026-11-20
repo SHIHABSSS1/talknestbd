@@ -58,6 +58,10 @@ import {
   PUBLISHER_CONTENT_KEY,
   publisherDefaults,
 } from "../publisher-content";
+import {
+  SELL_CONTENT_KEY,
+  sellDefaults,
+} from "../sell-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -84,6 +88,7 @@ async function main() {
     [STUDENT_SHELF_KEY]: cloneStudentShelfDefaults(),
     [AUTHOR_CONTENT_KEY]: authorDefaults,
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
+    [SELL_CONTENT_KEY]: sellDefaults,
   };
 
   try {

@@ -290,3 +290,36 @@ export const dataSnapshots = pgTable(
 );
 
 export type DataSnapshot = typeof dataSnapshots.$inferSelect;
+
+/**
+ * Sell requests raised from the public calculator on /sell-used-books.
+ *
+ * Prices are numeric(10,2), never float. The submitter is optional so anonymous
+ * demo visitors can use the calculator; when a Better Auth session exists the
+ * server records its user id — the client never chooses it.
+ */
+export const sellRequests = pgTable(
+  "sell_requests",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    name: text("name").notNull(),
+    phone: text("phone").notNull(),
+    email: text("email"),
+    address: text("address").notNull(),
+    bookTitle: text("book_title").notNull(),
+    purchasePrice: numeric("purchase_price", { precision: 10, scale: 2 }).notNull(),
+    condition: text("condition").notNull(),
+    rate: numeric("rate", { precision: 5, scale: 2 }).notNull(),
+    amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+    status: text("status").notNull().default("New"),
+    adminNote: text("admin_note"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("sell_requests_status_created_idx").on(table.status, table.createdAt),
+    index("sell_requests_user_id_idx").on(table.userId),
+  ],
+);
+
+export type SellRequestRow = typeof sellRequests.$inferSelect;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -116,6 +116,7 @@ export function SellUsedBooksEditor({ label }: { label: string }) {
   const [draft, setDraft] = useState<SellContent>(content);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [tab, setTab] = useState<Tab>("banner");
+  const [pending, startTransition] = useTransition();
 
   useEffect(() => setDraft(content), [content]);
 
@@ -178,14 +179,41 @@ export function SellUsedBooksEditor({ label }: { label: string }) {
   };
 
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const result = await save(draft);
+        setNotice({ text: result.message, error: !result.ok });
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the content.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(cloneSellDefaults());
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) setDraft(cloneSellDefaults());
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const handleStatusChange = (id: string, status: SellRequest["status"]) => {
+    startTransition(async () => {
+      const result = await updateRequest(id, { status });
+      setNotice({ text: result.message, error: !result.ok });
+    });
+  };
+
+  const handleRemoveRequest = (id: string) => {
+    startTransition(async () => {
+      const result = await removeRequest(id);
+      setNotice({ text: result.message, error: !result.ok });
+    });
   };
 
   return (
@@ -1206,9 +1234,10 @@ export function SellUsedBooksEditor({ label }: { label: string }) {
                             <select
                               value={request.status}
                               onChange={(event) =>
-                                updateRequest(request.id, {
-                                  status: event.target.value as SellRequest["status"],
-                                })
+                                handleStatusChange(
+                                  request.id,
+                                  event.target.value as SellRequest["status"],
+                                )
                               }
                               className="rounded-[4px] border border-line bg-white px-2 py-1.5 text-[10px] text-ink"
                             >
@@ -1222,7 +1251,7 @@ export function SellUsedBooksEditor({ label }: { label: string }) {
                           <td className="px-2 py-2.5 text-right">
                             <button
                               type="button"
-                              onClick={() => removeRequest(request.id)}
+                              onClick={() => handleRemoveRequest(request.id)}
                               title="Delete request"
                               className="rounded-[4px] p-1.5 text-muted hover:text-brand-700"
                             >
@@ -1276,14 +1305,16 @@ export function SellUsedBooksEditor({ label }: { label: string }) {
             <button
               type="button"
               onClick={handleSave}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700 disabled:opacity-50"
             >
-              <Save size={13} /> Save changes
+              <Save size={13} /> {pending ? "Saving…" : "Save changes"}
             </button>
             <button
               type="button"
               onClick={handleReset}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300"
+              disabled={pending}
+              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line px-4 text-[11px] font-medium text-ink hover:border-brand-300 disabled:opacity-50"
             >
               <RotateCcw size={13} /> Restore default
             </button>

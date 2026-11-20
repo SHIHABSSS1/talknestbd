@@ -6,6 +6,7 @@ import { getCategoryContent } from "@/lib/db/queries/categories";
 import { getAuthorContent } from "@/lib/db/queries/authors";
 import { getPublisherContent } from "@/lib/db/queries/publishers";
 import { getUpSaleShelfContent } from "@/lib/db/queries/shelves";
+import { getSellContent } from "@/lib/db/queries/sell";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
@@ -80,12 +81,13 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Cached content block (content:categories); passed to the client provider so
   // every category surface shares one server-rendered source of truth.
-  const [categoryContent, authorContent, publisherContent, upSale] =
+  const [categoryContent, authorContent, publisherContent, upSale, sellContent] =
     await Promise.all([
       getCategoryContent(),
       getAuthorContent(),
       getPublisherContent(),
       getUpSaleShelfContent(),
+      getSellContent(),
     ]);
 
   return (
@@ -101,7 +103,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <CategoryContentProvider initialContent={categoryContent}>
             <BookContentProvider>
                 <ShelfContentProvider>
-                  <SellContentProvider>
+                  <SellContentProvider initialContent={sellContent}>
                     <SellRequestsProvider>
                       <UpSaleBooksProvider initialBooks={upSale.books}>
                         <UsedContentProvider>

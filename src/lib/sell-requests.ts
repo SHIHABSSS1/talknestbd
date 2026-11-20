@@ -15,6 +15,8 @@ export interface SellRequest {
   rate: number;
   amount: number;
   status: SellRequestStatus;
+  /** Optional internal note added by an admin. */
+  adminNote?: string;
 }
 
 export const SELL_REQUESTS_KEY = "talknestbd-sell-requests-v1";

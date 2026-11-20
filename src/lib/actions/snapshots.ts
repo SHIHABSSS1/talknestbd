@@ -50,6 +50,8 @@ import {
   publisherDefaults,
 } from "@/lib/publisher-content";
 import { viralShelfSchema } from "@/lib/shelf-schema";
+import { SELL_CONTENT_KEY, sellDefaults } from "@/lib/sell-content";
+import { sellContentSchema } from "@/lib/sell-schema";
 import { authorContentSchema } from "@/lib/author-schema";
 import { publisherContentSchema } from "@/lib/publisher-schema";
 import {
@@ -76,6 +78,7 @@ const defaults: Record<string, unknown> = {
   [SUNNAH_SHELF_KEY]: cloneSunnahShelfDefaults(),
   [INTERNATIONAL_SHELF_KEY]: cloneInternationalShelfDefaults(),
   [STUDENT_SHELF_KEY]: cloneStudentShelfDefaults(),
+  [SELL_CONTENT_KEY]: sellDefaults,
   [AUTHOR_CONTENT_KEY]: authorDefaults,
   [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
@@ -91,6 +94,7 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [SUNNAH_SHELF_KEY]: viralShelfSchema,
   [INTERNATIONAL_SHELF_KEY]: viralShelfSchema,
   [STUDENT_SHELF_KEY]: viralShelfSchema,
+  [SELL_CONTENT_KEY]: sellContentSchema,
   [AUTHOR_CONTENT_KEY]: authorContentSchema,
   [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };

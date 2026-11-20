@@ -1,6 +1,10 @@
 /**
  * Editable content for the homepage "Sell used books" banner and the full
- * /sell-used-books page. Persisted in localStorage (demo only — no backend).
+ * /sell-used-books page.
+ *
+ * The live document lives in Postgres (`content_blocks` key
+ * "sell-used-books"). The localStorage helpers below remain only so an admin
+ * can import copy saved in this browser before the database existed.
  */
 
 export type SellIconKey =
@@ -106,6 +110,9 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const SELL_CONTENT_KEY = "sell-used-books";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const SELL_STORAGE_KEY = "talknestbd-sell-used-books-v1";
 
 export const sellIconKeys: { key: SellIconKey; label: string }[] = [
