@@ -18,17 +18,19 @@ import { StoryCommunity } from "@/components/home/StoryCommunity";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
+  getNewArrivalsShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
 } from "@/lib/db/queries/shelves";
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust, viral, upSale] = await Promise.all([
+  const [hero, trust, viral, upSale, newArrivals] = await Promise.all([
     getHeroContent(),
     getTrustContent(),
     getViralShelfContent(),
     getUpSaleShelfContent(),
+    getNewArrivalsShelfContent(),
   ]);
 
   return (
@@ -42,7 +44,7 @@ export default async function HomePage() {
       <UpSaleRail content={upSale} />
       <UsedBooksBanner />
 
-      <NewArrivalsRail />
+      <NewArrivalsRail content={newArrivals} />
 
       <FreeOrderWholesale />
 

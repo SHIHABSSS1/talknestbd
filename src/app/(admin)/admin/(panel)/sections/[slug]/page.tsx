@@ -24,6 +24,7 @@ import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
+  getNewArrivalsShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
 } from "@/lib/db/queries/shelves";
@@ -84,14 +85,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
       />
     );
   }
-  const newArrivalsShelf: ShelfConfig = {
-    slug: "new-arrivals",
-    tag: "new",
-    href: "/new-books",
-    shelfName: "New Arrivals",
-  };
   if (slug === "new-arrivals") {
-    return <ShelfEditor label={label} config={newArrivalsShelf} />;
+    const newArrivals = await getNewArrivalsShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={newArrivals}
+        variant="new-arrivals"
+      />
+    );
   }
 
   const extraShelves: Record<string, ShelfConfig> = {

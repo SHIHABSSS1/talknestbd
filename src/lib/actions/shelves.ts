@@ -7,6 +7,7 @@ import { getServerSession, isAdminSession } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
+  NEW_ARRIVALS_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   type SaveResult,
@@ -99,4 +100,22 @@ export async function resetUpSaleShelfContent(): Promise<SaveResult> {
     return { ok: false, message: "Sign in as an admin to reset the shelf." };
   }
   return deleteShelf(UP_SALE_SHELF_KEY, "up-sale");
+}
+
+/** Publishes the New Arrivals shelf (heading + books). */
+export async function saveNewArrivalsShelfContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+  const parsed = parseShelf(input);
+  if (!parsed.data) return { ok: false, message: parsed.error! };
+  return writeShelf(NEW_ARRIVALS_SHELF_KEY, parsed.data, "new-arrivals");
+}
+
+/** Removes the stored new-arrivals document so the built-in shelf is used again. */
+export async function resetNewArrivalsShelfContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the shelf." };
+  }
+  return deleteShelf(NEW_ARRIVALS_SHELF_KEY, "new-arrivals");
 }

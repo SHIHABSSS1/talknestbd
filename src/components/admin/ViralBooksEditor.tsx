@@ -20,15 +20,19 @@ import {
 import { BookCover } from "@/components/books/BookCover";
 import { BookForm } from "@/components/admin/BookForm";
 import {
+  resetNewArrivalsShelfContent,
   resetUpSaleShelfContent,
   resetViralShelfContent,
+  saveNewArrivalsShelfContent,
   saveUpSaleShelfContent,
   saveViralShelfContent,
 } from "@/lib/actions/shelves";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
+  NEW_ARRIVALS_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneNewArrivalsShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
   type ShelfHeading,
@@ -43,7 +47,7 @@ const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
-type ShelfVariant = "viral" | "up-sale";
+type ShelfVariant = "viral" | "up-sale" | "new-arrivals";
 
 const shelfVariants = {
   viral: {
@@ -63,6 +67,15 @@ const shelfVariants = {
     defaults: cloneUpSaleShelfDefaults,
     save: saveUpSaleShelfContent,
     reset: resetUpSaleShelfContent,
+  },
+  "new-arrivals": {
+    key: NEW_ARRIVALS_SHELF_KEY,
+    tag: "new" as BookTag,
+    href: "/new-books",
+    tagline: "Books on this shelf appear in the New Arrivals rail and page.",
+    defaults: cloneNewArrivalsShelfDefaults,
+    save: saveNewArrivalsShelfContent,
+    reset: resetNewArrivalsShelfContent,
   },
 } as const;
 

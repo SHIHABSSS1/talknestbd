@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
+  NEW_ARRIVALS_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneNewArrivalsShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
   type ViralShelfContent,
@@ -69,5 +71,29 @@ export async function getUpSaleShelfContent(): Promise<ViralShelfContent> {
   } catch (error) {
     console.error("[up-sale] content_blocks read failed, using defaults:", error);
     return cloneUpSaleShelfDefaults();
+  }
+}
+
+/** The New Arrivals document, following the same cache/tag contract. */
+export async function getNewArrivalsShelfContent(): Promise<ViralShelfContent> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("content", `content:${NEW_ARRIVALS_SHELF_KEY}`);
+
+  try {
+    const [row] = await db
+      .select({ data: contentBlocks.data })
+      .from(contentBlocks)
+      .where(eq(contentBlocks.key, NEW_ARRIVALS_SHELF_KEY))
+      .limit(1);
+    const parsed = viralShelfSchema.safeParse(row?.data);
+    if (!parsed.success) {
+      if (row) console.warn("[new-arrivals] invalid stored document, using defaults:", parsed.error.issues[0]?.message);
+      return cloneNewArrivalsShelfDefaults();
+    }
+    return parsed.data;
+  } catch (error) {
+    console.error("[new-arrivals] content_blocks read failed, using defaults:", error);
+    return cloneNewArrivalsShelfDefaults();
   }
 }
