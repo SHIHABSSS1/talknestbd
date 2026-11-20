@@ -12,7 +12,6 @@ import { StoriesEditor } from "@/components/admin/StoriesEditor";
 import { VideoQuizEditor } from "@/components/admin/VideoQuizEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
-import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
 import { ViralBooksEditor } from "@/components/admin/ViralBooksEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { UsedBooksEditor } from "@/components/admin/UsedBooksEditor";
@@ -26,6 +25,7 @@ import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getInternationalShelfContent,
   getNewArrivalsShelfContent,
+  getStudentShelfContent,
   getSunnahShelfContent,
   getTrendingShelfContent,
   getUpSaleShelfContent,
@@ -131,16 +131,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
-  const extraShelves: Record<string, ShelfConfig> = {
-    "student-books": {
-      slug: "student-books",
-      tag: "student",
-      href: "/student-books",
-      shelfName: "Student Books",
-    },
-  };
-  if (extraShelves[slug]) {
-    return <ShelfEditor label={label} config={extraShelves[slug]} />;
+  if (slug === "student-books") {
+    const student = await getStudentShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={student}
+        variant="student"
+      />
+    );
   }
   if (slug === "sell-used-books") {
     return <SellUsedBooksEditor label={label} />;

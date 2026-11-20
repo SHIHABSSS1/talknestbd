@@ -20,6 +20,7 @@ import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getInternationalShelfContent,
   getNewArrivalsShelfContent,
+  getStudentShelfContent,
   getSunnahShelfContent,
   getTrendingShelfContent,
   getUpSaleShelfContent,
@@ -28,17 +29,27 @@ import {
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust, viral, upSale, newArrivals, trending, sunnah, international] =
-    await Promise.all([
-      getHeroContent(),
-      getTrustContent(),
-      getViralShelfContent(),
-      getUpSaleShelfContent(),
-      getNewArrivalsShelfContent(),
-      getTrendingShelfContent(),
-      getSunnahShelfContent(),
-      getInternationalShelfContent(),
-    ]);
+  const [
+    hero,
+    trust,
+    viral,
+    upSale,
+    newArrivals,
+    trending,
+    sunnah,
+    international,
+    student,
+  ] = await Promise.all([
+    getHeroContent(),
+    getTrustContent(),
+    getViralShelfContent(),
+    getUpSaleShelfContent(),
+    getNewArrivalsShelfContent(),
+    getTrendingShelfContent(),
+    getSunnahShelfContent(),
+    getInternationalShelfContent(),
+    getStudentShelfContent(),
+  ]);
 
   return (
     <>
@@ -89,6 +100,7 @@ export default async function HomePage() {
         slug="student-books"
         tag="student"
         href="/student-books"
+        content={student}
       />
 
       <ReviewsWall />

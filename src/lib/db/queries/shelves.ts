@@ -8,12 +8,14 @@ import { contentBlocks } from "@/lib/db/schema";
 import {
   INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
+  STUDENT_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
+  cloneStudentShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
@@ -173,5 +175,29 @@ export async function getInternationalShelfContent(): Promise<ViralShelfContent>
   } catch (error) {
     console.error("[international] content_blocks read failed, using defaults:", error);
     return cloneInternationalShelfDefaults();
+  }
+}
+
+/** The Student Books document, following the same cache/tag contract. */
+export async function getStudentShelfContent(): Promise<ViralShelfContent> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("content", `content:${STUDENT_SHELF_KEY}`);
+
+  try {
+    const [row] = await db
+      .select({ data: contentBlocks.data })
+      .from(contentBlocks)
+      .where(eq(contentBlocks.key, STUDENT_SHELF_KEY))
+      .limit(1);
+    const parsed = viralShelfSchema.safeParse(row?.data);
+    if (!parsed.success) {
+      if (row) console.warn("[student-books] invalid stored document, using defaults:", parsed.error.issues[0]?.message);
+      return cloneStudentShelfDefaults();
+    }
+    return parsed.data;
+  } catch (error) {
+    console.error("[student-books] content_blocks read failed, using defaults:", error);
+    return cloneStudentShelfDefaults();
   }
 }

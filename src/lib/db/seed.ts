@@ -37,12 +37,14 @@ import {
 import {
   INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
+  STUDENT_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
+  cloneStudentShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
@@ -79,6 +81,7 @@ async function main() {
     [TRENDING_SHELF_KEY]: cloneTrendingShelfDefaults(),
     [SUNNAH_SHELF_KEY]: cloneSunnahShelfDefaults(),
     [INTERNATIONAL_SHELF_KEY]: cloneInternationalShelfDefaults(),
+    [STUDENT_SHELF_KEY]: cloneStudentShelfDefaults(),
     [AUTHOR_CONTENT_KEY]: authorDefaults,
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
   };

@@ -22,12 +22,14 @@ import { BookForm } from "@/components/admin/BookForm";
 import {
   resetInternationalShelfContent,
   resetNewArrivalsShelfContent,
+  resetStudentShelfContent,
   resetSunnahShelfContent,
   resetTrendingShelfContent,
   resetUpSaleShelfContent,
   resetViralShelfContent,
   saveInternationalShelfContent,
   saveNewArrivalsShelfContent,
+  saveStudentShelfContent,
   saveSunnahShelfContent,
   saveTrendingShelfContent,
   saveUpSaleShelfContent,
@@ -37,12 +39,14 @@ import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
   INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
+  STUDENT_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
+  cloneStudentShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
@@ -65,7 +69,8 @@ type ShelfVariant =
   | "new-arrivals"
   | "trending"
   | "sunnah"
-  | "international";
+  | "international"
+  | "student";
 
 const shelfVariants = {
   viral: {
@@ -121,6 +126,15 @@ const shelfVariants = {
     defaults: cloneInternationalShelfDefaults,
     save: saveInternationalShelfContent,
     reset: resetInternationalShelfContent,
+  },
+  student: {
+    key: STUDENT_SHELF_KEY,
+    tag: "student" as BookTag,
+    href: "/student-books",
+    tagline: "Books on this shelf appear in the Student Books rail and page.",
+    defaults: cloneStudentShelfDefaults,
+    save: saveStudentShelfContent,
+    reset: resetStudentShelfContent,
   },
 } as const;
 

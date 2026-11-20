@@ -9,6 +9,7 @@ import { contentBlocks } from "@/lib/db/schema";
 import {
   INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
+  STUDENT_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
@@ -175,4 +176,22 @@ export async function resetInternationalShelfContent(): Promise<SaveResult> {
     return { ok: false, message: "Sign in as an admin to reset the shelf." };
   }
   return deleteShelf(INTERNATIONAL_SHELF_KEY, "international");
+}
+
+/** Publishes the Student Books shelf (heading + books). */
+export async function saveStudentShelfContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+  const parsed = parseShelf(input);
+  if (!parsed.data) return { ok: false, message: parsed.error! };
+  return writeShelf(STUDENT_SHELF_KEY, parsed.data, "student-books");
+}
+
+/** Removes the stored student document so the built-in shelf is used again. */
+export async function resetStudentShelfContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the shelf." };
+  }
+  return deleteShelf(STUDENT_SHELF_KEY, "student-books");
 }

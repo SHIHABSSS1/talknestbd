@@ -119,6 +119,19 @@ export function cloneViralShelfDefaults(): ViralShelfContent {
 /** Live content_blocks key for the 50% Up Sale shelf (heading + books). */
 export const UP_SALE_SHELF_KEY = "shelf:up-sale";
 
+/** Live content_blocks key for the Student Books shelf (heading + books). */
+export const STUDENT_SHELF_KEY = "shelf:student-books";
+
+/** The shipped student shelf: original copy plus the demo student books. */
+export function cloneStudentShelfDefaults(): ViralShelfContent {
+  return JSON.parse(
+    JSON.stringify({
+      heading: shelfDefaults(SHELF_SLUGS.studentBooks),
+      books: allBooks().filter((book) => book.tags.includes("student")),
+    }),
+  ) as ViralShelfContent;
+}
+
 /** Live content_blocks key for the International Books shelf (heading + books). */
 export const INTERNATIONAL_SHELF_KEY = "shelf:international";
 
