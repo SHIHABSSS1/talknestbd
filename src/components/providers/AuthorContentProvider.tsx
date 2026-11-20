@@ -4,17 +4,16 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import {
-  AUTHOR_STORAGE_KEY,
-  clearAuthorContent,
+  resetAuthorContent,
+  saveAuthorContent,
+} from "@/lib/actions/authors";
+import {
   cloneAuthorDefaults,
-  readAuthorContent,
-  writeAuthorContent,
   type AuthorContent,
   type SaveResult,
 } from "@/lib/author-content";
@@ -22,41 +21,51 @@ import type { Author } from "@/lib/types";
 
 interface AuthorContentContextValue {
   content: AuthorContent;
+  /** Always true — the document arrives from the server, not localStorage. */
   hydrated: boolean;
-  save: (next: AuthorContent) => SaveResult;
-  reset: () => SaveResult;
+  save: (next: AuthorContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
   getAuthor: (slug: string) => Author | undefined;
 }
 
 const AuthorContentContext = createContext<AuthorContentContextValue | null>(null);
-const initialContent: AuthorContent = cloneAuthorDefaults();
 
-export function AuthorContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<AuthorContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
+/** Database-backed author document, fed once by a cached server query. */
+export function AuthorContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: AuthorContent;
+}) {
+  const [content, setContent] = useState<AuthorContent>(
+    initialContent ?? cloneAuthorDefaults(),
+  );
 
-  useEffect(() => {
-    setContent(readAuthorContent());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === AUTHOR_STORAGE_KEY || event.key === null) {
-        setContent(readAuthorContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+  const save = useCallback(async (next: AuthorContent) => {
+    try {
+      const result = await saveAuthorContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the authors.",
+      };
+    }
   }, []);
 
-  const save = useCallback((next: AuthorContent) => {
-    const result = writeAuthorContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearAuthorContent();
-    if (result.ok) setContent(cloneAuthorDefaults());
-    return result;
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetAuthorContent();
+      if (result.ok) setContent(cloneAuthorDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the authors.",
+      };
+    }
   }, []);
 
   const getAuthor = useCallback(
@@ -65,8 +74,8 @@ export function AuthorContentProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset, getAuthor }),
-    [content, hydrated, save, reset, getAuthor],
+    () => ({ content, hydrated: true, save, reset, getAuthor }),
+    [content, save, reset, getAuthor],
   );
 
   return (

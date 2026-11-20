@@ -3,6 +3,8 @@ import { Roboto } from "next/font/google";
 import { StoreProvider } from "@/lib/store";
 import { CategoryContentProvider } from "@/components/providers/CategoryContentProvider";
 import { getCategoryContent } from "@/lib/db/queries/categories";
+import { getAuthorContent } from "@/lib/db/queries/authors";
+import { getPublisherContent } from "@/lib/db/queries/publishers";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
@@ -77,7 +79,11 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Cached content block (content:categories); passed to the client provider so
   // every category surface shares one server-rendered source of truth.
-  const categoryContent = await getCategoryContent();
+  const [categoryContent, authorContent, publisherContent] = await Promise.all([
+    getCategoryContent(),
+    getAuthorContent(),
+    getPublisherContent(),
+  ]);
 
   return (
     <html lang="en" className={roboto.variable} data-scroll-behavior="smooth">
@@ -100,8 +106,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                             <WholesaleContentProvider>
                               <WholesaleRequestsProvider>
                                 <AudioContentProvider>
-                                  <AuthorContentProvider>
-                                    <PublisherContentProvider>
+                                  <AuthorContentProvider initialContent={authorContent}>
+                                    <PublisherContentProvider initialContent={publisherContent}>
                                       <ReviewsProvider>
                                         <VideoQuizProvider>
                                           <StoriesProvider>

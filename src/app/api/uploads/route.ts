@@ -13,6 +13,8 @@ const ALLOWED_FOLDERS = new Set([
   "trust-strip",
   "categories",
   "books",
+  "authors",
+  "publishers",
 ]);
 
 /**

@@ -38,6 +38,14 @@ import {
   VIRAL_SHELF_KEY,
   cloneViralShelfDefaults,
 } from "../shelf-content";
+import {
+  AUTHOR_CONTENT_KEY,
+  authorDefaults,
+} from "../author-content";
+import {
+  PUBLISHER_CONTENT_KEY,
+  publisherDefaults,
+} from "../publisher-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -56,6 +64,8 @@ async function main() {
     [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
     [CATEGORY_CONTENT_KEY]: categoryDefaults,
     [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
+    [AUTHOR_CONTENT_KEY]: authorDefaults,
+    [PUBLISHER_CONTENT_KEY]: publisherDefaults,
   };
 
   try {

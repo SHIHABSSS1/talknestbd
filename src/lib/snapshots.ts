@@ -11,6 +11,8 @@ export const SNAPSHOT_KEYS = [
   "trust-strip",
   "categories",
   "shelf:viral-books",
+  "authors",
+  "publishers",
 ] as const;
 export type SnapshotKey = (typeof SNAPSHOT_KEYS)[number];
 
@@ -19,6 +21,8 @@ export const SNAPSHOT_LABELS: Record<SnapshotKey, string> = {
   "trust-strip": "Trust strip cards",
   categories: "Category showcase",
   "shelf:viral-books": "Viral Books shelf",
+  authors: "Authors spotlight",
+  publishers: "Publishers strip",
 };
 
 export interface SnapshotSummary {

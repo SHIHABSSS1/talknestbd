@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -134,13 +134,25 @@ export function AuthorsEditor({ label }: { label: string }) {
     setUploading(true);
     setNotice(null);
     try {
-      const image = await fileToDataUrl(file);
-      setEditing((current) => (current ? { ...current, image } : current));
-      setNotice({ text: `Photo compressed (${dataUrlSizeLabel(image)}). Save the author to publish.` });
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const response = await fetch("/api/uploads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ src: dataUrl, folder: "authors" }),
+      });
+      const stored = (await response.json().catch(() => null)) as
+        | { url?: string; error?: string }
+        | null;
+      if (!response.ok || !stored?.url) {
+        throw new Error(stored?.error ?? "The photo could not be stored.");
+      }
+      setEditing((current) => (current ? { ...current, image: stored.url } : current));
+      setNotice({ text: `Photo stored on the server (${size}). Save the author to publish.` });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that image.",
       });
     } finally {
       setUploading(false);
@@ -162,16 +174,57 @@ export function AuthorsEditor({ label }: { label: string }) {
     setNotice(null);
   };
 
+  const [pending, startTransition] = useTransition();
+
+  /** Legacy browser photos are uploaded so only URLs reach the database. */
+  const normalise = async (content: AuthorContent): Promise<AuthorContent> => {
+    const authors: Author[] = [];
+    for (const author of content.authors) {
+      if (author.image?.startsWith("data:")) {
+        const response = await fetch("/api/uploads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ src: author.image, folder: "authors" }),
+        });
+        const stored = (await response.json().catch(() => null)) as
+          | { url?: string }
+          | null;
+        if (!response.ok || !stored?.url) {
+          throw new Error("A photo could not be uploaded. Remove it or try again.");
+        }
+        authors.push({ ...author, image: stored.url });
+      } else {
+        authors.push(author);
+      }
+    }
+    return { ...content, authors };
+  };
+
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const result = await save(await normalise(draft));
+        setNotice({ text: result.message, error: !result.ok });
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the authors.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(cloneAuthorDefaults());
-    setEditing(null);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) {
+        setDraft(cloneAuthorDefaults());
+        setEditing(null);
+      }
+      setNotice({ text: result.message, error: !result.ok });
+    });
   };
 
   const tabs: { key: Tab; label: string; count?: number }[] = [

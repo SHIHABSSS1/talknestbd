@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { authors } from "@/data/authors";
 import { AuthorDetailContent } from "@/components/authors/AuthorDetailContent";
 import { Container } from "@/components/ui/Container";
+import { getAuthorContent } from "@/lib/db/queries/authors";
 
-export function generateStaticParams() {
-  return authors.map((author) => ({ slug: author.slug }));
+export async function generateStaticParams() {
+  const content = await getAuthorContent();
+  return content.authors.map((author) => ({ slug: author.slug }));
 }
 
 export async function generateMetadata({
@@ -14,7 +15,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const author = authors.find((item) => item.slug === slug);
+  const content = await getAuthorContent();
+  const author = content.authors.find((item) => item.slug === slug);
   return author ? { title: author.name, description: author.bio } : { title: "Author" };
 }
 

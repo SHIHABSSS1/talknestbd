@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { publishers } from "@/data/publishers";
 import { PublisherDetailContent } from "@/components/publishers/PublisherDetailContent";
 import { Container } from "@/components/ui/Container";
+import { getPublisherContent } from "@/lib/db/queries/publishers";
 
-export function generateStaticParams() {
-  return publishers.map((publisher) => ({ slug: publisher.slug }));
+export async function generateStaticParams() {
+  const content = await getPublisherContent();
+  return content.publishers.map((publisher) => ({ slug: publisher.slug }));
 }
 
 export async function generateMetadata({
@@ -14,7 +15,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const publisher = publishers.find((item) => item.slug === slug);
+  const content = await getPublisherContent();
+  const publisher = content.publishers.find((item) => item.slug === slug);
   return publisher
     ? { title: publisher.name, description: publisher.description }
     : { title: "Publisher" };

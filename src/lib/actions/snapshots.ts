@@ -29,7 +29,17 @@ import {
   VIRAL_SHELF_KEY,
   cloneViralShelfDefaults,
 } from "@/lib/shelf-content";
+import {
+  AUTHOR_CONTENT_KEY,
+  authorDefaults,
+} from "@/lib/author-content";
+import {
+  PUBLISHER_CONTENT_KEY,
+  publisherDefaults,
+} from "@/lib/publisher-content";
 import { viralShelfSchema } from "@/lib/shelf-schema";
+import { authorContentSchema } from "@/lib/author-schema";
+import { publisherContentSchema } from "@/lib/publisher-schema";
 import {
   SNAPSHOT_KEYS,
   type SnapshotResult,
@@ -48,6 +58,8 @@ const defaults: Record<string, unknown> = {
   [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
   [CATEGORY_CONTENT_KEY]: categoryDefaults,
   [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
+  [AUTHOR_CONTENT_KEY]: authorDefaults,
+  [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
 
 const validators: Record<string, { safeParse: (value: unknown) => { success: boolean } }> = {
@@ -55,6 +67,8 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [TRUST_CONTENT_KEY]: trustContentSchema,
   [CATEGORY_CONTENT_KEY]: categoryContentSchema,
   [VIRAL_SHELF_KEY]: viralShelfSchema,
+  [AUTHOR_CONTENT_KEY]: authorContentSchema,
+  [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };
 
 function expireAllContent(): void {

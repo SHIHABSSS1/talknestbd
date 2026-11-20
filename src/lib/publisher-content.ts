@@ -29,6 +29,9 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const PUBLISHER_CONTENT_KEY = "publishers";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const PUBLISHER_STORAGE_KEY = "talknestbd-publishers-v1";
 
 const section = sectionDefaults.publishers;

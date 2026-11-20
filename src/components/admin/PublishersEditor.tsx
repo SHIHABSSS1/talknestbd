@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -95,13 +95,25 @@ export function PublishersEditor({ label }: { label: string }) {
     setUploading(true);
     setNotice(null);
     try {
-      const imageSrc = await fileToDataUrl(file);
-      setEditing((current) => (current ? { ...current, imageSrc } : current));
-      setNotice({ text: `Logo compressed (${dataUrlSizeLabel(imageSrc)}). Save the publisher to publish.` });
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const response = await fetch("/api/uploads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ src: dataUrl, folder: "publishers" }),
+      });
+      const stored = (await response.json().catch(() => null)) as
+        | { url?: string; error?: string }
+        | null;
+      if (!response.ok || !stored?.url) {
+        throw new Error(stored?.error ?? "The logo could not be stored.");
+      }
+      setEditing((current) => (current ? { ...current, imageSrc: stored.url } : current));
+      setNotice({ text: `Logo stored on the server (${size}). Save the publisher to publish.` });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that image.",
       });
     } finally {
       setUploading(false);
@@ -123,16 +135,57 @@ export function PublishersEditor({ label }: { label: string }) {
     setNotice(null);
   };
 
+  const [pending, startTransition] = useTransition();
+
+  /** Legacy browser logos are uploaded so only URLs reach the database. */
+  const normalise = async (content: PublisherContent): Promise<PublisherContent> => {
+    const publishers: Publisher[] = [];
+    for (const publisher of content.publishers) {
+      if (publisher.imageSrc?.startsWith("data:")) {
+        const response = await fetch("/api/uploads", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ src: publisher.imageSrc, folder: "publishers" }),
+        });
+        const stored = (await response.json().catch(() => null)) as
+          | { url?: string }
+          | null;
+        if (!response.ok || !stored?.url) {
+          throw new Error("A logo could not be uploaded. Remove it or try again.");
+        }
+        publishers.push({ ...publisher, imageSrc: stored.url });
+      } else {
+        publishers.push(publisher);
+      }
+    }
+    return { ...content, publishers };
+  };
+
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const result = await save(await normalise(draft));
+        setNotice({ text: result.message, error: !result.ok });
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the publishers.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(clonePublisherDefaults());
-    setEditing(null);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) {
+        setDraft(clonePublisherDefaults());
+        setEditing(null);
+      }
+      setNotice({ text: result.message, error: !result.ok });
+    });
   };
 
   const tabs: { key: Tab; label: string; count?: number }[] = [
