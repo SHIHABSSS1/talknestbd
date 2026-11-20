@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
@@ -137,4 +138,22 @@ export async function resetTrendingShelfContent(): Promise<SaveResult> {
     return { ok: false, message: "Sign in as an admin to reset the shelf." };
   }
   return deleteShelf(TRENDING_SHELF_KEY, "trending");
+}
+
+/** Publishes the Sunnah Essentials shelf (heading + books). */
+export async function saveSunnahShelfContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+  const parsed = parseShelf(input);
+  if (!parsed.data) return { ok: false, message: parsed.error! };
+  return writeShelf(SUNNAH_SHELF_KEY, parsed.data, "sunnah");
+}
+
+/** Removes the stored Sunnah document so the built-in shelf is used again. */
+export async function resetSunnahShelfContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the shelf." };
+  }
+  return deleteShelf(SUNNAH_SHELF_KEY, "sunnah");
 }

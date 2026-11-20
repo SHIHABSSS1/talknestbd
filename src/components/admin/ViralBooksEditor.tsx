@@ -21,10 +21,12 @@ import { BookCover } from "@/components/books/BookCover";
 import { BookForm } from "@/components/admin/BookForm";
 import {
   resetNewArrivalsShelfContent,
+  resetSunnahShelfContent,
   resetTrendingShelfContent,
   resetUpSaleShelfContent,
   resetViralShelfContent,
   saveNewArrivalsShelfContent,
+  saveSunnahShelfContent,
   saveTrendingShelfContent,
   saveUpSaleShelfContent,
   saveViralShelfContent,
@@ -32,10 +34,12 @@ import {
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneNewArrivalsShelfDefaults,
+  cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
@@ -51,7 +55,12 @@ const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
-type ShelfVariant = "viral" | "up-sale" | "new-arrivals" | "trending";
+type ShelfVariant =
+  | "viral"
+  | "up-sale"
+  | "new-arrivals"
+  | "trending"
+  | "sunnah";
 
 const shelfVariants = {
   viral: {
@@ -89,6 +98,15 @@ const shelfVariants = {
     defaults: cloneTrendingShelfDefaults,
     save: saveTrendingShelfContent,
     reset: resetTrendingShelfContent,
+  },
+  sunnah: {
+    key: SUNNAH_SHELF_KEY,
+    tag: "sunnah" as BookTag,
+    href: "/sunnah",
+    tagline: "Books on this shelf appear in the Sunnah Essentials rail and page.",
+    defaults: cloneSunnahShelfDefaults,
+    save: saveSunnahShelfContent,
+    reset: resetSunnahShelfContent,
   },
 } as const;
 

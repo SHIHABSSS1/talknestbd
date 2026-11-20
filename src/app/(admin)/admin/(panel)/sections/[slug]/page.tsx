@@ -25,6 +25,7 @@ import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getNewArrivalsShelfContent,
+  getSunnahShelfContent,
   getTrendingShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
@@ -107,14 +108,18 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
       />
     );
   }
+  if (slug === "sunnah") {
+    const sunnah = await getSunnahShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={sunnah}
+        variant="sunnah"
+      />
+    );
+  }
 
   const extraShelves: Record<string, ShelfConfig> = {
-    sunnah: {
-      slug: "sunnah",
-      tag: "sunnah",
-      href: "/sunnah",
-      shelfName: "Sunnah Essentials",
-    },
     international: {
       slug: "international",
       tag: "international",

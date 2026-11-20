@@ -19,6 +19,7 @@ import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
   getNewArrivalsShelfContent,
+  getSunnahShelfContent,
   getTrendingShelfContent,
   getUpSaleShelfContent,
   getViralShelfContent,
@@ -26,7 +27,7 @@ import {
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust, viral, upSale, newArrivals, trending] =
+  const [hero, trust, viral, upSale, newArrivals, trending, sunnah] =
     await Promise.all([
       getHeroContent(),
       getTrustContent(),
@@ -34,6 +35,7 @@ export default async function HomePage() {
       getUpSaleShelfContent(),
       getNewArrivalsShelfContent(),
       getTrendingShelfContent(),
+      getSunnahShelfContent(),
     ]);
 
   return (
@@ -67,6 +69,7 @@ export default async function HomePage() {
         tag="sunnah"
         href="/sunnah"
         tone="soft"
+        content={sunnah}
       />
 
       <ShelfRail

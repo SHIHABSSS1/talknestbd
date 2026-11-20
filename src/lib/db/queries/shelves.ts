@@ -7,10 +7,12 @@ import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
   NEW_ARRIVALS_SHELF_KEY,
+  SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
   cloneNewArrivalsShelfDefaults,
+  cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
   cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
@@ -121,5 +123,29 @@ export async function getTrendingShelfContent(): Promise<ViralShelfContent> {
   } catch (error) {
     console.error("[trending] content_blocks read failed, using defaults:", error);
     return cloneTrendingShelfDefaults();
+  }
+}
+
+/** The Sunnah Essentials document, following the same cache/tag contract. */
+export async function getSunnahShelfContent(): Promise<ViralShelfContent> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("content", `content:${SUNNAH_SHELF_KEY}`);
+
+  try {
+    const [row] = await db
+      .select({ data: contentBlocks.data })
+      .from(contentBlocks)
+      .where(eq(contentBlocks.key, SUNNAH_SHELF_KEY))
+      .limit(1);
+    const parsed = viralShelfSchema.safeParse(row?.data);
+    if (!parsed.success) {
+      if (row) console.warn("[sunnah] invalid stored document, using defaults:", parsed.error.issues[0]?.message);
+      return cloneSunnahShelfDefaults();
+    }
+    return parsed.data;
+  } catch (error) {
+    console.error("[sunnah] content_blocks read failed, using defaults:", error);
+    return cloneSunnahShelfDefaults();
   }
 }
