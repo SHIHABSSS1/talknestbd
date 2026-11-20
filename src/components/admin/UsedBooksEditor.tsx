@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   AlertCircle,
   ArrowLeft,
@@ -40,20 +40,40 @@ export function UsedBooksEditor({ label }: { label: string }) {
     setNotice(null);
   };
 
+  const [pending, startTransition] = useTransition();
+
+  /** Stores the image on disk so only a /media URL reaches the database. */
+  const postImage = async (src: string): Promise<string> => {
+    const response = await fetch("/api/uploads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ src, folder: "used-books" }),
+    });
+    const result = (await response.json().catch(() => null)) as
+      | { url?: string; error?: string }
+      | null;
+    if (!response.ok || !result?.url) {
+      throw new Error(result?.error ?? "The image could not be uploaded.");
+    }
+    return result.url;
+  };
+
   const uploadImage = async (file: File | undefined) => {
     if (!file) return;
     setUploading(true);
     setNotice(null);
     try {
-      const imageSrc = await fileToDataUrl(file);
-      set("imageSrc", imageSrc);
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const url = await postImage(dataUrl);
+      set("imageSrc", url);
       setNotice({
-        text: `Image compressed (${dataUrlSizeLabel(imageSrc)}). Save changes to publish.`,
+        text: `Image stored on the server (${size}). Save changes to publish.`,
       });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that image.",
       });
     } finally {
       setUploading(false);
@@ -61,14 +81,34 @@ export function UsedBooksEditor({ label }: { label: string }) {
   };
 
   const handleSave = () => {
-    const result = save(draft);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const normalised: UsedContent = {
+          ...draft,
+          imageSrc: draft.imageSrc.startsWith("data:")
+            ? await postImage(draft.imageSrc)
+            : draft.imageSrc,
+        };
+        const result = await save(normalised);
+        setNotice({ text: result.message, error: !result.ok });
+        if (result.ok) setDraft(normalised);
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save the banner.",
+        });
+      }
+    });
   };
 
   const handleReset = () => {
-    const result = reset();
-    setDraft(cloneUsedDefaults());
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      const result = await reset();
+      if (result.ok) setDraft(cloneUsedDefaults());
+      setNotice({ text: result.message, error: !result.ok });
+    });
   };
 
   return (
@@ -287,7 +327,7 @@ export function UsedBooksEditor({ label }: { label: string }) {
                   </span>
                 )}
                 <p className="mt-1 text-[9px] leading-relaxed text-muted">
-                  Uploaded images are resized and stored in this browser only.
+                  Images are compressed in the browser and stored on the server when you save.
                 </p>
               </div>
             </div>

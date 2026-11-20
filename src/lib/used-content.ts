@@ -1,7 +1,10 @@
 /**
  * Editable content for the homepage "Pre-loved books" (used books) banner.
  * Buttons/links are intentionally fixed and are NOT editable here.
- * Persisted in localStorage (demo only — no backend).
+ *
+ * The live document lives in Postgres (`content_blocks` key "used-books").
+ * The localStorage helpers below remain only so an admin can import copy saved
+ * in this browser before the database existed.
  */
 
 import { sectionDefaults } from "@/lib/section-content";
@@ -24,6 +27,9 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key (server-side source of truth). */
+export const USED_CONTENT_KEY = "used-books";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const USED_STORAGE_KEY = "talknestbd-used-books-v1";
 
 const DEFAULT_IMAGE =

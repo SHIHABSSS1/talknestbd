@@ -62,6 +62,10 @@ import {
   SELL_CONTENT_KEY,
   sellDefaults,
 } from "../sell-content";
+import {
+  USED_CONTENT_KEY,
+  usedDefaults,
+} from "../used-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -89,6 +93,7 @@ async function main() {
     [AUTHOR_CONTENT_KEY]: authorDefaults,
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
     [SELL_CONTENT_KEY]: sellDefaults,
+    [USED_CONTENT_KEY]: usedDefaults,
   };
 
   try {

@@ -4,65 +4,71 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
 import {
-  clearUsedContent,
+  resetUsedContent,
+  saveUsedContent,
+} from "@/lib/actions/used";
+import {
   cloneUsedDefaults,
-  readUsedContent,
-  USED_STORAGE_KEY,
-  writeUsedContent,
   type SaveResult,
   type UsedContent,
 } from "@/lib/used-content";
 
 interface UsedContentContextValue {
   content: UsedContent;
+  /** Always true — the document arrives from the server, not localStorage. */
   hydrated: boolean;
-  save: (next: UsedContent) => SaveResult;
-  reset: () => SaveResult;
+  save: (next: UsedContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
 }
 
 const UsedContentContext = createContext<UsedContentContextValue | null>(null);
 
-// Stable first render (server + client) so hydration matches.
-const initialContent: UsedContent = cloneUsedDefaults();
+/** Database-backed used-books banner, fed by a cached server query. */
+export function UsedContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: UsedContent;
+}) {
+  const [content, setContent] = useState<UsedContent>(
+    initialContent ?? cloneUsedDefaults(),
+  );
 
-export function UsedContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<UsedContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setContent(readUsedContent());
-    setHydrated(true);
-
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === USED_STORAGE_KEY || event.key === null) {
-        setContent(readUsedContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+  const save = useCallback(async (next: UsedContent) => {
+    try {
+      const result = await saveUsedContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the banner.",
+      };
+    }
   }, []);
 
-  const save = useCallback((next: UsedContent) => {
-    const result = writeUsedContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearUsedContent();
-    if (result.ok) setContent(cloneUsedDefaults());
-    return result;
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetUsedContent();
+      if (result.ok) setContent(cloneUsedDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the banner.",
+      };
+    }
   }, []);
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset }),
-    [content, hydrated, save, reset],
+    () => ({ content, hydrated: true, save, reset }),
+    [content, save, reset],
   );
 
   return (

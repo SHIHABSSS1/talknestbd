@@ -15,6 +15,7 @@ const ALLOWED_FOLDERS = new Set([
   "books",
   "authors",
   "publishers",
+  "used-books",
 ]);
 
 /**
