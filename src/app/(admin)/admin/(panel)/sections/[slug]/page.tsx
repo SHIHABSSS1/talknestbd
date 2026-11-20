@@ -24,6 +24,7 @@ import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
+  getInternationalShelfContent,
   getNewArrivalsShelfContent,
   getSunnahShelfContent,
   getTrendingShelfContent,
@@ -119,13 +120,18 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     );
   }
 
+  if (slug === "international") {
+    const international = await getInternationalShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={international}
+        variant="international"
+      />
+    );
+  }
+
   const extraShelves: Record<string, ShelfConfig> = {
-    international: {
-      slug: "international",
-      tag: "international",
-      href: "/international-books",
-      shelfName: "International Books",
-    },
     "student-books": {
       slug: "student-books",
       tag: "student",

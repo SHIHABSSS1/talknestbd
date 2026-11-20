@@ -18,6 +18,7 @@ import { StoryCommunity } from "@/components/home/StoryCommunity";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import {
+  getInternationalShelfContent,
   getNewArrivalsShelfContent,
   getSunnahShelfContent,
   getTrendingShelfContent,
@@ -27,7 +28,7 @@ import {
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust, viral, upSale, newArrivals, trending, sunnah] =
+  const [hero, trust, viral, upSale, newArrivals, trending, sunnah, international] =
     await Promise.all([
       getHeroContent(),
       getTrustContent(),
@@ -36,6 +37,7 @@ export default async function HomePage() {
       getNewArrivalsShelfContent(),
       getTrendingShelfContent(),
       getSunnahShelfContent(),
+      getInternationalShelfContent(),
     ]);
 
   return (
@@ -77,6 +79,7 @@ export default async function HomePage() {
         tag="international"
         href="/international-books"
         tone="soft"
+        content={international}
       />
 
       <AuthorsSpotlight />

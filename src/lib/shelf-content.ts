@@ -119,6 +119,19 @@ export function cloneViralShelfDefaults(): ViralShelfContent {
 /** Live content_blocks key for the 50% Up Sale shelf (heading + books). */
 export const UP_SALE_SHELF_KEY = "shelf:up-sale";
 
+/** Live content_blocks key for the International Books shelf (heading + books). */
+export const INTERNATIONAL_SHELF_KEY = "shelf:international";
+
+/** The shipped international shelf: original copy plus the demo books. */
+export function cloneInternationalShelfDefaults(): ViralShelfContent {
+  return JSON.parse(
+    JSON.stringify({
+      heading: shelfDefaults(SHELF_SLUGS.international),
+      books: allBooks().filter((book) => book.tags.includes("international")),
+    }),
+  ) as ViralShelfContent;
+}
+
 /** Live content_blocks key for the Sunnah Essentials shelf (heading + books). */
 export const SUNNAH_SHELF_KEY = "shelf:sunnah";
 

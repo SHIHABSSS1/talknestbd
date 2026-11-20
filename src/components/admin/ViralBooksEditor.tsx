@@ -20,11 +20,13 @@ import {
 import { BookCover } from "@/components/books/BookCover";
 import { BookForm } from "@/components/admin/BookForm";
 import {
+  resetInternationalShelfContent,
   resetNewArrivalsShelfContent,
   resetSunnahShelfContent,
   resetTrendingShelfContent,
   resetUpSaleShelfContent,
   resetViralShelfContent,
+  saveInternationalShelfContent,
   saveNewArrivalsShelfContent,
   saveSunnahShelfContent,
   saveTrendingShelfContent,
@@ -33,11 +35,13 @@ import {
 } from "@/lib/actions/shelves";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
+  INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
@@ -60,7 +64,8 @@ type ShelfVariant =
   | "up-sale"
   | "new-arrivals"
   | "trending"
-  | "sunnah";
+  | "sunnah"
+  | "international";
 
 const shelfVariants = {
   viral: {
@@ -107,6 +112,15 @@ const shelfVariants = {
     defaults: cloneSunnahShelfDefaults,
     save: saveSunnahShelfContent,
     reset: resetSunnahShelfContent,
+  },
+  international: {
+    key: INTERNATIONAL_SHELF_KEY,
+    tag: "international" as BookTag,
+    href: "/international-books",
+    tagline: "Books on this shelf appear in the International Books rail and page.",
+    defaults: cloneInternationalShelfDefaults,
+    save: saveInternationalShelfContent,
+    reset: resetInternationalShelfContent,
   },
 } as const;
 

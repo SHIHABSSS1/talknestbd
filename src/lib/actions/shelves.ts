@@ -7,6 +7,7 @@ import { getServerSession, isAdminSession } from "@/lib/auth-guards";
 import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
+  INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
@@ -156,4 +157,22 @@ export async function resetSunnahShelfContent(): Promise<SaveResult> {
     return { ok: false, message: "Sign in as an admin to reset the shelf." };
   }
   return deleteShelf(SUNNAH_SHELF_KEY, "sunnah");
+}
+
+/** Publishes the International Books shelf (heading + books). */
+export async function saveInternationalShelfContent(input: unknown): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to save changes." };
+  }
+  const parsed = parseShelf(input);
+  if (!parsed.data) return { ok: false, message: parsed.error! };
+  return writeShelf(INTERNATIONAL_SHELF_KEY, parsed.data, "international");
+}
+
+/** Removes the stored international document so the built-in shelf is used again. */
+export async function resetInternationalShelfContent(): Promise<SaveResult> {
+  if (!isAdminSession(await getServerSession())) {
+    return { ok: false, message: "Sign in as an admin to reset the shelf." };
+  }
+  return deleteShelf(INTERNATIONAL_SHELF_KEY, "international");
 }

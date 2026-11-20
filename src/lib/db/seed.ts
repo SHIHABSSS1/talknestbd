@@ -35,11 +35,13 @@ import {
   trustDefaults,
 } from "../trust-content";
 import {
+  INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
@@ -76,6 +78,7 @@ async function main() {
     [NEW_ARRIVALS_SHELF_KEY]: cloneNewArrivalsShelfDefaults(),
     [TRENDING_SHELF_KEY]: cloneTrendingShelfDefaults(),
     [SUNNAH_SHELF_KEY]: cloneSunnahShelfDefaults(),
+    [INTERNATIONAL_SHELF_KEY]: cloneInternationalShelfDefaults(),
     [AUTHOR_CONTENT_KEY]: authorDefaults,
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
   };

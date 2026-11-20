@@ -6,11 +6,13 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { contentBlocks } from "@/lib/db/schema";
 import {
+  INTERNATIONAL_SHELF_KEY,
   NEW_ARRIVALS_SHELF_KEY,
   SUNNAH_SHELF_KEY,
   TRENDING_SHELF_KEY,
   UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneInternationalShelfDefaults,
   cloneNewArrivalsShelfDefaults,
   cloneSunnahShelfDefaults,
   cloneTrendingShelfDefaults,
@@ -147,5 +149,29 @@ export async function getSunnahShelfContent(): Promise<ViralShelfContent> {
   } catch (error) {
     console.error("[sunnah] content_blocks read failed, using defaults:", error);
     return cloneSunnahShelfDefaults();
+  }
+}
+
+/** The International Books document, following the same cache/tag contract. */
+export async function getInternationalShelfContent(): Promise<ViralShelfContent> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("content", `content:${INTERNATIONAL_SHELF_KEY}`);
+
+  try {
+    const [row] = await db
+      .select({ data: contentBlocks.data })
+      .from(contentBlocks)
+      .where(eq(contentBlocks.key, INTERNATIONAL_SHELF_KEY))
+      .limit(1);
+    const parsed = viralShelfSchema.safeParse(row?.data);
+    if (!parsed.success) {
+      if (row) console.warn("[international] invalid stored document, using defaults:", parsed.error.issues[0]?.message);
+      return cloneInternationalShelfDefaults();
+    }
+    return parsed.data;
+  } catch (error) {
+    console.error("[international] content_blocks read failed, using defaults:", error);
+    return cloneInternationalShelfDefaults();
   }
 }
