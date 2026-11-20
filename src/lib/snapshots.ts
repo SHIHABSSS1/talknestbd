@@ -6,13 +6,19 @@
  * a migration or a bad edit. No user-specific or payment data is captured.
  */
 
-export const SNAPSHOT_KEYS = ["hero", "trust-strip", "categories"] as const;
+export const SNAPSHOT_KEYS = [
+  "hero",
+  "trust-strip",
+  "categories",
+  "shelf:viral-books",
+] as const;
 export type SnapshotKey = (typeof SNAPSHOT_KEYS)[number];
 
 export const SNAPSHOT_LABELS: Record<SnapshotKey, string> = {
   hero: "Homepage hero",
   "trust-strip": "Trust strip cards",
   categories: "Category showcase",
+  "shelf:viral-books": "Viral Books shelf",
 };
 
 export interface SnapshotSummary {

@@ -19,6 +19,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
+import { BookForm } from "@/components/admin/BookForm";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
@@ -36,6 +37,7 @@ import {
   type CategorySubcategory,
   type CategoryTile,
 } from "@/lib/category-content";
+import type { Book } from "@/lib/types";
 import { categoryRoute, slugify, uniqueSlug } from "@/lib/slug";
 
 const fieldClass =
@@ -100,6 +102,11 @@ export function CategoryEditor({ label }: { label: string }) {
   const [notice, setNotice] = useState<Notice | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [legacy, setLegacy] = useState<CategoryContent | null>(null);
+  const [addingTo, setAddingTo] = useState<{
+    slug: string;
+    subcategory?: string;
+  } | null>(null);
+  const [addBookCategory, setAddBookCategory] = useState("");
   const [pending, startTransition] = useTransition();
   const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -287,7 +294,27 @@ export function CategoryEditor({ label }: { label: string }) {
     });
   };
 
+  /** Books added from a category are published with the category document. */
+  const handleCategoryBookSaved = (book: Book) => {
+    if (!addingTo) return { ok: false, message: "No category selected." };
+    const linked: Book = {
+      ...book,
+      category: addingTo.slug,
+      subcategory: addingTo.subcategory || book.subcategory,
+    };
+    setDraft((current) => ({
+      ...current,
+      books: [...(current.books ?? []).filter((item) => item.slug !== linked.slug), linked],
+    }));
+    setAddingTo(null);
+    setNotice({
+      text: `${linked.title} added to this category's draft. Click Save changes to publish it.`,
+    });
+    return { ok: true, message: `${linked.title} added to the category draft.` };
+  };
+
   return (
+    <>
     <div className="space-y-5">
       {/* Breadcrumb */}
       <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
@@ -418,20 +445,45 @@ export function CategoryEditor({ label }: { label: string }) {
 
           {/* Tiles */}
           <section className="rounded-[10px] border border-line bg-white">
-            <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
               <div>
                 <h2 className="text-[13px] font-semibold text-ink">Category shelves</h2>
                 <p className="text-[10px] text-muted">
                   {draft.tiles.length} shelve{draft.tiles.length === 1 ? "" : "s"} · shown in this order
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={addTile}
-                className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-brand-50 px-2.5 text-[10px] font-semibold text-brand-700 transition-colors hover:bg-brand-100"
-              >
-                <Plus size={12} /> Add shelf
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={addBookCategory || parentOptions[0]?.slug || ""}
+                  onChange={(event) => setAddBookCategory(event.target.value)}
+                  aria-label="Category for the new book"
+                  className="h-8 rounded-[4px] border border-line bg-white px-2 text-[10px] text-ink"
+                >
+                  {parentOptions.map((tile) => (
+                    <option key={tile.id} value={tile.slug}>
+                      {tile.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setAddingTo({
+                      slug: addBookCategory || parentOptions[0]?.slug || "uponnash",
+                    })
+                  }
+                  className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-brand-50 px-2.5 text-[10px] font-semibold text-brand-700 transition-colors hover:bg-brand-100"
+                >
+                  <Plus size={12} /> Add book
+                </button>
+                <button
+                  type="button"
+                  onClick={addTile}
+                  className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-line px-2.5 text-[10px] font-semibold text-ink transition-colors hover:border-brand-300"
+                >
+                  <Plus size={12} /> Add shelf
+                </button>
+              </div>
             </div>
 
             <div className="space-y-3 p-4 sm:p-5">
@@ -767,8 +819,23 @@ export function CategoryEditor({ label }: { label: string }) {
                       </div>
                     )}
 
-                    <div className={hint}>
-                      Link a book to a subcategory from Admin → Books → Subcategory.
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          activeParent &&
+                          setAddingTo({
+                            slug: activeParent.slug,
+                            subcategory: activeParent.subcategories[0]?.slug,
+                          })
+                        }
+                        className="inline-flex h-8 items-center gap-1.5 rounded-[4px] border border-brand-200 bg-brand-50 px-2.5 text-[10px] font-semibold text-brand-700 hover:bg-brand-100"
+                      >
+                        <Plus size={12} /> Add book to this subcategory
+                      </button>
+                      <span className={hint}>
+                        Or link an existing book from Admin → Books → Subcategory.
+                      </span>
                     </div>
                   </>
                 )}
@@ -929,5 +996,31 @@ export function CategoryEditor({ label }: { label: string }) {
         </div>
       </div>
     </div>
+
+    {addingTo && (
+      <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto p-3 sm:p-6">
+        <button
+          type="button"
+          aria-label="Close add book dialog"
+          onClick={() => setAddingTo(null)}
+          className="fixed inset-0 bg-ink/40"
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Add a book to this category"
+          className="relative z-10 w-full max-w-4xl"
+        >
+          <BookForm
+            defaultCategory={addingTo.slug}
+            defaultSubcategory={addingTo.subcategory}
+            showPreview={false}
+            onCancel={() => setAddingTo(null)}
+            onSave={handleCategoryBookSaved}
+          />
+        </div>
+      </div>
+    )}
+    </>
   );
 }

@@ -7,7 +7,13 @@ import { saveImageDataUrl } from "@/lib/storage/local";
 const MAX_BODY_BYTES = 6_000_000;
 
 /** Folders the browser is allowed to write into. */
-const ALLOWED_FOLDERS = new Set(["hero", "avatars", "trust-strip", "categories"]);
+const ALLOWED_FOLDERS = new Set([
+  "hero",
+  "avatars",
+  "trust-strip",
+  "categories",
+  "books",
+]);
 
 /**
  * Local image upload for the admin editors.

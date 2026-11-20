@@ -160,7 +160,7 @@ export function BookDetailTabs({ book }: { book: Book }) {
                 ["Language", book.language],
                 ["Binding", book.binding],
                 ["Published", toBn(book.publishedYear)],
-                ["ISBN", "978-984-0000-00-0"],
+                ["ISBN", book.isbn || "—"],
               ].map(([label, value]) => (
                 <div
                   key={label}

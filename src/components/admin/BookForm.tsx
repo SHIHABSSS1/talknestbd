@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { Check, ImagePlus, Save, UploadCloud, X } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { Check, ImagePlus, Plus, Save, UploadCloud, X } from "lucide-react";
 import { BookCover } from "@/components/books/BookCover";
+import { PersonPickerDialog } from "@/components/admin/PersonPickerDialog";
 import { useCategoryContent } from "@/components/providers/CategoryContentProvider";
 import { useBookContent } from "@/components/providers/BookContentProvider";
+import { useAuthorContent } from "@/components/providers/AuthorContentProvider";
+import { usePublisherContent } from "@/components/providers/PublisherContentProvider";
 import { fileToDataUrl, dataUrlSizeLabel } from "@/lib/image";
-import { slugify } from "@/lib/slug";
+import { slugify, uniqueSlug } from "@/lib/slug";
 import type {
+  Author,
   Book,
   BookTag,
   CoverMotif,
+  Publisher,
 } from "@/lib/types";
 import type { SaveResult } from "@/lib/book-content";
 
@@ -51,6 +56,7 @@ interface FormState {
   language: string;
   binding: string;
   publishedYear: string;
+  isbn: string;
   description: string;
   longDescription: string;
   highlights: string;
@@ -70,6 +76,22 @@ function lines(value: string): string[] {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+/** Stores a compressed cover on disk so only a /media URL reaches the DB. */
+async function postCoverDataUrl(src: string): Promise<string> {
+  const response = await fetch("/api/uploads", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ src, folder: "books" }),
+  });
+  const result = (await response.json().catch(() => null)) as
+    | { url?: string; error?: string }
+    | null;
+  if (!response.ok || !result?.url) {
+    throw new Error(result?.error ?? "The cover could not be uploaded.");
+  }
+  return result.url;
 }
 
 function initialState(
@@ -95,6 +117,7 @@ function initialState(
     language: book?.language ?? "Bangla",
     binding: book?.binding ?? "Paperback",
     publishedYear: book ? String(book.publishedYear) : "2026",
+    isbn: book?.isbn ?? "",
     description: book?.description ?? "",
     longDescription: book?.longDescription.join("\n") ?? "",
     highlights: book?.highlights.join("\n") ?? "",
@@ -116,21 +139,40 @@ export function BookForm({
   onSave,
   defaultTags = [],
   showPreview = true,
+  defaultCategory,
+  defaultSubcategory,
 }: {
   book?: Book;
   onCancel: () => void;
-  onSave: (book: Book) => SaveResult;
+  onSave: (book: Book) => SaveResult | Promise<SaveResult>;
   defaultTags?: BookTag[];
   showPreview?: boolean;
+  defaultCategory?: string;
+  defaultSubcategory?: string;
 }) {
   const { content: categoryContent } = useCategoryContent();
   const { saveBook } = useBookContent();
+  const { content: authorContent, save: saveAuthorContent } = useAuthorContent();
+  const { content: publisherContent, save: savePublisherContent } = usePublisherContent();
   const categoryOptions = categoryContent.tiles.filter((tile) => !tile.audio);
   const [form, setForm] = useState<FormState>(() =>
-    initialState(categoryOptions[0]?.slug ?? "uponnash", defaultTags, book),
+    initialState(
+      defaultCategory ?? categoryOptions[0]?.slug ?? "uponnash",
+      defaultTags,
+      book,
+    ),
   );
   const [notice, setNotice] = useState<{ text: string; error?: boolean } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [picker, setPicker] = useState<"author" | "publisher" | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  // A category "Add book" action preselects the shelf and its subcategory.
+  useEffect(() => {
+    if (defaultSubcategory) {
+      setForm((current) => ({ ...current, category: defaultCategory ?? current.category, subcategory: defaultSubcategory }));
+    }
+  }, [defaultCategory, defaultSubcategory]);
 
   const subcategoryOptions =
     categoryOptions.find((tile) => tile.slug === form.category)?.subcategories ?? [];
@@ -156,15 +198,17 @@ export function BookForm({
     setUploading(true);
     setNotice(null);
     try {
-      const imageSrc = await fileToDataUrl(file);
-      set("imageSrc", imageSrc);
+      const dataUrl = await fileToDataUrl(file);
+      const size = dataUrlSizeLabel(dataUrl);
+      const url = await postCoverDataUrl(dataUrl);
+      set("imageSrc", url);
       setNotice({
-        text: `Cover compressed (${dataUrlSizeLabel(imageSrc)}). Save the book to publish it.`,
+        text: `Cover stored on the server (${size}). Save the book to publish it.`,
       });
     } catch (error) {
       setNotice({
         error: true,
-        text: error instanceof Error ? error.message : "Could not read that image.",
+        text: error instanceof Error ? error.message : "Could not store that cover.",
       });
     } finally {
       setUploading(false);
@@ -177,47 +221,61 @@ export function BookForm({
       setNotice({ error: true, text: "Title and author are required." });
       return;
     }
-    const nextBook: Book = {
-      slug: book?.slug ?? slugify(form.title),
-      title: form.title.trim(),
-      subtitle: form.subtitle.trim() || undefined,
-      author: form.author.trim(),
-      authorSlug: slugify(form.authorSlug || form.author),
-      publisher: form.publisher.trim() || "TalkNest BD",
-      publisherSlug: slugify(form.publisherSlug || form.publisher),
-      category: form.category,
-      subcategory: form.subcategory || undefined,
-      price: Number(form.price) || 0,
-      oldPrice: form.oldPrice ? Number(form.oldPrice) : undefined,
-      rating: Number(form.rating) || 4.5,
-      reviewCount: Number(form.reviewCount) || 0,
-      stock: Number(form.stock) || 0,
-      pages: Number(form.pages) || 200,
-      language: form.language.trim() || "Bangla",
-      binding: form.binding,
-      publishedYear: Number(form.publishedYear) || 2026,
-      description: form.description.trim(),
-      longDescription: lines(form.longDescription),
-      highlights: lines(form.highlights),
-      cover: {
-        from: form.from,
-        to: form.to,
-        accent: form.accent,
-        motif: form.motif,
-        ...(form.imageSrc ? { imageSrc: form.imageSrc } : {}),
-      },
-      tags: form.tags,
-      ...(form.audioEnabled && (form.audioDuration || form.audioNarrator)
-        ? {
-            audio: {
-              duration: form.audioDuration.trim() || "—",
-              narrator: form.audioNarrator.trim() || "TalkNest Audio",
-            },
-          }
-        : {}),
-    };
-    const result = onSave(nextBook) ?? saveBook(nextBook);
-    setNotice({ text: result.message, error: !result.ok });
+    setNotice(null);
+    startTransition(async () => {
+      try {
+        const coverSrc = form.imageSrc?.startsWith("data:")
+          ? await postCoverDataUrl(form.imageSrc)
+          : form.imageSrc;
+        const nextBook: Book = {
+          slug: book?.slug ?? slugify(form.title),
+          title: form.title.trim(),
+          subtitle: form.subtitle.trim() || undefined,
+          author: form.author.trim(),
+          authorSlug: slugify(form.authorSlug || form.author),
+          publisher: form.publisher.trim() || "TalkNest BD",
+          publisherSlug: slugify(form.publisherSlug || form.publisher),
+          category: form.category,
+          subcategory: form.subcategory || undefined,
+          price: Number(form.price) || 0,
+          oldPrice: form.oldPrice ? Number(form.oldPrice) : undefined,
+          rating: Number(form.rating) || 4.5,
+          reviewCount: Number(form.reviewCount) || 0,
+          stock: Number(form.stock) || 0,
+          pages: Number(form.pages) || 200,
+          language: form.language.trim() || "Bangla",
+          binding: form.binding,
+          publishedYear: Number(form.publishedYear) || 2026,
+          isbn: form.isbn.trim() || undefined,
+          description: form.description.trim(),
+          longDescription: lines(form.longDescription),
+          highlights: lines(form.highlights),
+          cover: {
+            from: form.from,
+            to: form.to,
+            accent: form.accent,
+            motif: form.motif,
+            ...(coverSrc ? { imageSrc: coverSrc } : {}),
+          },
+          tags: form.tags,
+          ...(form.audioEnabled && (form.audioDuration || form.audioNarrator)
+            ? {
+                audio: {
+                  duration: form.audioDuration.trim() || "—",
+                  narrator: form.audioNarrator.trim() || "TalkNest Audio",
+                },
+              }
+            : {}),
+        };
+        const result = (await onSave(nextBook)) ?? saveBook(nextBook);
+        setNotice({ text: result.message, error: !result.ok });
+      } catch (error) {
+        setNotice({
+          error: true,
+          text: error instanceof Error ? error.message : "Could not save this book.",
+        });
+      }
+    });
   };
 
   const previewBook: Book = {
@@ -251,6 +309,7 @@ export function BookForm({
   };
 
   return (
+    <>
     <form onSubmit={submit} className="rounded-[10px] border border-line bg-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
         <div>
@@ -295,39 +354,106 @@ export function BookForm({
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
+            <div className="block">
               <span className={labelClass}>Author</span>
+              <div className="flex gap-2">
+                <select
+                  value={form.authorSlug || "__custom"}
+                  onChange={(event) => {
+                    const selected = authorContent.authors.find(
+                      (item) => item.slug === event.target.value,
+                    );
+                    setForm((current) => ({
+                      ...current,
+                      author: selected?.name ?? current.author,
+                      authorSlug: selected?.slug ?? "",
+                    }));
+                  }}
+                  className={inputClass}
+                  aria-label="Choose an author"
+                >
+                  <option value="__custom">Custom author…</option>
+                  {authorContent.authors.map((author) => (
+                    <option key={author.slug} value={author.slug}>
+                      {author.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setPicker("author")}
+                  title="Add a new author"
+                  aria-label="Add a new author"
+                  className="grid h-[42px] w-10 shrink-0 place-items-center rounded-[4px] border border-brand-200 bg-brand-50 text-brand-700 transition-colors hover:bg-brand-100"
+                >
+                  <Plus size={15} />
+                </button>
+              </div>
+            </div>
+            <label className="block">
+              <span className={labelClass}>Author name / slug (auto)</span>
               <input
                 value={form.author}
-                onChange={(event) => set("author", event.target.value)}
-                className={inputClass}
-              />
-            </label>
-            <label className="block">
-              <span className={labelClass}>Author slug (auto)</span>
-              <input
-                value={form.authorSlug}
-                onChange={(event) => set("authorSlug", event.target.value)}
-                placeholder={slugify(form.author || "author")}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    author: event.target.value,
+                    authorSlug: slugify(event.target.value),
+                  }))
+                }
                 className={inputClass}
               />
             </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
+            <div className="block">
               <span className={labelClass}>Publisher</span>
+              <div className="flex gap-2">
+                <select
+                  value={form.publisherSlug || "__custom"}
+                  onChange={(event) => {
+                    const selected = publisherContent.publishers.find(
+                      (item) => item.slug === event.target.value,
+                    );
+                    setForm((current) => ({
+                      ...current,
+                      publisher: selected?.name ?? current.publisher,
+                      publisherSlug: selected?.slug ?? "",
+                    }));
+                  }}
+                  className={inputClass}
+                  aria-label="Choose a publisher"
+                >
+                  <option value="__custom">Custom publisher…</option>
+                  {publisherContent.publishers.map((publisher) => (
+                    <option key={publisher.slug} value={publisher.slug}>
+                      {publisher.name}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setPicker("publisher")}
+                  title="Add a new publisher"
+                  aria-label="Add a new publisher"
+                  className="grid h-[42px] w-10 shrink-0 place-items-center rounded-[4px] border border-brand-200 bg-brand-50 text-brand-700 transition-colors hover:bg-brand-100"
+                >
+                  <Plus size={15} />
+                </button>
+              </div>
+            </div>
+            <label className="block">
+              <span className={labelClass}>Publisher name / slug (auto)</span>
               <input
                 value={form.publisher}
-                onChange={(event) => set("publisher", event.target.value)}
-                className={inputClass}
-              />
-            </label>
-            <label className="block">
-              <span className={labelClass}>Publisher slug</span>
-              <input
-                value={form.publisherSlug}
-                onChange={(event) => set("publisherSlug", event.target.value)}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    publisher: event.target.value,
+                    publisherSlug: slugify(event.target.value),
+                  }))
+                }
                 className={inputClass}
               />
             </label>
@@ -449,7 +575,7 @@ export function BookForm({
             </label>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <label className="block">
               <span className={labelClass}>Language</span>
               <input
@@ -468,6 +594,16 @@ export function BookForm({
                 <option>Paperback</option>
                 <option>Hardcover</option>
               </select>
+            </label>
+            <label className="block">
+              <span className={labelClass}>ISBN (optional)</span>
+              <input
+                value={form.isbn}
+                onChange={(event) => set("isbn", event.target.value)}
+                placeholder="978-984-0000-00-0"
+                maxLength={40}
+                className={inputClass}
+              />
             </label>
             <label className="block">
               <span className={labelClass}>Slug (auto from title)</span>
@@ -636,7 +772,7 @@ export function BookForm({
               )}
             </div>
             <span className={hint}>
-              Uploaded images are compressed in the browser and saved to this browser only.
+              Covers are compressed in the browser and stored on the server when you save.
             </span>
           </div>
         </div>
@@ -669,7 +805,7 @@ export function BookForm({
           )}
           {showPreview && (
             <p className="text-[9px] text-muted">
-              Demo note: uploads live in this browser only — nothing is sent to a server.
+              Demo note: books saved from a database-backed shelf or category are published for everyone; other uploads stay in this browser.
             </p>
           )}
         </div>
@@ -678,9 +814,10 @@ export function BookForm({
       <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-3.5 sm:px-5">
         <button
           type="submit"
-          className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700"
+          disabled={pending}
+          className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
         >
-          <Save size={13} /> {book ? "Save book" : "Upload book"}
+          <Save size={13} /> {pending ? "Saving…" : book ? "Save book" : "Upload book"}
         </button>
         <button
           type="button"
@@ -691,5 +828,37 @@ export function BookForm({
         </button>
       </div>
     </form>
+
+    {picker && (
+      <PersonPickerDialog
+        kind={picker}
+        slugs={
+          picker === "author"
+            ? authorContent.authors.map((item) => item.slug)
+            : publisherContent.publishers.map((item) => item.slug)
+        }
+        onSave={async (entry) =>
+          picker === "author"
+            ? saveAuthorContent({
+                ...authorContent,
+                authors: [...authorContent.authors, entry as Author],
+              })
+            : savePublisherContent({
+                ...publisherContent,
+                publishers: [...publisherContent.publishers, entry as Publisher],
+              })
+        }
+        onCreated={(entry) => {
+          setForm((current) =>
+            picker === "author"
+              ? { ...current, author: entry.name, authorSlug: entry.slug }
+              : { ...current, publisher: entry.name, publisherSlug: entry.slug },
+          );
+          setPicker(null);
+        }}
+        onClose={() => setPicker(null)}
+      />
+    )}
+    </>
   );
 }

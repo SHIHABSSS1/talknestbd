@@ -34,6 +34,10 @@ import {
   TRUST_CONTENT_KEY,
   trustDefaults,
 } from "../trust-content";
+import {
+  VIRAL_SHELF_KEY,
+  cloneViralShelfDefaults,
+} from "../shelf-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -51,6 +55,7 @@ async function main() {
     [HERO_CONTENT_KEY]: { banners: heroDefaults.banners },
     [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
     [CATEGORY_CONTENT_KEY]: categoryDefaults,
+    [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
   };
 
   try {

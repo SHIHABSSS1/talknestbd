@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ViralPageContent } from "@/components/books/ViralPageContent";
+import { getViralShelfContent } from "@/lib/db/queries/shelves";
 
 export const metadata: Metadata = {
   title: "Viral Books",
@@ -7,6 +8,7 @@ export const metadata: Metadata = {
 };
 
 /** Legacy URL — now shows the Viral Books shelf. */
-export default function BestSellersPage() {
-  return <ViralPageContent />;
+export default async function BestSellersPage() {
+  const content = await getViralShelfContent();
+  return <ViralPageContent content={content} />;
 }

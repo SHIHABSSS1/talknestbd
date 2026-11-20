@@ -47,7 +47,7 @@ export async function getCategoryContent(): Promise<CategoryContent> {
       subcategories: tile.subcategories ?? [],
       homeBooks: tile.homeBooks ?? true,
     }));
-    return { heading: parsed.data.heading, tiles };
+    return { heading: parsed.data.heading, tiles, books: parsed.data.books ?? [] };
   } catch (error) {
     console.error("[categories] content_blocks read failed, using sample shelves:", error);
     return cloneCategoryDefaults();

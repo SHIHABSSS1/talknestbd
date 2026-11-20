@@ -13,6 +13,7 @@ import { VideoQuizEditor } from "@/components/admin/VideoQuizEditor";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ShelfEditor, type ShelfConfig } from "@/components/admin/ShelfEditor";
+import { ViralBooksEditor } from "@/components/admin/ViralBooksEditor";
 import { TrustStripEditor } from "@/components/admin/TrustStripEditor";
 import { UsedBooksEditor } from "@/components/admin/UsedBooksEditor";
 import { SectionEditor } from "@/components/admin/SectionEditor";
@@ -22,6 +23,7 @@ import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
+import { getViralShelfContent } from "@/lib/db/queries/shelves";
 
 export const metadata: Metadata = {
   title: "Edit section",
@@ -65,14 +67,9 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
   if (slug === "categories") {
     return <CategoryEditor label={label} />;
   }
-  const viralShelf: ShelfConfig = {
-    slug: "viral-books",
-    tag: "viral",
-    href: "/viral-books",
-    shelfName: "Viral Books",
-  };
   if (slug === "viral-books") {
-    return <ShelfEditor label={label} config={viralShelf} />;
+    const viral = await getViralShelfContent();
+    return <ViralBooksEditor label={label} initialContent={viral} />;
   }
   const upSaleShelf: ShelfConfig = {
     slug: "up-sale",

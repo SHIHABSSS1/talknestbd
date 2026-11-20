@@ -1,27 +1,24 @@
 "use client";
 
 import { BookRail } from "@/components/books/BookRail";
-import { useBookContent } from "@/components/providers/BookContentProvider";
-import { useShelfContent } from "@/components/providers/ShelfContentProvider";
-import { SHELF_SLUGS } from "@/lib/shelf-content";
+import type { ViralShelfContent } from "@/lib/shelf-content";
 
-/** Viral books shelf on the homepage — driven by the admin shelf editor. */
-export function ViralRail() {
-  const { books } = useBookContent();
-  const { getHeading } = useShelfContent();
-  const heading = getHeading(SHELF_SLUGS.viral);
-  const viralBooks = books.filter((book) => book.tags.includes("viral"));
-
-  if (viralBooks.length === 0) return null;
+/**
+ * Viral books shelf on the homepage. The heading and books arrive from the
+ * cached `shelf:viral-books` document, so an admin save publishes the rail for
+ * every visitor.
+ */
+export function ViralRail({ content }: { content: ViralShelfContent }) {
+  if (content.books.length === 0) return null;
 
   return (
     <BookRail
-      books={viralBooks}
-      eyebrow={heading.eyebrow}
-      title={heading.title}
-      description={heading.description}
+      books={content.books}
+      eyebrow={content.heading.eyebrow}
+      title={content.heading.title}
+      description={content.heading.description}
       href="/viral-books"
-      linkLabel={heading.linkLabel}
+      linkLabel={content.heading.linkLabel}
     />
   );
 }

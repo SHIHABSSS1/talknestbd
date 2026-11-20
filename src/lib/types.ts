@@ -68,6 +68,8 @@ export interface Book {
   cover: BookCoverTheme;
   tags: BookTag[];
   audio?: AudioInfo;
+  /** Optional ISBN shown on the detail page instead of a placeholder. */
+  isbn?: string;
 }
 
 export interface Category {

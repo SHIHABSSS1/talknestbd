@@ -26,6 +26,11 @@ import {
 } from "@/lib/trust-content";
 import { trustContentSchema } from "@/lib/trust-schema";
 import {
+  VIRAL_SHELF_KEY,
+  cloneViralShelfDefaults,
+} from "@/lib/shelf-content";
+import { viralShelfSchema } from "@/lib/shelf-schema";
+import {
   SNAPSHOT_KEYS,
   type SnapshotResult,
 } from "@/lib/snapshots";
@@ -42,12 +47,14 @@ const defaults: Record<string, unknown> = {
   [HERO_CONTENT_KEY]: { banners: heroDefaults.banners },
   [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
   [CATEGORY_CONTENT_KEY]: categoryDefaults,
+  [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
 };
 
 const validators: Record<string, { safeParse: (value: unknown) => { success: boolean } }> = {
   [HERO_CONTENT_KEY]: heroContentSchema,
   [TRUST_CONTENT_KEY]: trustContentSchema,
   [CATEGORY_CONTENT_KEY]: categoryContentSchema,
+  [VIRAL_SHELF_KEY]: viralShelfSchema,
 };
 
 function expireAllContent(): void {

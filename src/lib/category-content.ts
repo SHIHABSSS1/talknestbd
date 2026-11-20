@@ -12,6 +12,7 @@
  */
 
 import { categoryRoute, slugify } from "@/lib/slug";
+import type { Book } from "@/lib/types";
 
 export type CategoryIconKey =
   | "book"
@@ -63,6 +64,8 @@ export interface CategoryHeading {
 export interface CategoryContent {
   heading: CategoryHeading;
   tiles: CategoryTile[];
+  /** Books published with this category document (admin "Add book"). */
+  books?: Book[];
 }
 
 export interface SaveResult {
@@ -237,7 +240,9 @@ export const categoryDefaults: CategoryContent = {
 };
 
 export function cloneCategoryDefaults(): CategoryContent {
-  return JSON.parse(JSON.stringify(categoryDefaults)) as CategoryContent;
+  const clone = JSON.parse(JSON.stringify(categoryDefaults)) as CategoryContent;
+  clone.books = [];
+  return clone;
 }
 
 const VALID_ICONS = new Set<string>(categoryIconKeys.map((item) => item.key));
@@ -314,6 +319,7 @@ export function readCategoryContent(): CategoryContent {
           homeBooks: tile.homeBooks ?? true,
         };
       }),
+      books: Array.isArray(parsed.books) ? parsed.books : [],
     };
   } catch {
     return cloneCategoryDefaults();

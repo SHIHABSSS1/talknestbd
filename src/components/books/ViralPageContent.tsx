@@ -3,16 +3,11 @@
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { BookGrid } from "@/components/books/BookGrid";
-import { useBookContent } from "@/components/providers/BookContentProvider";
-import { useShelfContent } from "@/components/providers/ShelfContentProvider";
-import { SHELF_SLUGS } from "@/lib/shelf-content";
+import type { ViralShelfContent } from "@/lib/shelf-content";
 import { toBn } from "@/lib/utils";
 
-export function ViralPageContent() {
-  const { books } = useBookContent();
-  const { getHeading } = useShelfContent();
-  const heading = getHeading(SHELF_SLUGS.viral);
-  const viralBooks = books.filter((book) => book.tags.includes("viral"));
+export function ViralPageContent({ content }: { content: ViralShelfContent }) {
+  const { heading, books } = content;
 
   return (
     <>
@@ -24,7 +19,7 @@ export function ViralPageContent() {
       >
         <div className="flex flex-wrap gap-2 text-[11px]">
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
-            Total {toBn(viralBooks.length)} books
+            Total {toBn(books.length)} books
           </span>
           <span className="rounded-full border border-forest-900/10 bg-cream-50 px-3 py-1.5 font-medium text-forest-800">
             Free delivery on orders over ৳999
@@ -37,7 +32,7 @@ export function ViralPageContent() {
 
       <section className="py-8 sm:py-12">
         <Container>
-          <BookGrid books={viralBooks} columns="five" />
+          <BookGrid books={books} columns="five" />
         </Container>
       </section>
     </>

@@ -25,7 +25,11 @@ export function booksForTile(
     ? getBooksByCollection("audio")
     : getBooksByCategory(tile.slug) ??
       staticBooks.filter((book) => book.category === tile.slug);
-  const all = dedupe([...staticForTile, ...extraBooks]);
+  // Only books that actually belong to this tile are merged in — otherwise a
+  // single uploaded book would show up in every category page.
+  const matchesTile = (book: Book) =>
+    tile.audio ? book.tags.includes("audio") : book.category === tile.slug;
+  const all = dedupe([...staticForTile, ...extraBooks.filter(matchesTile)]);
   if (!subSlug) return all;
   return all.filter((book) => book.subcategory === subSlug);
 }

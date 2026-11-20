@@ -18,6 +18,7 @@ import {
   MAX_CATEGORY_TILES,
   type CategoryIconKey,
 } from "./category-content";
+import { bookSchema } from "./book-schema";
 
 const iconKeys = categoryIconKeys.map((item) => item.key) as [
   CategoryIconKey,
@@ -88,6 +89,7 @@ export const categoryTileSchema = z.object({
 export const categoryContentSchema = z.object({
   heading: categoryHeadingSchema,
   tiles: z.array(categoryTileSchema).max(MAX_CATEGORY_TILES),
+  books: z.array(bookSchema).max(200).default([]),
 });
 
 export type CategoryContentInput = z.infer<typeof categoryContentSchema>;

@@ -4,7 +4,9 @@
  * selected by their collection tag — there is no separate shelf book store.
  */
 
+import { getBooksByCollection } from "@/data/books";
 import { sectionDefaults } from "@/lib/section-content";
+import type { Book } from "@/lib/types";
 
 export interface ShelfHeading {
   eyebrow: string;
@@ -89,6 +91,28 @@ export function writeShelfHeading(slug: string, heading: ShelfHeading): SaveResu
   } catch {
     return { ok: false, message: "Could not save: browser storage may be full." };
   }
+}
+
+/** Live content_blocks key for the Viral Books shelf (heading + books). */
+export const VIRAL_SHELF_KEY = "shelf:viral-books";
+
+export interface ViralShelfContent {
+  heading: ShelfHeading;
+  books: Book[];
+}
+
+/**
+ * The shipped viral shelf: its original copy plus the demo books that carried
+ * the `viral` tag. Used as the seed document and as the fallback when the DB
+ * row is missing or invalid.
+ */
+export function cloneViralShelfDefaults(): ViralShelfContent {
+  return JSON.parse(
+    JSON.stringify({
+      heading: shelfDefaults(SHELF_SLUGS.viral),
+      books: getBooksByCollection("viral"),
+    }),
+  ) as ViralShelfContent;
 }
 
 export function clearShelfHeading(slug: string): SaveResult {

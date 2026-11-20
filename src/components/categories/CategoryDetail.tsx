@@ -55,9 +55,11 @@ export function CategoryDetail({ slug }: { slug: string }) {
   }
 
   const selected = tile.subcategories.find((sub) => sub.slug === activeSub);
+  // Books published with the category document take precedence over uploads.
+  const categoryBooks = [...(content.books ?? []), ...extraBooks];
   const visibleBooks = selected
-    ? subcategoryBooks(tile, selected, extraBooks)
-    : booksForTile(tile, undefined, extraBooks);
+    ? subcategoryBooks(tile, selected, categoryBooks)
+    : booksForTile(tile, undefined, categoryBooks);
 
   return (
     <>

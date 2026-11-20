@@ -17,10 +17,15 @@ import { VideoQuizSection } from "@/components/home/VideoQuizSection";
 import { StoryCommunity } from "@/components/home/StoryCommunity";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
+import { getViralShelfContent } from "@/lib/db/queries/shelves";
 
 export default async function HomePage() {
   // Cached content blocks; the admin save actions expire these tags.
-  const [hero, trust] = await Promise.all([getHeroContent(), getTrustContent()]);
+  const [hero, trust, viral] = await Promise.all([
+    getHeroContent(),
+    getTrustContent(),
+    getViralShelfContent(),
+  ]);
 
   return (
     <>
@@ -37,7 +42,7 @@ export default async function HomePage() {
 
       <FreeOrderWholesale />
 
-      <ViralRail />
+      <ViralRail content={viral} />
 
       <ShelfRail
         slug="trending"
