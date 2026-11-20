@@ -11,6 +11,7 @@ export const SNAPSHOT_KEYS = [
   "trust-strip",
   "categories",
   "shelf:viral-books",
+  "shelf:up-sale",
   "authors",
   "publishers",
 ] as const;
@@ -21,6 +22,7 @@ export const SNAPSHOT_LABELS: Record<SnapshotKey, string> = {
   "trust-strip": "Trust strip cards",
   categories: "Category showcase",
   "shelf:viral-books": "Viral Books shelf",
+  "shelf:up-sale": "50% Up Sale shelf",
   authors: "Authors spotlight",
   publishers: "Publishers strip",
 };

@@ -7,15 +7,16 @@ import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { ViewAllRow } from "@/components/ui/ViewAllRow";
 import { UpSaleGrid } from "@/components/books/UpSaleGrid";
-import { useShelfContent } from "@/components/providers/ShelfContentProvider";
-import { useUpSaleBooks } from "@/components/providers/UpSaleBooksProvider";
-import { SHELF_SLUGS } from "@/lib/shelf-content";
+import { toUpSaleBook } from "@/components/providers/UpSaleBooksProvider";
+import type { ViralShelfContent } from "@/lib/shelf-content";
 
-export function UpSaleRail() {
-  const { books } = useUpSaleBooks();
-  const { getHeading } = useShelfContent();
-  const heading = getHeading(SHELF_SLUGS.upSale);
+/** The 50% up-sale rail, driven by the DB-backed `shelf:up-sale` document. */
+export function UpSaleRail({ content }: { content: ViralShelfContent }) {
+  const heading = content.heading;
+  const books = content.books.map(toUpSaleBook);
   const example = books[0];
+
+  if (books.length === 0) return null;
 
   return (
     <section id="up-sale" className="border-b border-line bg-white py-8 sm:py-10">

@@ -35,7 +35,9 @@ import {
   trustDefaults,
 } from "../trust-content";
 import {
+  UP_SALE_SHELF_KEY,
   VIRAL_SHELF_KEY,
+  cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
 } from "../shelf-content";
 import {
@@ -64,6 +66,7 @@ async function main() {
     [TRUST_CONTENT_KEY]: { cards: trustDefaults.cards },
     [CATEGORY_CONTENT_KEY]: categoryDefaults,
     [VIRAL_SHELF_KEY]: cloneViralShelfDefaults(),
+    [UP_SALE_SHELF_KEY]: cloneUpSaleShelfDefaults(),
     [AUTHOR_CONTENT_KEY]: authorDefaults,
     [PUBLISHER_CONTENT_KEY]: publisherDefaults,
   };

@@ -23,7 +23,10 @@ import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
-import { getViralShelfContent } from "@/lib/db/queries/shelves";
+import {
+  getUpSaleShelfContent,
+  getViralShelfContent,
+} from "@/lib/db/queries/shelves";
 
 export const metadata: Metadata = {
   title: "Edit section",
@@ -71,14 +74,15 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     const viral = await getViralShelfContent();
     return <ViralBooksEditor label={label} initialContent={viral} />;
   }
-  const upSaleShelf: ShelfConfig = {
-    slug: "up-sale",
-    tag: "up-sale",
-    href: "/up-sales",
-    shelfName: "50% Up Sale",
-  };
   if (slug === "up-sale") {
-    return <ShelfEditor label={label} config={upSaleShelf} />;
+    const upSale = await getUpSaleShelfContent();
+    return (
+      <ViralBooksEditor
+        label={label}
+        initialContent={upSale}
+        variant="up-sale"
+      />
+    );
   }
   const newArrivalsShelf: ShelfConfig = {
     slug: "new-arrivals",

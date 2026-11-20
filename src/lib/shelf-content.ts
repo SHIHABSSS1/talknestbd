@@ -5,6 +5,7 @@
  */
 
 import { getBooksByCollection } from "@/data/books";
+import { allBooks } from "@/lib/book-content";
 import { sectionDefaults } from "@/lib/section-content";
 import type { Book } from "@/lib/types";
 
@@ -111,6 +112,19 @@ export function cloneViralShelfDefaults(): ViralShelfContent {
     JSON.stringify({
       heading: shelfDefaults(SHELF_SLUGS.viral),
       books: getBooksByCollection("viral"),
+    }),
+  ) as ViralShelfContent;
+}
+
+/** Live content_blocks key for the 50% Up Sale shelf (heading + books). */
+export const UP_SALE_SHELF_KEY = "shelf:up-sale";
+
+/** The shipped up-sale shelf: original copy plus the demo +50% listings. */
+export function cloneUpSaleShelfDefaults(): ViralShelfContent {
+  return JSON.parse(
+    JSON.stringify({
+      heading: shelfDefaults(SHELF_SLUGS.upSale),
+      books: allBooks().filter((book) => book.tags.includes("up-sale")),
     }),
   ) as ViralShelfContent;
 }

@@ -3,7 +3,7 @@
 import { useUpSaleBooks } from "@/components/providers/UpSaleBooksProvider";
 import { toBn } from "@/lib/utils";
 
-export function UpSaleCount() {
+export function UpSaleCount({ count }: { count?: number }) {
   const { books } = useUpSaleBooks();
-  return <>{toBn(books.length)} copies in stock</>;
+  return <>{toBn(count ?? books.length)} copies in stock</>;
 }

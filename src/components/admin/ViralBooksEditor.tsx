@@ -20,17 +20,22 @@ import {
 import { BookCover } from "@/components/books/BookCover";
 import { BookForm } from "@/components/admin/BookForm";
 import {
+  resetUpSaleShelfContent,
   resetViralShelfContent,
+  saveUpSaleShelfContent,
   saveViralShelfContent,
 } from "@/lib/actions/shelves";
 import { dataUrlSizeLabel, fileToDataUrl } from "@/lib/image";
 import {
+  UP_SALE_SHELF_KEY,
+  VIRAL_SHELF_KEY,
+  cloneUpSaleShelfDefaults,
   cloneViralShelfDefaults,
   type ShelfHeading,
   type ViralShelfContent,
 } from "@/lib/shelf-content";
 import { formatPrice } from "@/lib/utils";
-import type { Book } from "@/lib/types";
+import type { Book, BookTag } from "@/lib/types";
 
 const fieldClass =
   "w-full rounded-[4px] border border-line bg-white px-3 py-2.5 text-[12px] text-ink placeholder:text-muted/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15";
@@ -38,6 +43,28 @@ const subLabel = "mb-1.5 block text-[11px] font-semibold text-ink";
 const hint = "mt-1 block text-[9px] leading-relaxed text-muted";
 
 type Notice = { text: string; error?: boolean };
+type ShelfVariant = "viral" | "up-sale";
+
+const shelfVariants = {
+  viral: {
+    key: VIRAL_SHELF_KEY,
+    tag: "viral" as BookTag,
+    href: "/viral-books",
+    tagline: "Books tagged for this shelf appear on the homepage rail and at /viral-books.",
+    defaults: cloneViralShelfDefaults,
+    save: saveViralShelfContent,
+    reset: resetViralShelfContent,
+  },
+  "up-sale": {
+    key: UP_SALE_SHELF_KEY,
+    tag: "up-sale" as BookTag,
+    href: "/up-sales",
+    tagline: "Books on this shelf appear in the 50% up-sale rail and pricing page.",
+    defaults: cloneUpSaleShelfDefaults,
+    save: saveUpSaleShelfContent,
+    reset: resetUpSaleShelfContent,
+  },
+} as const;
 
 async function uploadCover(src: string): Promise<string> {
   const response = await fetch("/api/uploads", {
@@ -78,10 +105,13 @@ async function normaliseBooks(books: Book[]): Promise<Book[]> {
 export function ViralBooksEditor({
   label,
   initialContent,
+  variant = "viral",
 }: {
   label: string;
   initialContent: ViralShelfContent;
+  variant?: ShelfVariant;
 }) {
+  const config = shelfVariants[variant];
   const [saved, setSaved] = useState<ViralShelfContent>(initialContent);
   const [draft, setDraft] = useState<ViralShelfContent>(initialContent);
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -143,7 +173,7 @@ export function ViralBooksEditor({
           heading: draft.heading,
           books: await normaliseBooks(draft.books),
         };
-        const result = await saveViralShelfContent(normalised);
+        const result = await config.save(normalised);
         setNotice({ text: result.message, error: !result.ok });
         if (result.ok) {
           setDraft(normalised);
@@ -161,9 +191,9 @@ export function ViralBooksEditor({
   const handleReset = () => {
     setNotice(null);
     startTransition(async () => {
-      const result = await resetViralShelfContent();
+      const result = await config.reset();
       if (result.ok) {
-        const fresh = cloneViralShelfDefaults();
+        const fresh = config.defaults();
         setDraft(fresh);
         setSaved(fresh);
         setEditing(null);
@@ -192,13 +222,11 @@ export function ViralBooksEditor({
               Published
             </span>
           </div>
-          <p className="mt-1 text-[12px] text-muted">
-            Books tagged for this shelf appear on the homepage rail and at /viral-books.
-          </p>
+          <p className="mt-1 text-[12px] text-muted">{config.tagline}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Link
-            href="/viral-books"
+            href={config.href}
             className="inline-flex h-9 items-center gap-1.5 rounded-[4px] border border-line bg-white px-3 text-[11px] font-medium text-ink transition-colors hover:border-brand-300 hover:text-brand-700"
           >
             <Eye size={13} /> View shelf
@@ -217,7 +245,7 @@ export function ViralBooksEditor({
           {editing ? (
             <BookForm
               book={editing === "new" ? undefined : editing}
-              defaultTags={["viral"]}
+              defaultTags={[config.tag]}
               showPreview={false}
               onCancel={() => setEditing(null)}
               onSave={handleBookSaved}
@@ -398,7 +426,7 @@ export function ViralBooksEditor({
           <div className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3">
             <p className="text-[10px] leading-relaxed text-muted">
               <span className="font-semibold text-ink">Storage note:</span> the shelf lives in
-              the Neon database (content_blocks, key <code>shelf:viral-books</code>) and cover
+              the Neon database (content_blocks, key <code>{config.key}</code>) and cover
               images are written to local disk under <code>uploads/books</code>, served at{" "}
               <code>/media</code>. Saved changes appear for every visitor.
             </p>

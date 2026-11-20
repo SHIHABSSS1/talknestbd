@@ -7,7 +7,10 @@ import {
   type ReactNode,
 } from "react";
 import { useBookContent } from "@/components/providers/BookContentProvider";
+import { toUpSaleBook } from "@/lib/up-sale";
 import type { Book, UpSaleBook } from "@/lib/types";
+
+export { toUpSaleBook };
 
 interface UpSaleBooksContextValue {
   books: UpSaleBook[];
@@ -16,33 +19,22 @@ interface UpSaleBooksContextValue {
 
 const UpSaleBooksContext = createContext<UpSaleBooksContextValue | null>(null);
 
-/** Converts a catalogue book into the 50% up-sale pricing model. */
-export function toUpSaleBook(book: Book): UpSaleBook {
-  const originalPrice = book.oldPrice ?? book.price;
-  const sellingPrice = Math.round(originalPrice * 0.5);
-  return {
-    id: `up-${book.slug}`,
-    cartSlug: book.slug,
-    bookSlug: book.slug,
-    title: book.title,
-    author: book.author,
-    condition: "Like new",
-    originalPrice,
-    sellingPrice,
-    price: Math.round(sellingPrice * 1.5),
-    returnedBy: "A TalkNest reader",
-    location: "Bangladesh",
-    stock: book.stock,
-    cover: book.cover,
-  };
-}
-
-export function UpSaleBooksProvider({ children }: { children: ReactNode }) {
+export function UpSaleBooksProvider({
+  children,
+  initialBooks,
+}: {
+  children: ReactNode;
+  /** Books from the DB-backed `shelf:up-sale` document. */
+  initialBooks?: Book[];
+}) {
   const { books } = useBookContent();
 
   const booksForShelf = useMemo(
-    () => books.filter((book) => book.tags.includes("up-sale")).map(toUpSaleBook),
-    [books],
+    () =>
+      (initialBooks ?? books.filter((book) => book.tags.includes("up-sale"))).map(
+        toUpSaleBook,
+      ),
+    [initialBooks, books],
   );
 
   const value = useMemo(

@@ -7,6 +7,8 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { Button } from "@/components/ui/Button";
 import { UpSaleBooksGrid } from "@/components/books/UpSaleBooksGrid";
 import { UpSaleCount } from "@/components/books/UpSaleCount";
+import { getUpSaleShelfContent } from "@/lib/db/queries/shelves";
+import { toUpSaleBook } from "@/lib/up-sale";
 
 export const metadata: Metadata = {
   title: "50% Up Sale",
@@ -41,19 +43,22 @@ const pricingSteps = [
   },
 ];
 
-export default function UpSalePage() {
+export default async function UpSalePage() {
+  const content = await getUpSaleShelfContent();
+  const upSaleBooks = content.books.map(toUpSaleBook);
+
   return (
     <>
       <PageHeader
-        eyebrow="TalkNest Up Sale"
-        title="Readers sell at 50%. Back on the shelf at +50%."
-        description="The 50% up sale is the next stop for books readers sell to us. We pay the reader half the new price, check the copy, then list it 50% up on that payout — so the next reader still saves 25%."
+        eyebrow={content.heading.eyebrow}
+        title={content.heading.title}
+        description={content.heading.description}
         tone="dark"
         crumbs={[{ label: "50% Up Sale" }]}
       >
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-            <UpSaleCount />
+            <UpSaleCount count={upSaleBooks.length} />
           </span>
           <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
             Condition checked by TalkNest
@@ -136,7 +141,7 @@ export default function UpSalePage() {
             </Button>
           </div>
 
-          <UpSaleBooksGrid className="mt-5" />
+          <UpSaleBooksGrid className="mt-5" books={upSaleBooks} />
 
           <div className="mt-7 grid gap-3 rounded-[8px] border border-line bg-canvas p-4 sm:grid-cols-[1fr_auto] sm:items-center sm:p-5">
             <div>
