@@ -8,8 +8,8 @@ import { Container } from "@/components/ui/Container";
 import { StoryShareForm } from "@/components/stories/StoryShareForm";
 
 export function SharePageContent() {
-  const { content } = useStories();
-  const page = content.share;
+  const { copy } = useStories();
+  const page = copy.share;
 
   return (
     <>

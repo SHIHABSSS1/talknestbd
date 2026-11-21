@@ -7,11 +7,10 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { StoriesWall } from "@/components/stories/StoriesWall";
-import { toBn } from "@/lib/utils";
 
 export function StoriesPageContent() {
-  const { content } = useStories();
-  const page = content.page;
+  const { copy } = useStories();
+  const page = copy.page;
 
   return (
     <>
@@ -78,7 +77,7 @@ export function StoriesPageContent() {
           </section>
 
           <p className="mt-6 text-center text-[10px] text-muted">
-            {toBn(210)}{page.footerNote}
+            {page.footerNote}
           </p>
         </Container>
       </section>

@@ -331,19 +331,21 @@ export function DashboardOverview() {
         key: "stories",
         label: "Story submissions",
         hint: "Community stories to review",
-        href: "/admin/sections/stories",
+        href: "/admin/stories",
         icon: PenLine,
         color: "#b06fe0",
-        rows: stories.requests.map((request) => ({
-          id: request.id,
-          createdAt: request.createdAt,
-          status: request.status,
-          title: request.title,
-          subtitle: request.name,
-        })),
+        rows: stories.pendingCount
+          ? [{
+              id: "story-submissions",
+              createdAt: new Date().toISOString(),
+              status: "Pending",
+              title: `${stories.pendingCount} story ${stories.pendingCount === 1 ? "submission" : "submissions"} awaiting review`,
+              subtitle: "Reader stories",
+            }]
+          : [],
       },
     ],
-    [sell.requests, wholesale.requests, reviewRows, stories.requests],
+    [sell.requests, wholesale.requests, reviewRows, stories.pendingCount],
   );
 
   const allRequests = useMemo(
@@ -431,11 +433,11 @@ export function DashboardOverview() {
       },
       {
         id: "demo-story",
-        title: "Community story submitted",
-        subtitle: "Story submissions · Rakibul Hasan",
-        time: "Yesterday",
+        title: "Community story submissions",
+        subtitle: "Reader stories awaiting review",
+        time: "Live",
         status: "Pending",
-        href: "/admin/sections/stories",
+        href: "/admin/stories",
         icon: PenLine,
         color: "#b06fe0",
       },

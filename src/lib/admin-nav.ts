@@ -52,6 +52,7 @@ export const adminNavGroups: AdminNavGroup[] = [
       { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
       { label: "Customers", href: "/admin/customers", icon: UsersRound },
       { label: "All books view", href: "/admin/catalog", icon: BookOpen },
+      { label: "Story community", href: "/admin/stories", icon: Mic },
       { label: "Videos", href: "/admin/videos", icon: PlayCircle },
       { label: "Quizzes", href: "/admin/quizzes", icon: BookOpen },
       { label: "Discussions", href: "/admin/discussions", icon: MessageCircle },

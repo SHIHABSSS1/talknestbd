@@ -11,6 +11,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed:video-quiz": "tsx src/lib/db/seed-video-quiz.ts",
+    "db:seed:stories": "tsx src/lib/db/seed-stories.ts",
     "db:seed:admin": "tsx src/lib/db/seed-admin.ts",
     "db:studio": "drizzle-kit studio"
   },

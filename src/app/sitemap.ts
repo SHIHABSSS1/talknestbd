@@ -1,11 +1,15 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site-url";
 import { getPublishedVideos } from "@/lib/db/queries/video-quiz";
+import { listStories } from "@/lib/db/queries/stories";
 
 /** Storefront routes only — admin and account pages are intentionally omitted. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const publishedVideos = await getPublishedVideos();
+  const [publishedVideos, publishedStories] = await Promise.all([
+    getPublishedVideos(),
+    listStories({ status: "published", limit: 100, offset: 0 }),
+  ]);
   const routes = [
     "",
     "/about",
@@ -25,7 +29,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/free-order",
     "/wholesale",
     "/stories",
-    "/stories/share",
     "/reviews",
     "/video",
     "/quiz",
@@ -40,7 +43,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/return-policy",
   ];
   const videoRoutes = publishedVideos.map((video) => `/videos/${video.slug}`);
-  return [...routes, ...videoRoutes].map((path) => ({
+  const storyRoutes = publishedStories.rows.map((story) => `/stories/${story.slug}`);
+  return [...routes, ...videoRoutes, ...storyRoutes].map((path) => ({
     url: `${SITE_URL}${path || "/"}`,
     lastModified: now,
     changeFrequency: path === "" ? "daily" : "weekly",

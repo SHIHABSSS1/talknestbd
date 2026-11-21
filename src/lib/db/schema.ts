@@ -681,3 +681,84 @@ export type QuizRow = typeof quizzes.$inferSelect;
 export type QuizQuestionRow = typeof quizQuestions.$inferSelect;
 export type QuizAttemptRow = typeof quizAttempts.$inferSelect;
 export type DiscussionRow = typeof discussions.$inferSelect;
+
+/**
+ * Reader Story Community.
+ *
+ * Submissions and published stories share one table: a submission starts as
+ * `pending`, an admin publishes or rejects it, and the storefront only ever
+ * reads `published` rows. Author identity comes from the session; the name is
+ * snapshotted so a deleted account does not erase a published story.
+ * PDF/audio files live outside the public /media tree and are streamed only
+ * through an authorising route handler (see /api/stories/[slug]/asset).
+ */
+export const stories = pgTable(
+  "stories",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    /** Null only for legacy seeded demo stories. */
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    name: text("name").notNull(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull(),
+    body: text("body").notNull().default(""),
+    /** "voice" | "text" | "pdf". */
+    type: text("type").notNull().default("text"),
+    category: text("category").notNull().default("Community"),
+    /** Public /media URL for the optional cover image. */
+    coverUrl: text("cover_url"),
+    avatarColor: text("avatar_color").notNull().default("#1877F2"),
+    duration: text("duration"),
+    /** Private storage key for a voice recording (never a public URL). */
+    audioKey: text("audio_key"),
+    /** Private storage key for a submitted PDF. */
+    attachmentKey: text("attachment_key"),
+    attachmentName: text("attachment_name"),
+    /** Denormalised, maintained atomically by the like API. */
+    likes: integer("likes").notNull().default(0),
+    /** "pending" | "published" | "rejected" | "draft". */
+    status: text("status").notNull().default("pending"),
+    featured: boolean("featured").notNull().default(false),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("stories_status_created_idx").on(table.status, table.createdAt),
+    index("stories_user_id_idx").on(table.userId),
+    index("stories_category_idx").on(table.category),
+    index("stories_type_idx").on(table.type),
+  ],
+);
+
+/** One like per signed-in reader per story; the counter lives on stories. */
+export const storyLikes = pgTable(
+  "story_likes",
+  {
+    storyId: text("story_id")
+      .notNull()
+      .references(() => stories.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.storyId, table.userId] })],
+);
+
+/** Admin-managed story categories, selectable in the submission form. */
+export const storyCategories = pgTable("story_categories", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description").notNull().default(""),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type StoryRow = typeof stories.$inferSelect;
+export type StoryLikeRow = typeof storyLikes.$inferSelect;
+export type StoryCategoryRow = typeof storyCategories.$inferSelect;

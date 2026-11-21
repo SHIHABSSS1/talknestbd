@@ -1,10 +1,13 @@
-/** Editable story content for the homepage, /stories and /stories/share. */
-
-import { stories } from "@/data/community";
+/**
+ * Editable copy for the Reader Story Community.
+ *
+ * Stories, likes and submissions now live in Postgres. This document only
+ * holds the words an admin edits on the homepage, /stories and /stories/share
+ * copy tabs; it is stored in content_blocks('stories').
+ */
 import { sectionDefaults } from "@/lib/section-content";
-import type { Story } from "@/lib/types";
 
-export interface StoryContent {
+export interface StoryCopy {
   section: { eyebrow: string; title: string; description: string; linkLabel: string };
   home: {
     bullets: string[];
@@ -39,19 +42,15 @@ export interface StoryContent {
     reviewTitle: string;
     reviewText: string;
   };
-  stories: Story[];
 }
 
-export interface SaveResult {
-  ok: boolean;
-  message: string;
-}
+export type SaveResult = { ok: boolean; message: string };
 
-export const STORY_STORAGE_KEY = "talknestbd-stories-v1";
+export const STORIES_CONTENT_KEY = "stories";
 
-const section = sectionDefaults.stories;
+const section = sectionDefaults[STORIES_CONTENT_KEY];
 
-export const storyDefaults: StoryContent = {
+export const storyDefaults: StoryCopy = {
   section: {
     eyebrow: section?.eyebrow ?? "Reader stories",
     title: section?.title ?? "Your story belongs here",
@@ -66,7 +65,7 @@ export const storyDefaults: StoryContent = {
     ],
     primaryLabel: "Share your story",
     secondaryLabel: "Read all stories",
-    notice: "More than 210 stories shared by readers this month.",
+    notice: "Every story in the community was shared by a reader.",
   },
   page: {
     eyebrow: "Share to My Heart",
@@ -74,9 +73,9 @@ export const storyDefaults: StoryContent = {
     description:
       "Every reader carries a story worth keeping. Share a memory, a turning point or an ordinary moment that stayed with you — in your own words, in your own voice or as a PDF diary.",
     stats: [
-      { value: "210+", label: "Stories shared" },
-      { value: "84", label: "Voice stories" },
-      { value: "12K", label: "Reader family" },
+      { value: "Voice", label: "Tell it in your own words" },
+      { value: "Written", label: "A memory worth keeping" },
+      { value: "PDF", label: "A diary or letter" },
     ],
     rulesEyebrow: "Simple rules for sharing",
     rulesTitle: "A few things to keep in mind",
@@ -93,7 +92,7 @@ export const storyDefaults: StoryContent = {
     ctaText:
       "A small memory can be the exact thing another reader needed to hear today.",
     ctaLabel: "Start your story",
-    footerNote: " stories shared this month · every story belongs to its reader",
+    footerNote: "stories shared by readers · every story belongs to its author",
     primaryLabel: "Share your story",
   },
   share: {
@@ -104,7 +103,7 @@ export const storyDefaults: StoryContent = {
     badge: "Voice · Written · PDF",
     successTitle: "Thank you — your story has reached us",
     successText:
-      "Our editorial team will review it and publish it if it fits the community.",
+      "Our editorial team will review it and publish it if it fits the community. You can follow its status from your account.",
     tipsTitle: "Quick tips for a good story",
     tips: [
       "Start with a moment, not a summary",
@@ -117,83 +116,8 @@ export const storyDefaults: StoryContent = {
     reviewText:
       "Every submission is checked before publication. We may ask for small edits, and we never publish without your go-ahead.",
   },
-  stories,
 };
 
-export function cloneStoryDefaults(): StoryContent {
-  return JSON.parse(JSON.stringify(storyDefaults)) as StoryContent;
-}
-
-function isStory(value: unknown): value is Story {
-  if (!value || typeof value !== "object") return false;
-  const item = value as Record<string, unknown>;
-  return (
-    typeof item.id === "string" &&
-    typeof item.name === "string" &&
-    typeof item.title === "string" &&
-    typeof item.excerpt === "string" &&
-    (item.type === "voice" || item.type === "text" || item.type === "pdf") &&
-    typeof item.likes === "number" &&
-    typeof item.date === "string" &&
-    typeof item.avatarColor === "string" &&
-    (item.attachmentDataUrl === undefined || typeof item.attachmentDataUrl === "string") &&
-    (item.audioDataUrl === undefined || typeof item.audioDataUrl === "string")
-  );
-}
-
-export function readStoryContent(): StoryContent {
-  const defaults = cloneStoryDefaults();
-  if (typeof window === "undefined") return defaults;
-  try {
-    const raw = window.localStorage.getItem(STORY_STORAGE_KEY);
-    if (!raw) return defaults;
-    const parsed = JSON.parse(raw) as Partial<StoryContent>;
-    if (!Array.isArray(parsed.stories) || !parsed.stories.every(isStory)) return defaults;
-    return {
-      section: { ...defaults.section, ...parsed.section },
-      home: {
-        ...defaults.home,
-        ...parsed.home,
-        bullets: Array.isArray(parsed.home?.bullets) ? parsed.home.bullets : defaults.home.bullets,
-      },
-      page: {
-        ...defaults.page,
-        ...parsed.page,
-        stats: Array.isArray(parsed.page?.stats) ? parsed.page.stats : defaults.page.stats,
-        rules: Array.isArray(parsed.page?.rules) ? parsed.page.rules : defaults.page.rules,
-      },
-      share: {
-        ...defaults.share,
-        ...parsed.share,
-        tips: Array.isArray(parsed.share?.tips) ? parsed.share.tips : defaults.share.tips,
-      },
-      stories: parsed.stories,
-    };
-  } catch {
-    return defaults;
-  }
-}
-
-export function writeStoryContent(content: StoryContent): SaveResult {
-  if (typeof window === "undefined") {
-    return { ok: false, message: "Storage is not available while rendering on the server." };
-  }
-  try {
-    window.localStorage.setItem(STORY_STORAGE_KEY, JSON.stringify(content));
-    return { ok: true, message: "Saved to this browser — story pages updated." };
-  } catch {
-    return { ok: false, message: "Could not save: browser storage may be full." };
-  }
-}
-
-export function clearStoryContent(): SaveResult {
-  if (typeof window === "undefined") {
-    return { ok: false, message: "Storage is not available while rendering on the server." };
-  }
-  try {
-    window.localStorage.removeItem(STORY_STORAGE_KEY);
-    return { ok: true, message: "Restored the original reader stories." };
-  } catch {
-    return { ok: false, message: "Could not reset browser storage." };
-  }
+export function cloneStoryDefaults(): StoryCopy {
+  return JSON.parse(JSON.stringify(storyDefaults)) as StoryCopy;
 }

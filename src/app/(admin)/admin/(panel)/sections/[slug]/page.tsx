@@ -8,7 +8,7 @@ import { AdminAudioManager } from "@/components/admin/AdminAudioManager";
 import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
 import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { ReviewsEditor } from "@/components/admin/ReviewsEditor";
-import { StoriesEditor } from "@/components/admin/StoriesEditor";
+import { AdminStoriesManager } from "@/components/admin/AdminStoriesManager";
 import { AdminVideoQuizManager } from "@/components/admin/AdminVideoQuizManager";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
@@ -23,6 +23,7 @@ import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
 import { getVideoQuizCopy } from "@/lib/db/queries/video-quiz";
+import { getStoryCopy } from "@/lib/db/queries/stories";
 import {
   getInternationalShelfContent,
   getNewArrivalsShelfContent,
@@ -168,7 +169,8 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     return <AdminVideoQuizManager label={label} initialCopy={copy} />;
   }
   if (slug === "stories") {
-    return <StoriesEditor label={label} />;
+    const copy = await getStoryCopy();
+    return <AdminStoriesManager label={label} initialCopy={copy} />;
   }
 
   return (

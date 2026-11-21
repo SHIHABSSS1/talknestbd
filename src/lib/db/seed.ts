@@ -77,6 +77,7 @@ import {
 import { reviews as demoReviews } from "../../data/reviews";
 import { audioDefaults } from "../audio-content";
 import { VIDEO_QUIZ_CONTENT_KEY, videoQuizDefaults } from "../video-quiz-content";
+import { STORIES_CONTENT_KEY, storyDefaults } from "../story-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -109,6 +110,7 @@ async function main() {
     [REVIEW_CONTENT_KEY]: reviewDefaults,
     audio: audioDefaults,
     [VIDEO_QUIZ_CONTENT_KEY]: videoQuizDefaults,
+    [STORIES_CONTENT_KEY]: storyDefaults,
   };
 
   try {

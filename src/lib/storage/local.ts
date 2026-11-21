@@ -275,6 +275,61 @@ export async function saveVideoStream(
   }
 }
 
+/**
+ * Private media (story PDFs and voice recordings) is written outside the
+ * public /media tree. It can only be streamed through an authorising route
+ * handler, so an unpublished submission's file cannot be fetched by URL.
+ */
+const PRIVATE_TYPES: Record<string, string> = {
+  ".pdf": "application/pdf",
+  ".webm": "audio/webm",
+  ".mp3": "audio/mpeg",
+  ".m4a": "audio/mp4",
+  ".mp4": "video/mp4",
+};
+
+export type StoredPrivateFile = {
+  key: string;
+  bytes: number;
+  mime: string;
+};
+
+export async function savePrivateFile(
+  data: Buffer,
+  extension: "pdf" | "webm" | "mp3" | "m4a" | "mp4",
+): Promise<StoredPrivateFile> {
+  if (data.length === 0) throw new Error("That file is empty.");
+  const hash = createHash("sha256").update(data).digest("hex").slice(0, 32);
+  const key = `stories/${hash}.${extension}`;
+  const destination = path.join(uploadRoot(), "private", key);
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(destination, data, { flag: "wx" }).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code !== "EEXIST") throw error;
+    },
+  );
+  return { key, bytes: data.length, mime: PRIVATE_TYPES[`.${extension}`]! };
+}
+
+/** Resolve a private key to a file path. Returns null for any traversal attempt. */
+export async function resolvePrivateFile(
+  key: string,
+): Promise<{ filePath: string; size: number; contentType: string; modified: Date } | null> {
+  if (!/^stories\/[a-f0-9]{32}\.(pdf|webm|mp3|m4a|mp4)$/.test(key)) return null;
+  const root = path.join(uploadRoot(), "private");
+  const filePath = path.resolve(root, key);
+  if (!filePath.startsWith(root + path.sep)) return null;
+  const contentType = PRIVATE_TYPES[path.extname(filePath).toLowerCase()];
+  if (!contentType) return null;
+  try {
+    const info = await stat(filePath);
+    if (!info.isFile()) return null;
+    return { filePath, size: info.size, contentType, modified: info.mtime };
+  } catch {
+    return null;
+  }
+}
+
 export type ResolvedMedia = {
   filePath: string;
   size: number;
@@ -293,6 +348,8 @@ export async function resolveMedia(
   const relative = segments.join("/");
 
   if (!relative || relative.includes("\0") || relative.includes("\\")) return null;
+  // Private story PDFs/recordings must never escape through the public route.
+  if (segments[0] === "private") return null;
   if (segments.some((segment) => segment === ".." || segment === "." )) return null;
 
   const filePath = path.resolve(/*turbopackIgnore: true*/ root, relative);

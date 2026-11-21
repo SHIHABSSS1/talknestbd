@@ -11,6 +11,7 @@ import {
   MapPin,
   MessageSquare,
   Package,
+  PenLine,
   Settings,
   UserRound,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const links = [
   { label: "Saved Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Wishlist", href: "/wishlist", icon: Heart },
   { label: "My Audiobooks", href: "/account/audiobooks", icon: Headphones },
+  { label: "My Stories", href: "/account/stories", icon: PenLine },
   { label: "Settings", href: "/account/settings", icon: Settings },
 ];
 

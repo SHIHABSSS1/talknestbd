@@ -4,6 +4,7 @@ import { SharePageContent } from "@/components/stories/SharePageContent";
 export const metadata: Metadata = {
   title: "Share a Story",
   description: "Share a memory, a turning point or a small everyday joy with TalkNest BD readers.",
+  robots: { index: false, follow: false },
 };
 
 export default function ShareStoryPage() {
