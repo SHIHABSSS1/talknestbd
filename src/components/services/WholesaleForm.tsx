@@ -127,7 +127,7 @@ export function WholesaleForm() {
         </h2>
         <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-muted">
           Our wholesale team will call or email within 1 business day with a quote
-          and stock availability. Keep the demo reference number below.
+          and stock availability. Keep your reference number below.
         </p>
         <p className="mx-auto mt-4 w-fit rounded-full bg-forest-900 px-5 py-2 font-display text-sm font-bold tracking-wider text-gold-300">
           {reference}
@@ -142,7 +142,7 @@ export function WholesaleForm() {
           </Button>
         </div>
         <p className="mt-4 text-[9px] text-muted">
-          Your request is saved in the demo database. No real quote or payment is processed.
+          Your request is saved and our team will respond within one business day.
         </p>
       </div>
     );
@@ -294,7 +294,7 @@ export function WholesaleForm() {
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-forest-900/8 pt-4">
         <p className="flex items-center gap-1.5 text-[9px] text-muted">
           <ClipboardList size={11} />
-          Demo form · free delivery on orders over ৳{toBn(999)}
+          Free delivery on orders over ৳{toBn(999)}
         </p>
         <Button type="submit" size="sm">
           <Send size={13} />

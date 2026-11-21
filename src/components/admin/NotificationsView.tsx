@@ -24,7 +24,7 @@ export function NotificationsView() {
         <div>
           <h1 className="font-display text-2xl font-bold text-ink">Notifications</h1>
           <p className="mt-1 text-[12px] text-muted">
-            {unreadCount} unread · demo updates from your admin workspace.
+            {unreadCount} unread · updates from your admin workspace.
           </p>
         </div>
         <button
@@ -89,7 +89,7 @@ export function NotificationsView() {
       </section>
 
       <p className="text-[10px] text-muted">
-        Demo note: notifications are sample updates stored in this browser only.
+        Storage note: notifications are sample updates stored in this browser only.
       </p>
     </div>
   );

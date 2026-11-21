@@ -57,7 +57,7 @@ async function PlaceholderContent({
 
         <div className="mt-6 rounded-[8px] border border-brand-100 bg-brand-50 px-4 py-3">
           <p className="text-[10px] leading-relaxed text-brand-800">
-            <span className="font-semibold">Demo notice:</span> admin editors are
+            <span className="font-semibold">Storage note:</span> admin editors are
             design previews — no data is saved and there is no server or real
             payment flow.
           </p>

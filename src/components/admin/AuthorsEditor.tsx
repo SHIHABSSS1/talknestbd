@@ -592,7 +592,7 @@ export function AuthorsEditor({ label }: { label: string }) {
             </div>
           </section>
           <p className="text-[10px] leading-relaxed text-muted">
-            Demo note: photos and profiles are stored in this browser only — nothing reaches a server.
+            Storage note: photos and profiles are stored in this browser only — nothing reaches a server.
           </p>
         </div>
       </div>

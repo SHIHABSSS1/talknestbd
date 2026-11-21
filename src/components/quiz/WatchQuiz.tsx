@@ -275,7 +275,7 @@ export function WatchQuiz({ mode = "home" }: { mode?: "home" | "page" }) {
 
             <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
               <span className="text-[9px] text-white/45">
-                Host: {player.host} · Demo video, loaded from YouTube
+                Host: {player.host} · Video loaded from YouTube
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 <a

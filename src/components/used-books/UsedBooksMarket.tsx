@@ -186,7 +186,7 @@ export function UsedBooksMarket() {
                 <MapPin size={12} className="text-forest-600" /> {selected.location}
               </p>
               <p className="rounded-xl bg-forest-50 px-3 py-2.5 text-[9px] leading-relaxed text-forest-800/70">
-                You can inspect the book in person before buying. On this demo
+                You can inspect the book in person before buying. When buying
                 site, the seller&apos;s contact details are shared after an order
                 is confirmed.
               </p>
@@ -254,7 +254,7 @@ export function UsedBookSellForm() {
         <h3 className="mt-3 font-display text-lg font-bold text-forest-950">Your book details have been submitted</h3>
         <p className="mx-auto mt-1.5 max-w-xs text-[10px] leading-relaxed text-muted">
           Our team will review the book&apos;s photos and condition, then get in
-          touch. This demo site does not send any information to a server.
+          touch. Your details are sent securely to our team.
         </p>
         <button
           type="button"
@@ -325,13 +325,13 @@ export function UsedBookSellForm() {
         <div className="rounded-xl border border-dashed border-forest-900/15 bg-cream-100/50 px-3 py-3 text-center">
           <BookOpen size={16} className="mx-auto text-forest-900/25" />
           <p className="mt-1 text-[9px] text-muted">
-            Photo upload isn&apos;t available in this demo — you&apos;ll share book photos when we contact you.
+            Photo upload isn&apos;t available yet — you&apos;ll share book photos when we contact you.
           </p>
         </div>
         <Button type="submit" size="sm" className="w-full">
           <Tag size={13} /> List my book for sale
         </Button>
-        <p className="text-center text-[8px] text-muted">Demo form · No real transaction takes place</p>
+        <p className="text-center text-[8px] text-muted">Reader-to-reader marketplace</p>
       </div>
     </form>
   );

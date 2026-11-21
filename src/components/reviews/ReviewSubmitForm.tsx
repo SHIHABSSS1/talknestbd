@@ -143,7 +143,7 @@ export function ReviewSubmitForm({
         {busy ? "Submitting…" : "Submit review"}
       </button>
       <p className="text-[9px] text-muted">
-        Reviews are published after admin approval. Demo site — no real payment or purchase required.
+        Reviews are published after moderation. Your rating and feedback help other readers.
       </p>
     </form>
   );

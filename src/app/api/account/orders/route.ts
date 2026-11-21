@@ -13,6 +13,7 @@ import {
 import { db } from "@/lib/db";
 import { audioUnlocks, orderItems, orders } from "@/lib/db/schema";
 import { generateOrderId } from "@/lib/orders";
+import { sendOrderReceiptEmail } from "@/lib/email";
 
 export async function GET(request: Request) {
   const session = await getApiSession(request);
@@ -138,8 +139,7 @@ export async function POST(request: Request) {
   });
 
   const savedItems = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
-  return NextResponse.json(
-    mapOrder(
+  const mapped = mapOrder(
       saved,
       savedItems.map((item) => ({
         slug: item.bookSlug ?? "",
@@ -149,7 +149,34 @@ export async function POST(request: Request) {
         price: Number(item.price),
         quantity: item.quantity,
       })),
-    ),
-    { status: 201 },
   );
+
+  // Email delivery must never roll back a successfully saved order.
+  const recipient = body.address.email?.trim() || session.user.email;
+  if (recipient) {
+    try {
+      await sendOrderReceiptEmail({
+        email: recipient,
+        order: {
+          id: mapped.id,
+          createdAt: mapped.createdAt,
+          total: mapped.total,
+          subtotal: mapped.subtotal,
+          deliveryCharge: mapped.deliveryCharge,
+          paymentMethod: mapped.paymentMethod,
+          deliveryMethod: mapped.deliveryMethod,
+          address: body.address as unknown as Record<string, unknown>,
+          items: mapped.items.map((item) => ({
+            title: item.title,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
+      });
+    } catch (error) {
+      console.error("[orders] receipt email failed:", error);
+    }
+  }
+
+  return NextResponse.json(mapped, { status: 201 });
 }

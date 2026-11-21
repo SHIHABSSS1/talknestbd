@@ -245,9 +245,9 @@ export const sellDefaults: SellContent = {
       },
       {
         id: "faq-5",
-        question: "Does the demo site really pay money?",
+        question: "How does payment for used books work?",
         answer:
-          "No. This website is a front-end demo; no real payment or used-book transaction takes place here. These terms will apply when the real service launches.",
+          "After we receive and inspect your book, we confirm the payout and arrange payment using the contact details you shared. Terms are confirmed before the transaction.",
       },
     ],
     bottomCta: {
@@ -287,7 +287,7 @@ export const sellDefaults: SellContent = {
       "This is only an estimate. The final value is confirmed after we receive and inspect the book. Textbooks and older editions may not be eligible to sell.",
     eligibilityNote: "Works for books with a purchase price up to ৳20,000.",
     submitLabel: "Request a sale",
-    successTitle: "Your request is ready as a demo",
+    successTitle: "Your request has been received",
     successText:
       "For a real sale, contact us on WhatsApp with your order number and photos of the book.",
   },

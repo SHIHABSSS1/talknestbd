@@ -5,6 +5,7 @@
  * is read/written through /api/account/** with the Better Auth session cookie.
  */
 export type PaymentMethod = "cod" | "bkash" | "nagad";
+export type PaymentStatus = "pending" | "paid" | "refunded";
 export type DeliveryMethod = "standard" | "express" | "pickup";
 
 export interface SavedAddress {
@@ -40,6 +41,7 @@ export interface Order {
   deliveryCharge: number;
   total: number;
   paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
   deliveryMethod: DeliveryMethod;
   address: AddressFormValues;
   note?: string;
@@ -75,6 +77,14 @@ export function generateOrderId(): string {
   ].join("");
   const random = Math.floor(1000 + Math.random() * 9000);
   return `TNB-${date}-${random}`;
+}
+
+/** DB rows store lowercase slugs; the UI uses title-case labels. */
+export function normaliseOrderStatus(status: string): Order["status"] {
+  const value = status.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (value === "out_for_delivery" || value === "outfordelivery") return "Out for delivery";
+  if (value === "processing") return "Processing";
+  return "Confirmed";
 }
 
 export function formatOrderDate(iso: string): string {

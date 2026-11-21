@@ -560,7 +560,7 @@ export function PublishersEditor({ label }: { label: string }) {
             </div>
           </section>
           <p className="text-[10px] leading-relaxed text-muted">
-            Demo note: logos and profiles are stored in this browser only — nothing reaches a server.
+            Storage note: logos and profiles are stored in this browser only — nothing reaches a server.
           </p>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -116,8 +117,16 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
       <div className="print-receipt overflow-hidden rounded-3xl border border-forest-900/10 bg-cream-50">
         <div className="flex flex-col gap-3 border-b border-forest-900/8 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-              TalkNest BD · Order Receipt
+            <Image
+              src="/talknest/logo-colored.png"
+              alt="TalkNest BD"
+              width={150}
+              height={59}
+              className="h-auto w-[120px] object-contain object-left sm:w-[150px]"
+              unoptimized
+            />
+            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
+              Order Receipt
             </p>
             <h2 className="mt-1 font-display text-xl font-bold text-forest-950">
                Order receipt
@@ -317,11 +326,10 @@ export function OrderReceipt({ orderId }: { orderId: string }) {
         </div>
 
         <div className="border-t border-forest-900/8 bg-cream-100/40 px-5 py-4 text-[9px] leading-relaxed text-muted sm:px-7">
-           <p className="font-semibold text-forest-800">Demo receipt</p>
+           <p className="font-semibold text-forest-800">Thank you for ordering from TalkNest BD</p>
           <p className="mt-0.5">
-             No real payment was taken for this demo order. It is saved to your
-             account. For a live order, you could
-             contact us within seven days of delivery for a return or exchange.
+             This receipt is a record of your order. Contact us within seven days of
+             delivery for a return or exchange.
           </p>
           <p className="mt-1.5">
              Support: {siteConfig.phone} · {siteConfig.email} · {siteConfig.address}

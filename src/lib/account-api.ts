@@ -10,12 +10,15 @@ import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import { auth } from "@/lib/auth";
 import { audioPrice } from "@/lib/audio";
-import type {
-  AddressFormValues,
-  Order,
-  OrderItem,
-  SavedAddress,
+import {
+  normaliseOrderStatus,
+  type AddressFormValues,
+  type Order,
+  type OrderItem,
+  type SavedAddress,
 } from "@/lib/orders";
+
+export { normaliseOrderStatus };
 
 export async function getApiSession(request: Request) {
   return auth.api.getSession({ headers: request.headers });
@@ -129,17 +132,6 @@ export function toAddressDb(values: AddressFormValues & { isDefault?: boolean })
   };
 }
 
-/** DB rows store lowercase slugs; the UI uses title-case labels. */
-export function normaliseOrderStatus(status: string): Order["status"] {
-  const value = status.trim().toLowerCase().replace(/[\s-]+/g, "_");
-  if (value === "out_for_delivery" || value === "outfordelivery") {
-    return "Out for delivery";
-  }
-  if (value === "processing") return "Processing";
-  if (value === "confirmed") return "Confirmed";
-  return "Confirmed";
-}
-
 export function mapOrder(
   row: {
     id: string;
@@ -148,6 +140,7 @@ export function mapOrder(
     deliveryCharge: string;
     total: string;
     paymentMethod: string;
+    paymentStatus?: string | null;
     paymentNumber: string | null;
     deliveryMethod: string;
     addressSnapshot: unknown;
@@ -164,6 +157,9 @@ export function mapOrder(
     deliveryCharge: money(row.deliveryCharge),
     total: money(row.total),
     paymentMethod: row.paymentMethod as Order["paymentMethod"],
+    paymentStatus: (row.paymentStatus === "paid" || row.paymentStatus === "refunded"
+      ? row.paymentStatus
+      : "pending") as Order["paymentStatus"],
     deliveryMethod: row.deliveryMethod as Order["deliveryMethod"],
     address: row.addressSnapshot as AddressFormValues,
     note: row.note ?? undefined,

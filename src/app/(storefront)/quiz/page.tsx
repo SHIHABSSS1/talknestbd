@@ -139,7 +139,7 @@ async function QuizContent({
                 <li>• Each question has only one correct answer</li>
                 <li>• An explanation appears after you answer</li>
                 <li>• You&apos;ll get a total score and title at the end</li>
-                <li>• Demo quiz — no real prizes</li>
+                <li>• A friendly reading quiz for fun — no prizes</li>
               </ul>
             </div>
           </aside>

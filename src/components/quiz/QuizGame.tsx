@@ -113,7 +113,7 @@ export function QuizGame({
               </Button>
             </div>
             <p className="mt-4 text-[8px] text-cream-100/35">
-              Demo quiz · no prizes are awarded automatically
+              A reading quiz for fun · no prizes
             </p>
           </div>
         </div>

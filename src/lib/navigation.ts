@@ -75,6 +75,7 @@ export const moreLinks: NavLink[] = [
   { label: "Book Quiz", href: "/quiz?tab=book", icon: CircleHelp },
   { label: "Reader Stories", href: "/stories", icon: Mic },
   { label: "Customer Reviews", href: "/reviews", icon: HeartHandshake },
+  { label: "Track Order", href: "/track-order", icon: Package },
   { label: "Blog", href: "/blogs", icon: Newspaper },
   { label: "About Us", href: "/about", icon: LibraryBig },
   { label: "Contact", href: "/contact", icon: Newspaper },
@@ -96,6 +97,7 @@ export const footerLinks = {
     { label: "50% Up Sale", href: "/up-sales" },
     { label: "Buy Used Books", href: "/used-books" },
     { label: "Audiobooks", href: "/audio-books" },
+    { label: "Track Order", href: "/track-order" },
     { label: "Sunnah Essentials", href: "/sunnah-items" },
   ],
   community: [

@@ -69,7 +69,7 @@ export function ContactForm() {
             Send another message
           </Button>
         </div>
-        <p className="mt-4 text-[9px] text-muted">Demo form · no information was sent to a server</p>
+        <p className="mt-4 text-[9px] text-muted">We usually reply within one business day</p>
       </div>
     );
   }

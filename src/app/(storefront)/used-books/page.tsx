@@ -138,7 +138,7 @@ export default function UsedBooksPage() {
                   ))}
                 </div>
                 <p className="mt-3 rounded-xl border border-dashed border-forest-900/15 px-3 py-2 text-[9px] leading-relaxed text-muted">
-                  No real payments are made in this demo marketplace. Verify the seller
+                  Confirm the book's condition with the seller
                   and book details carefully before any real transaction.
                 </p>
               </section>

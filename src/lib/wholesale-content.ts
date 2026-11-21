@@ -154,7 +154,7 @@ export const wholesaleDefaults: WholesaleContent = {
     priceList: {
       heading: "Wholesale price list",
       note: "Commission varies slightly by book type; the final quote is confirmed after your request.",
-      footer: "Minimum order: 10 copies · Demo price list",
+      footer: "Minimum order: 10 copies · Indicative price list",
       termsLabel: "View terms",
     },
     tiers: [
@@ -238,7 +238,7 @@ export const wholesaleDefaults: WholesaleContent = {
         id: "faq-2",
         question: "How does payment work?",
         answer:
-          "No real payment is taken on this demo site. On launch, payment terms are confirmed with your quote.",
+          "Payment terms are confirmed with your quote before any order is processed.",
       },
       {
         id: "faq-3",
@@ -280,7 +280,7 @@ export const wholesaleDefaults: WholesaleContent = {
     intro: {
       heading: "Good books, delivered without the extra cost",
       text: "Fill your cart with titles over the free-delivery threshold and the shipping charge is on us — no coupon needed.",
-      note: "This is a demo storefront. No real payment or delivery takes place.",
+      note: "Delivery timelines are confirmed when your wholesale quote is issued.",
     },
     steps: [
       { id: "fo-step-1", title: "Pick your books", text: "Add titles to your cart from the catalogue." },
@@ -302,7 +302,7 @@ export const wholesaleDefaults: WholesaleContent = {
         "Free delivery applies automatically at checkout.",
         "Delivery times vary by district and courier coverage.",
         "Cash on delivery is available across Bangladesh.",
-        "Demo site — no real shipment is arranged.",
+        "Shipment details are confirmed with your quote.",
       ],
     },
     cta: {

@@ -107,7 +107,7 @@ export function LegalDocument({ document }: { document: LegalDocumentData }) {
                 ))}
               </div>
               <div className="border-t border-forest-900/8 bg-cream-100/40 px-5 py-4 text-[9px] leading-relaxed text-muted sm:px-7">
-                These policies were prepared for the TalkNest BD demo website.
+                These policies explain how TalkNest BD handles your information.
                 They will be reviewed with legal advice before a live service is
                 launched.
               </div>

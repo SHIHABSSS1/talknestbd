@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   MapPin,
+  MessageSquare,
   Package,
   Settings,
   UserRound,
@@ -21,6 +22,7 @@ import { cn, initials } from "@/lib/utils";
 const links = [
   { label: "Dashboard", href: "/account", icon: LayoutDashboard },
   { label: "My Orders", href: "/account/orders", icon: Package },
+  { label: "My Reviews", href: "/account/reviews", icon: MessageSquare },
   { label: "Saved Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Wishlist", href: "/wishlist", icon: Heart },
   { label: "Audio Library", href: "/audio-books", icon: Headphones },

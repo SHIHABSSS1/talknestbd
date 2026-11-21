@@ -524,7 +524,7 @@ export function DashboardOverview() {
               <p className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.1em] text-brand-100">
                 <Activity size={11} /> Workspace
               </p>
-              <p className="mt-1 text-[12px] font-semibold">Demo mode · Browser only</p>
+              <p className="mt-1 text-[12px] font-semibold">Live workspace · Database connected</p>
             </div>
           </div>
         </div>
@@ -846,7 +846,7 @@ export function DashboardOverview() {
               {[
                 { label: "Edit hero banner", hint: "Title & description", href: "/admin/sections/hero", icon: ImageIcon },
                 { label: "Upload a book", hint: "Add to the catalog", href: "/admin/books", icon: LibraryBig },
-                { label: "Manage orders", hint: "Demo order list", href: "/admin/orders", icon: ShoppingBag },
+                { label: "Manage orders", hint: "Review and update live orders", href: "/admin/orders", icon: ShoppingBag },
                 { label: "Site settings", hint: "Workspace options", href: "/admin/settings", icon: Settings2 },
               ].map((action) => (
                 <li key={action.href}>
@@ -910,11 +910,9 @@ export function DashboardOverview() {
         </div>
       </div>
 
-      {/* Demo disclaimer */}
       <p className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3 text-center text-[10px] leading-relaxed text-muted">
-        Demo admin panel — no backend connection. Orders, books and request counts are read
-        from this browser only; sample figures are clearly labelled wherever live data is
-        not available.
+        Orders, reviews and requests are read from the live database. Catalogue and
+        community features still managed in this browser are clearly labelled.
       </p>
     </div>
   );

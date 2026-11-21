@@ -151,8 +151,7 @@ export default async function UpSalePage() {
               </p>
               <p className="mt-1 text-[10.5px] leading-relaxed text-muted">
                 If you bought it from TalkNest, finish reading, then estimate your 50%
-                selling payout in a minute. This is a demo storefront — no real payment
-                or pickup takes place.
+                selling payout in a minute. Our team confirms the payout and pickup.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -166,10 +165,9 @@ export default async function UpSalePage() {
           </div>
 
           <p className="mt-4 text-center text-[9px] leading-relaxed text-muted">
-            Demo pricing only. Up-sale copies are sample listings; condition and stock
-            are not verified by a real fulfilment team.{" "}
+            Prices shown are indicative. Condition and stock are confirmed before dispatch.{" "}
             <Link href="/terms" className="font-semibold text-brand-700 hover:text-brand-800">
-              Read the demo terms
+              Read our terms
             </Link>
           </p>
         </Container>

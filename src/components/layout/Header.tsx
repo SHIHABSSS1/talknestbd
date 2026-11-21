@@ -173,7 +173,7 @@ export function Header() {
               </span>
             </div>
             <div className="flex items-center gap-4 text-muted sm:gap-5">
-              <Link href="/account/orders" className="hidden transition-colors hover:text-brand-600 sm:inline">
+              <Link href="/track-order" className="hidden transition-colors hover:text-brand-600 sm:inline">
                 Track Order
               </Link>
               <Link href="/wholesale" className="hidden transition-colors hover:text-brand-600 md:inline">

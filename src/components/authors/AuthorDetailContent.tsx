@@ -31,7 +31,7 @@ export function AuthorDetailContent({ slug }: { slug: string }) {
           <div className="mx-auto max-w-lg rounded-2xl border border-line bg-white p-8 text-center">
             <h1 className="font-display text-xl font-bold text-ink">Author not found</h1>
             <p className="mt-2 text-sm text-muted">
-              This profile may have been added in another browser. Demo author profiles are stored locally.
+              This profile may have been added in another browser. Author profiles are stored in this browser.
             </p>
             <Link href="/authors" className="mt-5 inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-4 text-[11px] font-semibold text-white hover:bg-brand-700">
               <ArrowLeft size={13} /> All authors

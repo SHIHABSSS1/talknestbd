@@ -805,7 +805,7 @@ export function BookForm({
           )}
           {showPreview && (
             <p className="text-[9px] text-muted">
-              Demo note: books saved from a database-backed shelf or category are published for everyone; other uploads stay in this browser.
+              Storage note: books saved from a database-backed shelf or category are published for everyone; other uploads stay in this browser.
             </p>
           )}
         </div>

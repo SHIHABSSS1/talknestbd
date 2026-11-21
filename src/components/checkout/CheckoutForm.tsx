@@ -16,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useStore, useHydrated } from "@/lib/store";
+import { useSession } from "@/lib/auth-client";
 import { accountFetch } from "@/lib/account-client";
 import type {
   AddressFormValues,
@@ -49,11 +50,15 @@ const paymentOptions: {
   title: string;
   subtitle: string;
   icon: typeof Banknote;
+  soon?: boolean;
 }[] = [
   { value: "cod", title: "Cash on delivery", subtitle: "Pay when your books arrive", icon: Banknote },
-  { value: "bkash", title: "bKash", subtitle: "Mobile banking", icon: Smartphone },
-  { value: "nagad", title: "Nagad", subtitle: "Mobile banking", icon: Smartphone },
+  { value: "bkash", title: "bKash", subtitle: "Online payment · Coming soon", icon: Smartphone, soon: true },
+  { value: "nagad", title: "Nagad", subtitle: "Online payment · Coming soon", icon: Smartphone, soon: true },
 ];
+
+/** Gateway labels reserved for the upcoming online-payment integration. */
+const paymentMethods = ["Visa", "Mastercard", "bKash", "Nagad", "Rocket"];
 
 function addressToValues(address: SavedAddress): AddressFormValues {
   return {
@@ -84,8 +89,11 @@ export function CheckoutForm() {
   const [note, setNote] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const { data: session } = useSession();
+  const isGuest = !session?.user;
 
   useEffect(() => {
+    if (isGuest) return;
     accountFetch<SavedAddress[]>("/api/account/addresses")
       .then((addresses) => {
         setSavedAddresses(addresses);
@@ -98,7 +106,7 @@ export function CheckoutForm() {
       .catch(() => {
         // The form still works with a new address.
       });
-  }, []);
+  }, [isGuest]);
 
   const selectedAddress = savedAddresses.find((address) => address.id === selectedId);
   const activeAddress: AddressFormValues =
@@ -149,7 +157,9 @@ export function CheckoutForm() {
     if (activeAddress.phone.replace(/\D/g, "").length < 11) {
       next.phone = "Enter a valid 11-digit mobile number";
     }
-    if (activeAddress.email && !/^\S+@\S+\.\S+$/.test(activeAddress.email)) {
+    if (isGuest && !activeAddress.email?.trim()) {
+      next.email = "Enter your email to receive the receipt";
+    } else if (activeAddress.email && !/^\S+@\S+\.\S+$/.test(activeAddress.email)) {
       next.email = "Enter a valid email address";
     }
     if (mode === "new") {
@@ -179,46 +189,66 @@ export function CheckoutForm() {
     setSubmitting(true);
 
     try {
-      const order = await accountFetch<Order>("/api/account/orders", {
-        method: "POST",
-        body: JSON.stringify({
-          items: items.map(({ slug, kind, title, price, meta, quantity }) => ({
-            slug,
-            kind,
-            title,
-            price,
-            meta,
-            quantity,
-          })),
-          subtotal: cartTotal,
-          deliveryCharge,
-          total,
-          paymentMethod,
-          deliveryMethod,
-          address: {
-            ...activeAddress,
-            email: activeAddress.email?.trim() || undefined,
-          },
-          note: note.trim() || undefined,
-          paymentNumber: paymentMethod === "cod" ? undefined : paymentNumber.trim(),
-          status: "Confirmed",
-        }),
-      });
+      const payload = {
+        items: items.map(({ slug, kind, title, price, meta, quantity }) => ({
+          slug,
+          kind,
+          title,
+          price,
+          meta,
+          quantity,
+        })),
+        subtotal: cartTotal,
+        deliveryCharge,
+        total,
+        paymentMethod,
+        deliveryMethod,
+        address: {
+          ...activeAddress,
+          email: activeAddress.email?.trim() || undefined,
+        },
+        note: note.trim() || undefined,
+        paymentNumber: paymentMethod === "cod" ? undefined : paymentNumber.trim(),
+        status: "Confirmed",
+      };
 
-      if (mode === "new" && saveNewAddress) {
-        await accountFetch("/api/account/addresses", {
+      let order: Order;
+      if (isGuest) {
+        const result = await accountFetch<{ order: Order; token: string }>(
+          "/api/guest/orders",
+          { method: "POST", body: JSON.stringify({ ...payload, email: activeAddress.email!.trim() }) },
+        );
+        order = result.order;
+        const saved = JSON.parse(
+          typeof window === "undefined" ? "{}" : window.localStorage.getItem("talknestbd-guest-orders") || "{}",
+        ) as Record<string, string>;
+        saved[order.id] = result.token;
+        window.localStorage.setItem("talknestbd-guest-orders", JSON.stringify(saved));
+      } else {
+        order = await accountFetch<Order>("/api/account/orders", {
           method: "POST",
-          body: JSON.stringify({
-            ...values,
-            email: values.email?.trim() || undefined,
-            isDefault: savedAddresses.length === 0,
-          }),
+          body: JSON.stringify(payload),
         });
+        if (mode === "new" && saveNewAddress) {
+          await accountFetch("/api/account/addresses", {
+            method: "POST",
+            body: JSON.stringify({
+              ...values,
+              email: values.email?.trim() || undefined,
+              isDefault: savedAddresses.length === 0,
+            }),
+          }).catch(() => undefined);
+        }
       }
 
       notify("Order placed successfully");
       clearCart();
-      router.push(`/orders/${order.id}`);
+      // Redirect to fixed, app-owned routes; the id is validated server-side.
+      if (isGuest) {
+        router.push("/track-order");
+      } else {
+        router.push("/account/orders");
+      }
     } catch (error) {
       notify(error instanceof Error ? error.message : "Could not place the order.");
       setSubmitting(false);
@@ -230,8 +260,8 @@ export function CheckoutForm() {
       <div className="mb-5 flex items-start gap-2.5 rounded-2xl border border-gold-500/25 bg-gold-500/8 px-4 py-3">
         <ShieldCheck size={17} className="mt-0.5 shrink-0 text-gold-600" />
         <p className="text-[11px] leading-relaxed text-forest-800">
-          <strong>Demo checkout:</strong> No real payment will be taken. Your
-          order is saved to your account so you can view the receipt later.
+          <strong>Secure checkout:</strong> Cash on delivery is the available
+          payment method. Your order is saved so you can view the receipt later.
         </p>
       </div>
 
@@ -368,13 +398,14 @@ export function CheckoutForm() {
                   <button
                     key={option.value}
                     type="button"
+                    disabled={option.soon}
                     onClick={() => {
                       setPaymentMethod(option.value);
                       setPaymentNumber("");
                       setErrors({});
                     }}
                     className={cn(
-                      "rounded-2xl border p-3.5 text-left transition-all",
+                      "rounded-2xl border p-3.5 text-left transition-all disabled:cursor-not-allowed disabled:opacity-55",
                       active
                         ? "border-forest-700 bg-forest-50/80 ring-1 ring-forest-700/20"
                         : "border-forest-900/10 bg-cream-50 hover:border-forest-900/25",
@@ -396,10 +427,43 @@ export function CheckoutForm() {
                     <span className="mt-2 block text-xs font-semibold text-forest-950">
                       {option.title}
                     </span>
-                    <span className="block text-[9px] text-muted">{option.subtitle}</span>
+                    <span className="flex items-center gap-1 text-[9px] text-muted">
+                      {option.subtitle}
+                      {option.soon && (
+                        <span className="rounded-full bg-gold-300/25 px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wide text-gold-600">
+                          Soon
+                        </span>
+                      )}
+                    </span>
                   </button>
                 );
               })}
+            </div>
+
+            <div className="mt-4 rounded-2xl border border-dashed border-forest-900/15 bg-white/60 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-[11px] font-semibold text-forest-900">
+                  Online payment
+                </p>
+                <span className="rounded-full bg-forest-100 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wide text-forest-700">
+                  Coming soon
+                </span>
+              </div>
+              <p className="mt-1 text-[10px] leading-relaxed text-muted">
+                Card, mobile banking and gateway checkout are being prepared. The payment
+                layer is designed for a drop-in integration — for now, choose cash on
+                delivery.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {paymentMethods.map((method) => (
+                  <span
+                    key={method}
+                    className="rounded-lg border border-forest-900/10 bg-cream-50 px-2.5 py-1.5 text-[9px] font-medium text-forest-800"
+                  >
+                    {method}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {paymentMethod !== "cod" && (
@@ -424,8 +488,8 @@ export function CheckoutForm() {
                   </span>
                 )}
                 <span className="mt-1 block text-[9px] leading-relaxed text-muted">
-                  No money will be charged on this demo site. Payment
-                  instructions will be sent after your order is confirmed.
+                  No money is charged at checkout. Payment instructions are
+                  sent after your order is confirmed.
                 </span>
               </label>
             )}
@@ -475,7 +539,7 @@ export function CheckoutForm() {
               <Link href="/terms" className="font-semibold text-clay-600 hover:text-clay-500">
                 Terms & Conditions
               </Link>
-              . This order will be saved in your browser as a demo.
+              . Your order is saved securely and a receipt is sent by email.
             </p>
           </div>
           <div className="mt-3 flex items-center justify-between rounded-2xl border border-forest-900/8 bg-forest-50/50 px-4 py-3 text-[10px] text-forest-800/75">

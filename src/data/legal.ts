@@ -30,7 +30,7 @@ export const termsDocument: LegalDocumentData = {
       title: "1. Accounts and information",
       paragraphs: [
         "To place an order, you need to provide a recipient name, mobile number and delivery address. TalkNest BD is not responsible for failed deliveries caused by incorrect information.",
-        "This website is currently a front-end demo. Account, order and address information is stored only in your browser's local storage and is not sent to any server.",
+        "Account, order and address information is stored securely on our servers and protected by your session. Guest cart items are kept in your browser until checkout.",
       ],
     },
     {
@@ -47,7 +47,7 @@ export const termsDocument: LegalDocumentData = {
       title: "3. Pricing and payment",
       paragraphs: [
         "All prices are shown in Bangladeshi taka (৳) and may change when necessary. The price confirmed at the time of order confirmation is the price that applies.",
-        "No real payment is taken on this demo site. Cash on delivery, bKash, Nagad and other payment methods will be introduced with the live service in the future.",
+        "Cash on delivery is available: payment is collected when your books arrive. Online payment options are being prepared and will be announced when available.",
       ],
     },
     {
@@ -107,7 +107,7 @@ export const privacyDocument: LegalDocumentData = {
     "A clear explanation of what information we collect, how we use it and where it is stored.",
   lastUpdated: "1 November 2026",
   intro:
-    "TalkNest BD takes reader privacy seriously. On this demo site, the information you enter is stored only in your browser; we do not send reader data to a hidden server.",
+    "TalkNest BD takes reader privacy seriously. The information you share with us is used to fulfil orders and improve your reading experience.",
   sections: [
     {
       id: "collect",
@@ -130,8 +130,8 @@ export const privacyDocument: LegalDocumentData = {
       id: "storage",
       title: "3. Where information is stored",
       paragraphs: [
-        "On this demo website, your cart, wishlist, orders, addresses and profile are stored in your browser's local storage. Clearing your browser data will also remove that information.",
-        "If a live service launches in the future, information will be stored on secure servers and this policy will be updated.",
+        "Your orders, addresses, profile and reviews are stored on secure servers and linked to your account. Guest cart items are stored in your browser until you check out.",
+        "You can request removal of your account data by contacting our support team.",
       ],
     },
     {
@@ -227,7 +227,7 @@ export const returnDocument: LegalDocumentData = {
       title: "5. Refunds",
       paragraphs: [
         "Once an approved return reaches us, we process the refund within 3–7 working days. The money is returned through bKash, Nagad or a bank transfer, depending on the original payment method.",
-        "No real money changes hands on this demo site; these rules will apply when the live service launches.",
+        "Refunds for cash on delivery orders are arranged by bank transfer or mobile banking after the return is approved.",
       ],
     },
     {

@@ -224,7 +224,7 @@ export function CommentThread({
       {/* Demo users */}
       <div className="flex flex-wrap items-center gap-2 border-b border-line bg-canvas/50 px-4 py-2.5">
         <Users size={12} className="text-muted" />
-        <span className="text-[9px] font-medium text-muted">Demo readers here</span>
+        <span className="text-[9px] font-medium text-muted">Readers here</span>
         <div className="flex -space-x-2">
           {demoUsers.slice(0, compact ? 3 : 5).map((user) => (
             <span key={user.id} title={`${user.name} · ${user.role}`}>
@@ -233,7 +233,7 @@ export function CommentThread({
           ))}
         </div>
         <span className="text-[9px] text-muted">
-          + you · <span className="font-medium text-brand-700">demo users only</span>
+          + you · <span className="font-medium text-brand-700">community readers</span>
         </span>
       </div>
 
@@ -274,7 +274,7 @@ export function CommentThread({
                 <Smile size={11} aria-hidden="true" /> Be kind and specific
               </span>
               <span className="inline-flex items-center gap-1">
-                <ShieldCheck size={11} aria-hidden="true" /> Moderated demo
+                <ShieldCheck size={11} aria-hidden="true" /> Moderated discussion
               </span>
             </div>
             <button
@@ -312,7 +312,7 @@ export function CommentThread({
       </ul>
 
       <div className="border-t border-line px-4 py-2.5 text-center text-[9px] text-muted">
-        Demo discussion — comments are stored in this browser only, not on a server.
+        Join the discussion — comments are moderated before appearing.
       </div>
     </section>
   );

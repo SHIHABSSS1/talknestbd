@@ -1418,7 +1418,7 @@ export function AudioEditor({ label }: { label: string }) {
           <section className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3">
             <p className="flex items-start gap-2 text-[10px] leading-relaxed text-muted">
               <Headphones size={13} className="mt-0.5 shrink-0 text-brand-700" />
-              Demo note: audio files use hosted URLs (SoundHelix samples by default). Uploads and
+              Storage note: audio files use hosted URLs (SoundHelix samples by default). Uploads and
               player settings are stored in this browser only — no real payments.
             </p>
           </section>

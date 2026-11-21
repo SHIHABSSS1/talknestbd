@@ -211,9 +211,9 @@ export function StoriesWall() {
                       {playing ? <Pause size={17} className="fill-forest-950" /> : <Play size={17} className="ml-0.5 fill-forest-950" />}
                     </button>
                     <div className="min-w-0 flex-1">
-                      <p className="text-[10px] font-semibold">Voice story · Demo audio</p>
+                      <p className="text-[10px] font-semibold">Voice story · Audio</p>
                       <p className="text-[8px] text-cream-100/45">
-                        {active.duration ?? "03:48"} · {active.audioDataUrl || active.audioUrl ? "Reader audio" : "SoundHelix demo track"}
+                        {active.duration ?? "03:48"} · {active.audioDataUrl || active.audioUrl ? "Reader audio" : "Sample audio track"}
                       </p>
                       <div className="mt-2 flex h-5 items-center gap-[2px]">
                         {[40, 70, 50, 85, 55, 75, 45, 90, 60, 70, 48, 82, 44, 65, 38, 78].map((height, index) => (
@@ -237,7 +237,7 @@ export function StoriesWall() {
               {active.type === "pdf" && (
                 <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-clay-500/20 bg-clay-500/5 px-3 py-2.5 text-[9px] text-clay-600">
                   <FileText size={13} aria-hidden="true" />
-                  {active.attachmentName ? `PDF diary: ${active.attachmentName}` : "Demo PDF diary"}
+                  {active.attachmentName ? `PDF diary: ${active.attachmentName}` : "Reader PDF diary"}
                   {active.attachmentDataUrl && (
                     <a
                       href={active.attachmentDataUrl}

@@ -346,7 +346,7 @@ export function VideoGallery() {
               />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-[9px] text-cream-100/45">
-              <span>Host: {player.host} · Demo video, loaded from YouTube</span>
+              <span>Host: {player.host} · Video loaded from YouTube</span>
               <Link
                 href={siteConfig.youtube}
                 target="_blank"

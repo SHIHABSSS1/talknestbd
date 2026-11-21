@@ -349,13 +349,13 @@ export function SiteSettings({
 
           {tab === "tracking" && (
             <>
-              <Section title="Facebook tracking" description="Configure Pixel and Conversions API-style events (demo settings only).">
+              <Section title="Facebook tracking" description="Configure Pixel and Conversions API-style events (preview settings).">
                 <label className="block"><span className={subLabel}>Pixel ID</span><input value={draft.tracking.facebookPixelId} onChange={(event) => setGroup("tracking", { ...draft.tracking, facebookPixelId: event.target.value })} placeholder="000000000000000" className={fieldClass} /></label>
                 <label className="block">
                   <span className={subLabel}>Conversions API access token</span>
                   <input type="password" value={draft.tracking.facebookApiToken} onChange={(event) => setGroup("tracking", { ...draft.tracking, facebookApiToken: event.target.value })} className={fieldClass} autoComplete="off" />
                   <span className="mt-1 block text-[9px] leading-relaxed text-gold-600">
-                    Demo only — never enter a real access token. This value is stored in your browser, not on a server.
+                    Preview only — never enter a real access token. This value is stored in your browser, not on a server.
                   </span>
                 </label>
                 <label className="block"><span className={subLabel}>Test event code</span><input value={draft.tracking.testEventCode} onChange={(event) => setGroup("tracking", { ...draft.tracking, testEventCode: event.target.value })} className={fieldClass} /></label>
@@ -378,7 +378,7 @@ export function SiteSettings({
 }, null, 2)}
                   </pre>
                   <p className="text-[10px] leading-relaxed text-muted">
-                    This demo stores settings in your browser only. Real server-side tracking needs a backend endpoint that sends events to Meta with the access token kept secret.
+                    This preview stores settings in your browser only. Real server-side tracking needs a backend endpoint that sends events to Meta with the access token kept secret.
                   </p>
                 </Section>
               )}
@@ -437,7 +437,7 @@ export function SiteSettings({
           )}
 
           {tab === "alerts" && (
-            <Section title="Admin alerts" description="Choose which activity should raise a notification in the demo panel.">
+            <Section title="Admin alerts" description="Choose which activity should raise a notification in the admin panel.">
               <div className="grid gap-2 sm:grid-cols-2">
                 {([
                   ["newOrders", "New orders", "A customer places an order"],
@@ -492,7 +492,7 @@ export function SiteSettings({
                   </label>
                 </div>
               </Section>
-              <Section title="Storage overview" description="Keys currently used by this demo.">
+              <Section title="Storage overview" description="Keys currently used by this browser.">
                 <ul className="grid gap-1.5 sm:grid-cols-2">
                   {["cart / wishlist", "orders / addresses / profile", "hero / trust / categories (now in the database)", "books / shelves / audio / stories", "reviews / requests", "video quiz / comments", "site settings / admin access"].map((key) => (
                     <li key={key} className="rounded-[6px] border border-line bg-white px-2.5 py-2 text-[10px] text-muted">{key}</li>
@@ -553,7 +553,7 @@ export function SiteSettings({
           <div className="rounded-[8px] border border-dashed border-line bg-white/60 px-4 py-3">
             <p className="flex items-start gap-2 text-[10px] leading-relaxed text-muted">
               <Bell size={13} className="mt-0.5 shrink-0 text-brand-700" aria-hidden="true" />
-              Demo note: settings, tokens and password are stored in this browser only. No verification or tracking data is sent to Google or Meta from this demo.
+              Storage note: settings, tokens and password are stored in this browser only. No verification or tracking data is sent to Google or Meta from this browser.
             </p>
           </div>
         </div>

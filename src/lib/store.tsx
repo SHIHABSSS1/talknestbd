@@ -10,6 +10,8 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { useSession } from "@/lib/auth-client";
+import { accountFetch } from "@/lib/account-client";
 
 export type StoreKind = "book" | "sunnah" | "audio";
 
@@ -77,21 +79,59 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [hydrated, setHydrated] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const syncedFor = useRef<string | null>(null);
 
   useEffect(() => {
-    const savedCart = readJSON<CartItem[]>(CART_KEY, []);
     const savedWishlist = readJSON<string[]>(WISH_KEY, []);
-    if (Array.isArray(savedCart)) {
-      setItems(savedCart.filter((item) => item && item.slug && item.quantity > 0));
-    }
     if (Array.isArray(savedWishlist)) setWishlist(savedWishlist);
-    setHydrated(true);
-  }, []);
+
+    const guestCart = readJSON<CartItem[]>(CART_KEY, []).filter(
+      (item) => item && item.slug && item.quantity > 0,
+    );
+
+    if (!userId) {
+      setItems(guestCart);
+      setHydrated(true);
+      return;
+    }
+
+    // Signed in: pull the account cart from the API and merge any guest cart
+    // once per login, then keep localStorage for future guest visits only.
+    let cancelled = false;
+    (async () => {
+      try {
+        if (guestCart.length && syncedFor.current !== userId) {
+          await Promise.all(
+            guestCart.map((item) =>
+              accountFetch("/api/cart", {
+                method: "POST",
+                body: JSON.stringify(item),
+              }).catch(() => undefined),
+            ),
+          );
+          syncedFor.current = userId;
+          window.localStorage.removeItem(CART_KEY);
+        }
+        const data = await accountFetch<{ items: CartItem[] }>("/api/cart");
+        if (!cancelled) setItems(data.items ?? []);
+      } catch {
+        if (!cancelled) setItems([]);
+      } finally {
+        if (!cancelled) setHydrated(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
 
   useEffect(() => {
-    if (!hydrated) return;
+    // Guest carts still persist locally; account carts live in Postgres.
+    if (!hydrated || userId) return;
     window.localStorage.setItem(CART_KEY, JSON.stringify(items));
-  }, [items, hydrated]);
+  }, [items, hydrated, userId]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -123,32 +163,61 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         }
         return [...previous, { ...item, quantity }];
       });
+      if (userId) {
+        void accountFetch("/api/cart", {
+          method: "POST",
+          body: JSON.stringify({ ...item, quantity }),
+        }).catch(() => undefined);
+      }
       notify("Added to cart");
     },
-    [notify],
+    [notify, userId],
   );
 
-  const removeItem = useCallback((slug: string, kind: StoreKind) => {
-    setItems((previous) =>
-      previous.filter((line) => !(line.slug === slug && line.kind === kind)),
-    );
-  }, []);
-
-  const setQuantity = useCallback((slug: string, kind: StoreKind, quantity: number) => {
-    if (quantity < 1) {
+  const removeItem = useCallback(
+    (slug: string, kind: StoreKind) => {
       setItems((previous) =>
         previous.filter((line) => !(line.slug === slug && line.kind === kind)),
       );
-      return;
-    }
-    setItems((previous) =>
-      previous.map((line) =>
-        line.slug === slug && line.kind === kind ? { ...line, quantity } : line,
-      ),
-    );
-  }, []);
+      if (userId) {
+        void accountFetch("/api/cart", {
+          method: "DELETE",
+          body: JSON.stringify({ slug, kind }),
+        }).catch(() => undefined);
+      }
+    },
+    [userId],
+  );
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const setQuantity = useCallback(
+    (slug: string, kind: StoreKind, quantity: number) => {
+      setItems((previous) =>
+        quantity < 1
+          ? previous.filter((line) => !(line.slug === slug && line.kind === kind))
+          : previous.map((line) =>
+              line.slug === slug && line.kind === kind ? { ...line, quantity } : line,
+            ),
+      );
+      if (userId) {
+        void accountFetch("/api/cart", {
+          method: "PATCH",
+          body: JSON.stringify({ slug, kind, quantity }),
+        }).catch(() => undefined);
+      }
+    },
+    [userId],
+  );
+
+  const clearCart = useCallback(() => {
+    setItems([]);
+    if (userId) {
+      void accountFetch("/api/cart?all=true", { method: "DELETE" }).catch(
+        () => undefined,
+      );
+    } else {
+      window.localStorage.removeItem(CART_KEY);
+    }
+  }, [userId]);
 
   const toggleWishlist = useCallback(
     (slug: string) => {

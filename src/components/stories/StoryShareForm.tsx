@@ -151,7 +151,7 @@ export function StoryShareForm() {
         </h2>
         <p className="mx-auto mt-2 max-w-md text-xs leading-relaxed text-muted">
           Our editorial team will read and review your story. Once approved, it
-          will be published on the “Stories from the Heart” page. This demo site
+          will be published on the “Stories from the Heart” page. This site
           does not send any information to a server.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -269,7 +269,7 @@ export function StoryShareForm() {
                         {recording ? "Recording..." : "Tell your story into the microphone"}
                       </p>
                       <p className="mt-1 text-[10px] text-muted">
-                        {recording ? formatTime(seconds) : "Keep it under 5 minutes · Audio is not uploaded on this demo site"}
+                        {recording ? formatTime(seconds) : "Keep it under 5 minutes · Audio is not uploaded"}
                       </p>
                       <div className="mt-3 flex justify-center gap-2">
                         {!recording ? (
@@ -330,7 +330,7 @@ export function StoryShareForm() {
                   )}
                   {errors.voice && <p className="mt-2 text-[9px] text-clay-600">{errors.voice}</p>}
                   <p className="mt-2 text-center text-[8px] text-muted">
-                    Demo: if you can&apos;t grant permission, switch to “Write” mode and submit your story as text.
+                    Tip: if you can&apos;t grant permission, switch to “Write” mode and submit your story as text.
                   </p>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export function StoryShareForm() {
                     {fileName || "Choose a PDF file"}
                   </span>
                   <span className="mt-0.5 text-[9px] text-muted">
-                    Max 10 MB · Files are not uploaded in this demo
+                    Max 10 MB · Files are not uploaded
                   </span>
                   <input
                     type="file"

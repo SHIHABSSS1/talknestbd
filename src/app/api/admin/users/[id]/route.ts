@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { hashPassword } from "better-auth/crypto";
 
@@ -50,7 +50,7 @@ export async function PATCH(request: Request, context: Context) {
   const [taken] = await db
     .select({ id: users.id })
     .from(users)
-    .where(and(eq(users.email, email), eq(users.id, id)))
+    .where(and(eq(users.email, email), ne(users.id, id)))
     .limit(1);
   if (taken) return jsonError("An account with that email already exists.", 409);
 

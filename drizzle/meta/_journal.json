@@ -71,6 +71,13 @@
       "when": 1795232729785,
       "tag": "0009_curious_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795238264537,
+      "tag": "0010_brown_corsair",
+      "breakpoints": true
     }
   ]
 }

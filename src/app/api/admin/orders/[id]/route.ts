@@ -7,17 +7,22 @@ import { db } from "@/lib/db";
 import { orders } from "@/lib/db/schema";
 
 const statusSchema = z.object({
-  status: z.enum([
-    "Confirmed",
-    "Processing",
-    "Out for delivery",
-    "confirmed",
-    "processing",
-    "out_for_delivery",
-  ]),
+  status: z
+    .enum([
+      "Confirmed",
+      "Processing",
+      "Out for delivery",
+      "confirmed",
+      "processing",
+      "out_for_delivery",
+    ])
+    .optional(),
+  paymentStatus: z.enum(["pending", "paid", "refunded"]).optional(),
 });
 
-function toDbStatus(status: z.infer<typeof statusSchema>["status"]): string {
+function toDbStatus(
+  status: NonNullable<z.infer<typeof statusSchema>["status"]>,
+): string {
   const value = status.toLowerCase().replace(/[\s-]+/g, "_");
   if (value === "out_for_delivery" || value === "outfordelivery") {
     return "out_for_delivery";
@@ -47,12 +52,21 @@ export async function PATCH(
   const parsed = statusSchema.safeParse(payload);
   if (!parsed.success) return jsonError("Invalid status.", 400);
 
+  const update: Record<string, unknown> = { updatedAt: new Date() };
+  if (parsed.data.status) update.status = toDbStatus(parsed.data.status);
+  if (parsed.data.paymentStatus) update.paymentStatus = parsed.data.paymentStatus;
+  if (Object.keys(update).length === 1) return jsonError("No update provided.", 400);
+
   const [row] = await db
     .update(orders)
-    .set({ status: toDbStatus(parsed.data.status), updatedAt: new Date() })
+    .set(update)
     .where(eq(orders.id, id))
     .returning();
 
   if (!row) return jsonError("Order not found.", 404);
-  return NextResponse.json({ id: row.id, status: row.status });
+  return NextResponse.json({
+    id: row.id,
+    status: row.status,
+    paymentStatus: row.paymentStatus,
+  });
 }

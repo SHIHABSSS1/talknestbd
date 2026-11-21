@@ -1,5 +1,8 @@
 import "server-only";
 
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
 import { Resend } from "resend";
 
 export type OtpEmailType =
@@ -122,4 +125,102 @@ export async function sendOtpEmail({
     console.error("[resend] failed to send OTP email:", error.message);
     throw new Error("Could not send the verification email. Please try again.");
   }
+}
+
+function esc(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Branded order receipt email. Delivery failures are surfaced to the caller so
+ * the order API can log them without discarding the saved order.
+ */
+export async function sendOrderReceiptEmail({
+  email,
+  order,
+}: {
+  email: string;
+  order: {
+    id: string;
+    createdAt: string;
+    total: number;
+    subtotal: number;
+    deliveryCharge: number;
+    paymentMethod: string;
+    deliveryMethod: string;
+    address: { name?: string; phone?: string; email?: string; [key: string]: unknown };
+    items: { title: string; quantity: number; price: number }[];
+  };
+}): Promise<void> {
+  if (!resend || !process.env.RESEND_FROM_EMAIL) {
+    throw new Error("Email delivery is not configured.");
+  }
+  const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://talknestbd.com";
+
+  // Embed the official logo as an inline CID image so it renders in every
+  // email client regardless of the site URL (localhost in dev, CDN in prod).
+  const logoCid = "talknest-logo";
+  const logoPath = path.join(process.cwd(), "public", "talknest", "logo-colored.png");
+  let logoAttachment: { filename: string; content: Buffer; contentId: string; contentType: string } | null = null;
+  try {
+    const content = await readFile(logoPath);
+    logoAttachment = {
+      filename: "talknest-logo.png",
+      content,
+      contentId: logoCid,
+      contentType: "image/png",
+    };
+  } catch (error) {
+    console.error("[email] could not load receipt logo:", error);
+  }
+  const logoSrc = logoAttachment ? `cid:${logoCid}` : `${site}/talknest/logo-colored.png`;
+
+  const rows = order.items
+    .map(
+      (item) =>
+        `<tr><td style="padding:8px 0;border-bottom:1px solid #e4dccb;">${esc(item.title)}</td>` +
+        `<td style="padding:8px 0;border-bottom:1px solid #e4dccb;text-align:center;">${esc(item.quantity)}</td>` +
+        `<td style="padding:8px 0;border-bottom:1px solid #e4dccb;text-align:right;">৳${esc(item.price.toFixed(2))}</td></tr>`,
+    )
+    .join("");
+  const money = (value: number) => `৳${value.toFixed(2)}`;
+
+  const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#faf7f0;font-family:Arial,sans-serif;color:#123b2a;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e4dccb;border-radius:12px;">
+    <tr><td style="padding:24px 28px;border-bottom:1px solid #e4dccb;">
+      <img src="${logoSrc}" alt="TalkNest BD" width="180" style="display:block;max-width:180px;height:auto;" />
+    </td></tr>
+    <tr><td style="padding:24px 28px;">
+      <h1 style="font-size:20px;margin:0 0 6px;">Thank you for your order</h1>
+      <p style="font-size:13px;color:#5b6b63;margin:0;">Order ${esc(order.id)} · ${esc(new Date(order.createdAt).toLocaleDateString("en-GB"))}</p>
+      <p style="font-size:13px;margin:16px 0;">Hello ${esc(order.address.name || "reader")}, your order is confirmed. We'll contact you before delivery.</p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;margin-top:16px;">
+        <tr><th align="left" style="padding:8px 0;border-bottom:1px solid #e4dccb;">Item</th><th align="center" style="padding:8px 0;border-bottom:1px solid #e4dccb;">Qty</th><th align="right" style="padding:8px 0;border-bottom:1px solid #e4dccb;">Price</th></tr>
+        ${rows}
+      </table>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:13px;margin-top:18px;">
+        <tr><td>Subtotal</td><td align="right">${money(order.subtotal)}</td></tr>
+        <tr><td>Delivery</td><td align="right">${money(order.deliveryCharge)}</td></tr>
+        <tr><td style="padding-top:8px;font-weight:bold;font-size:15px;">Total</td><td align="right" style="padding-top:8px;font-weight:bold;font-size:15px;">${money(order.total)}</td></tr>
+      </table>
+      <p style="font-size:12px;color:#5b6b63;margin-top:18px;">Payment: ${esc(order.paymentMethod)} · Delivery: ${esc(order.deliveryMethod)}</p>
+      <p style="font-size:12px;color:#5b6b63;">Contact: ${esc(order.address.phone || "")} ${esc(order.address.email || "")}</p>
+    </td></tr>
+    <tr><td style="padding:18px 28px;background:#faf7f0;font-size:11px;color:#5b6b63;">
+      TalkNest BD · 12/A Bailey Road, Dhaka 1000 · ${esc(site)}
+    </td></tr>
+  </table></body></html>`;
+
+  const { error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL!,
+    to: [email],
+    subject: `TalkNest BD — Receipt for order ${order.id}`,
+    html,
+    ...(logoAttachment ? { attachments: [logoAttachment] } : {}),
+  });
+  if (error) throw new Error(error.message || "Could not send the receipt email.");
 }

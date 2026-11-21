@@ -340,7 +340,7 @@ export function AudioLibrary() {
               />
               {audioError && (
                 <p className="mt-2 text-[9px] text-gold-300/80">
-                  The demo audio could not load. Check your internet connection and try again.
+                  The audio could not load. Check your internet connection and try again.
                 </p>
               )}
             </div>
@@ -394,7 +394,7 @@ export function AudioLibrary() {
                         {item.title}
                       </span>
                       <span className="block text-[9px] text-cream-100/35">
-                        {accessible ? item.duration : "Unlocks after purchase"} · Demo audio
+                        {accessible ? item.duration : "Unlocks after purchase"} · Sample audio
                       </span>
                     </span>
                     <span className="shrink-0 text-[9px] text-cream-100/35">
@@ -494,10 +494,9 @@ export function AudioLibrary() {
         )}
 
         <div className="rounded-2xl border border-forest-900/8 bg-cream-50 px-4 py-3 text-[9px] leading-relaxed text-muted">
-          <strong className="text-forest-800">Demo note:</strong> The audio player
-          uses demo files. Before commercial release, real TalkNest narrator audio
-          will be added here. Free audio can be listened to without a cart or
-          payment.
+          <strong className="text-forest-800">Listening note:</strong> Sample
+          audio is provided for preview. Free titles play without a cart or
+          payment; other titles unlock after purchase.
         </div>
       </div>
     </div>

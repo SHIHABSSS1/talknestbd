@@ -121,7 +121,7 @@ export const audioDefaults: AudioContent = {
     description:
       "Some audiobooks are completely free. Every premium title includes a free first-chapter preview — unlock it to listen all the way through.",
     badges: ["Free titles", "Free first-chapter preview", "Buy once, listen forever"],
-    freeNote: "Free titles play without a cart — no payment needed in this demo.",
+    freeNote: "Free titles play without a cart — no payment needed.",
     previewNote: "Premium titles include one free chapter preview.",
   },
   pricing: {

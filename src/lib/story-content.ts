@@ -104,7 +104,7 @@ export const storyDefaults: StoryContent = {
     badge: "Voice · Written · PDF",
     successTitle: "Thank you — your story has reached us",
     successText:
-      "Our editorial team will review it and publish it if it fits the community. In this demo the request is stored only in this browser.",
+      "Our editorial team will review it and publish it if it fits the community.",
     tipsTitle: "Quick tips for a good story",
     tips: [
       "Start with a moment, not a summary",

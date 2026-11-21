@@ -55,7 +55,7 @@ export function BookDetailContent({ slug }: { slug: string }) {
           <div className="mx-auto max-w-lg rounded-[10px] border border-line bg-white p-8 text-center">
             <h1 className="font-display text-xl font-bold text-ink">Book not found</h1>
             <p className="mt-2 text-sm leading-relaxed text-muted">
-              This book may have been uploaded in another browser. Demo uploads are stored
+              This book may have been uploaded in another browser. Uploads are stored
               locally — add it again or browse the catalogue.
             </p>
             <Link

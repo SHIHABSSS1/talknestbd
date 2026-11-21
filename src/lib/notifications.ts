@@ -41,7 +41,7 @@ export const sampleNotifications: AdminNotification[] = [
   {
     id: "n4",
     title: "Orders awaiting dispatch",
-    detail: "3 demo orders are still being processed.",
+    detail: "3 orders are still being processed.",
     time: "Yesterday",
     tone: "warning",
     href: "/admin/orders",

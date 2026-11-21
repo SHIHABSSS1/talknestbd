@@ -222,7 +222,10 @@ export const orders = pgTable(
       .default("0"),
     total: numeric("total", { precision: 10, scale: 2 }).notNull(),
     paymentMethod: text("payment_method").notNull(),
+    paymentStatus: text("payment_status").notNull().default("pending"),
     paymentNumber: text("payment_number"),
+    /** Token used by guests to look up their order on /track-order. */
+    guestToken: text("guest_token"),
     deliveryMethod: text("delivery_method").notNull(),
     addressSnapshot: jsonb("address_snapshot").notNull(),
     note: text("note"),
@@ -391,3 +394,29 @@ export const reviews = pgTable(
 );
 
 export type ReviewRow = typeof reviews.$inferSelect;
+
+/** Server-side carts for signed-in readers. Guests keep their cart in localStorage. */
+export const cartItems = pgTable(
+  "cart_items",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    slug: text("slug").notNull(),
+    kind: text("kind").notNull(),
+    title: text("title").notNull(),
+    price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+    meta: text("meta"),
+    quantity: integer("quantity").notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.slug, table.kind] }),
+    index("cart_items_user_id_idx").on(table.userId),
+  ],
+);
+
+export type CartItemRow = typeof cartItems.$inferSelect;

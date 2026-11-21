@@ -66,7 +66,7 @@ export const reviewDefaults: ReviewContent = {
       "Every review is checked before publishing. Insulting or promotional content is not published.",
     successTitle: "Thank you — your review has been submitted",
     successText:
-      "Our team will check it and publish it after verification. Your review is saved in the demo database.",
+      "Our team will check it and publish it after verification. Thank you for sharing your experience.",
   },
 };
 

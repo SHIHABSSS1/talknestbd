@@ -811,7 +811,7 @@ export function WholesaleEditor({ label }: { label: string }) {
                   <textarea value={draft.freeOrderPage.intro.text} onChange={(e) => setFreeOrder("intro", { ...draft.freeOrderPage.intro, text: e.target.value })} rows={3} className={fieldClass} />
                 </label>
                 <label className="mt-3 block">
-                  <span className={subLabel}>Demo note</span>
+                  <span className={subLabel}>Delivery note</span>
                   <input value={draft.freeOrderPage.intro.note} onChange={(e) => setFreeOrder("intro", { ...draft.freeOrderPage.intro, note: e.target.value })} className={fieldClass} />
                 </label>
               </Section>

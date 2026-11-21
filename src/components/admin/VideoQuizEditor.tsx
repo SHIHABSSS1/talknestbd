@@ -607,7 +607,7 @@ export function VideoQuizEditor({ label }: { label: string }) {
             </div>
           </section>
           <p className="text-[10px] leading-relaxed text-muted">
-            Demo note: videos, quizzes and comments are stored in this browser only — nothing reaches a server.
+            Storage note: videos, quizzes and comments are stored in this browser only — nothing reaches a server.
           </p>
         </div>
       </div>

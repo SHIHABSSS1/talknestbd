@@ -1,7 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Official TalkNest BD branding from public/talknest.
+ * The white variant is used on dark surfaces (footer, dark headers).
+ */
 export function Logo({
   light = false,
   compact = false,
@@ -9,31 +13,39 @@ export function Logo({
   light?: boolean;
   compact?: boolean;
 }) {
-  return (
-    <Link href="/" className="group flex shrink-0 items-center gap-2.5">
-      <span className="grid h-9 w-9 place-items-center rounded-[6px] bg-brand-600 text-white transition-colors duration-200 group-hover:bg-brand-700 sm:h-10 sm:w-10">
-        <BookOpen size={20} strokeWidth={2} aria-hidden="true" />
-      </span>
-      <span className="leading-none">
+  if (compact) {
+    return (
+      <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+        <Image
+          src={light ? "/talknest/icon-white.png" : "/talknest/icon-colored.png"}
+          alt="TalkNest BD"
+          width={36}
+          height={36}
+          className="h-9 w-9 object-contain transition-transform duration-200 group-hover:scale-105 sm:h-10 sm:w-10"
+          priority
+        />
         <span
           className={cn(
-            "block text-[20px] font-bold leading-none tracking-tight sm:text-[22px]",
+            "text-[18px] font-bold leading-none tracking-tight sm:text-[20px]",
             light ? "text-white" : "text-ink",
           )}
         >
-          TalkNest<span className="text-sale">BD</span>
+          TalkNest BD
         </span>
-        {!compact && (
-          <span
-            className={cn(
-              "mt-1 block text-[8px] font-medium uppercase tracking-[0.16em] sm:text-[9px]",
-              light ? "text-white/55" : "text-muted",
-            )}
-          >
-            Books · Stories · Community
-          </span>
-        )}
-      </span>
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/" className="group flex shrink-0 items-center">
+      <Image
+        src={light ? "/talknest/logo-white.png" : "/talknest/logo-colored.png"}
+        alt="TalkNest BD — books, stories and community"
+        width={132}
+        height={52}
+        priority
+        className="h-auto w-[112px] object-contain object-left transition-transform duration-200 group-hover:scale-[1.03] sm:w-[132px]"
+      />
     </Link>
   );
 }
