@@ -348,3 +348,46 @@ export const wholesaleRequests = pgTable(
 );
 
 export type WholesaleRequestRow = typeof wholesaleRequests.$inferSelect;
+
+/**
+ * Reader reviews and admin-created reviews.
+ *
+ * `source` distinguishes user submissions from admin-authored reviews;
+ * only `approved` rows are published to the storefront, and only approved rows
+ * may be pinned. The reply columns are managed through the admin API.
+ */
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    source: text("source").notNull().default("user"),
+    status: text("status").notNull().default("pending"),
+    pinned: boolean("pinned").notNull().default(false),
+    rating: integer("rating").notNull(),
+    title: text("title").notNull(),
+    text: text("text").notNull(),
+    bookSlug: text("book_slug").notNull(),
+    bookTitle: text("book_title").notNull(),
+    bookKind: text("book_kind").notNull().default("book"),
+    name: text("name").notNull(),
+    location: text("location").notNull().default(""),
+    avatarColor: text("avatar_color").notNull().default("#1877F2"),
+    verified: boolean("verified").notNull().default(true),
+    reply: text("reply"),
+    replyDate: timestamp("reply_date", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("reviews_status_created_idx").on(table.status, table.createdAt),
+    index("reviews_book_slug_status_idx").on(table.bookSlug, table.status),
+    index("reviews_user_id_idx").on(table.userId),
+    index("reviews_pinned_idx").on(table.pinned),
+  ],
+);
+
+export type ReviewRow = typeof reviews.$inferSelect;

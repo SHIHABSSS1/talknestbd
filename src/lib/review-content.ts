@@ -1,8 +1,12 @@
-/** Editable review content for the homepage wall, /reviews and book detail pages. */
+/**
+ * Editable copy for the homepage review wall and the /reviews page.
+ *
+ * Review records live in the `reviews` table and are served by /api/reviews.
+ * The localStorage helpers below remain only so an admin can import copy saved
+ * in this browser before the database existed.
+ */
 
-import { reviews as staticReviews } from "@/data/reviews";
 import { sectionDefaults } from "@/lib/section-content";
-import type { Review } from "@/lib/types";
 
 export interface ReviewContent {
   section: { eyebrow: string; title: string; description: string; linkLabel: string };
@@ -23,7 +27,6 @@ export interface ReviewContent {
     successTitle: string;
     successText: string;
   };
-  reviews: Review[];
 }
 
 export interface SaveResult {
@@ -31,6 +34,9 @@ export interface SaveResult {
   message: string;
 }
 
+/** Live content_blocks key for the review copy (records live in `reviews`). */
+export const REVIEW_CONTENT_KEY = "reviews";
+/** Legacy browser-only key, used solely by the editor's import action. */
 export const REVIEW_STORAGE_KEY = "talknestbd-reviews-v1";
 
 const section = sectionDefaults.reviews;
@@ -60,34 +66,15 @@ export const reviewDefaults: ReviewContent = {
       "Every review is checked before publishing. Insulting or promotional content is not published.",
     successTitle: "Thank you — your review has been submitted",
     successText:
-      "Our team will check it and publish it after verification. In this demo the request is stored only in this browser.",
+      "Our team will check it and publish it after verification. Your review is saved in the demo database.",
   },
-  reviews: staticReviews,
 };
 
 export function cloneReviewDefaults(): ReviewContent {
   return JSON.parse(JSON.stringify(reviewDefaults)) as ReviewContent;
 }
 
-function isReview(value: unknown): value is Review {
-  if (!value || typeof value !== "object") return false;
-  const item = value as Record<string, unknown>;
-  return (
-    typeof item.id === "string" &&
-    typeof item.name === "string" &&
-    typeof item.location === "string" &&
-    typeof item.rating === "number" &&
-    typeof item.text === "string" &&
-    typeof item.bookTitle === "string" &&
-    typeof item.bookSlug === "string" &&
-    typeof item.date === "string" &&
-    typeof item.avatarColor === "string" &&
-    typeof item.verified === "boolean" &&
-    (item.reply === undefined || typeof item.reply === "string") &&
-    (item.replyDate === undefined || typeof item.replyDate === "string")
-  );
-}
-
+/** Legacy import: only section/page copy is read from the old document. */
 export function readReviewContent(): ReviewContent {
   const defaults = cloneReviewDefaults();
   if (typeof window === "undefined") return defaults;
@@ -95,11 +82,9 @@ export function readReviewContent(): ReviewContent {
     const raw = window.localStorage.getItem(REVIEW_STORAGE_KEY);
     if (!raw) return defaults;
     const parsed = JSON.parse(raw) as Partial<ReviewContent>;
-    if (!Array.isArray(parsed.reviews) || !parsed.reviews.every(isReview)) return defaults;
     return {
       section: { ...defaults.section, ...parsed.section },
       page: { ...defaults.page, ...parsed.page },
-      reviews: parsed.reviews,
     };
   } catch {
     return defaults;

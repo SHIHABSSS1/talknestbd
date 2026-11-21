@@ -70,6 +70,11 @@ import {
   WHOLESALE_CONTENT_KEY,
   wholesaleDefaults,
 } from "../wholesale-content";
+import {
+  REVIEW_CONTENT_KEY,
+  reviewDefaults,
+} from "../review-content";
+import { reviews as demoReviews } from "../../data/reviews";
 
 config({ path: [".env.local", ".env"] });
 
@@ -99,6 +104,7 @@ async function main() {
     [SELL_CONTENT_KEY]: sellDefaults,
     [USED_CONTENT_KEY]: usedDefaults,
     [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
+    [REVIEW_CONTENT_KEY]: reviewDefaults,
   };
 
   try {
@@ -117,6 +123,30 @@ async function main() {
         values (${key}, ${sql.json(document as never)})
       `;
       console.log(`Seeded content_blocks["${key}"] with the built-in demo document.`);
+    }
+
+    const reviewCount = await sql<{ n: number }[]>`
+      select count(*)::int as n from reviews
+    `;
+    if (reviewCount[0]?.n === 0) {
+      for (const review of demoReviews) {
+        await sql`
+          insert into reviews (
+            id, source, status, pinned, rating, title, text,
+            book_slug, book_title, book_kind, name, location,
+            avatar_color, verified, created_at
+          ) values (
+            ${review.id}, ${review.source}, ${review.status}, ${review.pinned},
+            ${review.rating}, ${review.title}, ${review.text},
+            ${review.bookSlug}, ${review.bookTitle}, ${review.kind},
+            ${review.name}, ${review.location}, ${review.avatarColor},
+            ${review.verified}, ${review.createdAt}
+          )
+        `;
+      }
+      console.log(`Seeded ${demoReviews.length} demo reviews.`);
+    } else {
+      console.log("Reviews already present — left untouched.");
     }
 
     const snapshot = await sql`

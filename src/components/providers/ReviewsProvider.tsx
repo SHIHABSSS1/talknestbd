@@ -9,140 +9,163 @@ import {
   useState,
   type ReactNode,
 } from "react";
+
 import {
-  clearReviewContent,
+  resetReviewContent,
+  saveReviewContent,
+} from "@/lib/actions/reviews";
+import { useSession } from "@/lib/auth-client";
+import {
   cloneReviewDefaults,
-  readReviewContent,
-  REVIEW_STORAGE_KEY,
-  writeReviewContent,
   type ReviewContent,
   type SaveResult,
 } from "@/lib/review-content";
-import {
-  addReviewRequest,
-  readReviewRequests,
-  REVIEW_REQUESTS_KEY,
-  removeReviewRequest,
-  updateReviewRequest,
-  type ReviewRequest,
-} from "@/lib/review-requests";
 import type { Review } from "@/lib/types";
 
 interface ReviewsContextValue {
   content: ReviewContent;
+  reviews: Review[];
+  pinned: Review[];
+  total: number;
+  loading: boolean;
   hydrated: boolean;
-  save: (next: ReviewContent) => SaveResult;
-  reset: () => SaveResult;
-  requests: ReviewRequest[];
-  addRequest: (request: ReviewRequest) => void;
-  setRequestStatus: (id: string, status: ReviewRequest["status"]) => void;
-  removeRequest: (id: string) => void;
-  approve: (request: ReviewRequest) => void;
+  isLoggedIn: boolean;
+  /** Re-fetch published reviews (e.g. after an admin publishes/approves). */
+  refresh: () => Promise<void>;
+  save: (next: ReviewContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
+  submit: (input: {
+    rating: number;
+    title: string;
+    text: string;
+    bookSlug: string;
+    bookTitle: string;
+    kind: "book" | "audio";
+  }) => Promise<SaveResult>;
 }
 
 const ReviewsContext = createContext<ReviewsContextValue | null>(null);
-const initialContent: ReviewContent = cloneReviewDefaults();
 
-export function ReviewsProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<ReviewContent>(initialContent);
-  const [requests, setRequests] = useState<ReviewRequest[]>([]);
+/** DB-backed review copy + published reviews from /api/reviews. */
+export function ReviewsProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: ReviewContent;
+}) {
+  const [content, setContent] = useState<ReviewContent>(
+    initialContent ?? cloneReviewDefaults(),
+  );
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [pinned, setPinned] = useState<Review[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [hydrated, setHydrated] = useState(false);
+  const { data: session } = useSession();
+
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch("/api/reviews?pageSize=50", {
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error("Could not load reviews.");
+      const data = (await response.json()) as {
+        reviews?: Review[];
+        pinned?: Review[];
+        total?: number;
+      };
+      setReviews(data.reviews ?? []);
+      setPinned(data.pinned ?? []);
+      setTotal(data.total ?? 0);
+    } catch {
+      setReviews([]);
+      setPinned([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+      setHydrated(true);
+    }
+  }, []);
 
   useEffect(() => {
-    setContent(readReviewContent());
-    setRequests(readReviewRequests());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (
-        !event.key ||
-        event.key === REVIEW_STORAGE_KEY ||
-        event.key === REVIEW_REQUESTS_KEY
-      ) {
-        setContent(readReviewContent());
-        setRequests(readReviewRequests());
+    void refresh();
+  }, [refresh]);
+
+  const save = useCallback(async (next: ReviewContent) => {
+    try {
+      const result = await saveReviewContent(next);
+      if (result.ok) setContent(next);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the copy.",
+      };
+    }
+  }, []);
+
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetReviewContent();
+      if (result.ok) setContent(cloneReviewDefaults());
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the copy.",
+      };
+    }
+  }, []);
+
+  const submit = useCallback(
+    async (input: {
+      rating: number;
+      title: string;
+      text: string;
+      bookSlug: string;
+      bookTitle: string;
+      kind: "book" | "audio";
+    }) => {
+      try {
+        const response = await fetch("/api/reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(input),
+        });
+        const data = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        if (!response.ok) {
+          return { ok: false, message: data?.error ?? "Could not submit the review." };
+        }
+        await refresh();
+        return { ok: true, message: "Review submitted for moderation." };
+      } catch (error) {
+        return {
+          ok: false,
+          message: error instanceof Error ? error.message : "Could not submit the review.",
+        };
       }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  const save = useCallback((next: ReviewContent) => {
-    const result = writeReviewContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearReviewContent();
-    if (result.ok) setContent(cloneReviewDefaults());
-    return result;
-  }, []);
-
-  const refreshRequests = useCallback(() => setRequests(readReviewRequests()), []);
-
-  const addRequest = useCallback(
-    (request: ReviewRequest) => {
-      addReviewRequest(request);
-      refreshRequests();
     },
-    [refreshRequests],
-  );
-
-  const setRequestStatus = useCallback(
-    (id: string, status: ReviewRequest["status"]) => {
-      updateReviewRequest(id, { status });
-      refreshRequests();
-    },
-    [refreshRequests],
-  );
-
-  const removeRequest = useCallback(
-    (id: string) => {
-      removeReviewRequest(id);
-      refreshRequests();
-    },
-    [refreshRequests],
-  );
-
-  const approve = useCallback(
-    (request: ReviewRequest) => {
-      const review: Review = {
-        id: `r-${request.id}`,
-        name: request.name,
-        location: request.location,
-        rating: request.rating,
-        text: request.text,
-        bookTitle: request.bookTitle,
-        bookSlug: request.bookSlug,
-        date: "Just now",
-        avatarColor: "#1877F2",
-        verified: true,
-      };
-      const nextContent: ReviewContent = {
-        ...content,
-        reviews: [review, ...content.reviews.filter((item) => item.id !== review.id)],
-      };
-      const result = writeReviewContent(nextContent);
-      if (result.ok) setContent(nextContent);
-      updateReviewRequest(request.id, { status: "Approved" });
-      refreshRequests();
-    },
-    [content, refreshRequests],
+    [refresh],
   );
 
   const value = useMemo(
     () => ({
       content,
+      reviews,
+      pinned,
+      total,
+      loading,
       hydrated,
+      isLoggedIn: Boolean(session?.user),
+      refresh,
       save,
       reset,
-      requests,
-      addRequest,
-      setRequestStatus,
-      removeRequest,
-      approve,
+      submit,
     }),
-    [content, hydrated, save, reset, requests, addRequest, setRequestStatus, removeRequest, approve],
+    [content, reviews, pinned, total, loading, hydrated, session, refresh, save, reset, submit],
   );
 
   return <ReviewsContext.Provider value={value}>{children}</ReviewsContext.Provider>;

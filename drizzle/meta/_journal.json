@@ -64,6 +64,13 @@
       "when": 1795190205198,
       "tag": "0008_odd_the_captain",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795232729785,
+      "tag": "0009_curious_deadpool",
+      "breakpoints": true
     }
   ]
 }

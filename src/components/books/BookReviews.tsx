@@ -2,16 +2,25 @@
 
 import Link from "next/link";
 import { ArrowUpRight, PenLine, Star, ThumbsUp } from "lucide-react";
-import type { Book } from "@/lib/types";
-import { ratingBreakdown } from "@/data/reviews";
+
 import { useReviews } from "@/components/providers/ReviewsProvider";
 import { ReviewReply } from "@/components/ui/ReviewReply";
+import { ReviewSubmitForm } from "@/components/reviews/ReviewSubmitForm";
 import { toBn } from "@/lib/utils";
+import type { Book } from "@/lib/types";
 
 export function BookReviews({ book }: { book: Book }) {
-  const { content } = useReviews();
-  const bookReviews = content.reviews.filter((review) => review.bookSlug === book.slug);
-  const total = ratingBreakdown.reduce((sum, row) => sum + row.count, 0);
+  const { reviews, loading } = useReviews();
+  const kind = book.audio ? "audio" : "book";
+  const bookReviews = reviews.filter(
+    (review) => review.bookSlug === book.slug && review.kind === kind,
+  );
+
+  const breakdown = [5, 4, 3, 2, 1].map((stars) => ({
+    stars,
+    count: bookReviews.filter((review) => review.rating === stars).length,
+  }));
+  const breakdownTotal = breakdown.reduce((sum, row) => sum + row.count, 0) || 1;
 
   return (
     <section id="book-reviews" className="scroll-mt-[88px]">
@@ -57,31 +66,40 @@ export function BookReviews({ book }: { book: Book }) {
           </div>
 
           <div className="mt-4 space-y-1.5">
-            {ratingBreakdown.map((row) => (
+            {breakdown.map((row) => (
               <div key={row.stars} className="flex items-center gap-2 text-[9px] text-muted">
                 <span className="w-2">{toBn(row.stars)}</span>
                 <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cream-300">
                   <div
                     className="h-full rounded-full bg-gold-500"
-                    style={{ width: `${(row.count / total) * 100}%` }}
+                    style={{ width: `${(row.count / breakdownTotal) * 100}%` }}
                   />
                 </div>
-                <span className="w-7 text-right">{toBn(row.count)}%</span>
+                <span className="w-7 text-right">{toBn(row.count)}</span>
               </div>
             ))}
           </div>
 
-          <Link
-            href="/reviews#review-form"
-            className="mt-4 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-full bg-forest-900 text-[11px] font-semibold text-cream-50 transition-colors hover:bg-forest-700"
-          >
-            <PenLine size={13} />
-            Write your review
-          </Link>
+          <div className="mt-4 flex items-center gap-1.5 text-[10px] font-semibold text-forest-800">
+            <PenLine size={13} /> Write your review
+          </div>
+          <div className="mt-2">
+            <ReviewSubmitForm
+              bookSlug={book.slug}
+              bookTitle={book.title}
+              kind={kind}
+              compact
+            />
+          </div>
         </div>
 
         <div className="space-y-2.5">
-          {bookReviews.length > 0 ? (
+          {loading && (
+            <p className="rounded-2xl border border-dashed border-forest-900/15 bg-cream-50 p-6 text-center text-[11px] text-muted">
+              Loading reviews…
+            </p>
+          )}
+          {!loading && bookReviews.length > 0 && (
             bookReviews.map((review) => (
               <article key={review.id} className="rounded-2xl border border-forest-900/8 bg-cream-50 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
@@ -112,7 +130,10 @@ export function BookReviews({ book }: { book: Book }) {
                     ))}
                   </div>
                 </div>
-                <p className="mt-2.5 text-[11px] leading-relaxed text-forest-900/70 sm:text-xs">
+                <p className="mt-2.5 text-[11px] font-semibold text-forest-950 sm:text-xs">
+                  {review.title}
+                </p>
+                <p className="mt-1 text-[11px] leading-relaxed text-forest-900/70 sm:text-xs">
                   {review.text}
                 </p>
                 {review.reply && (
@@ -123,22 +144,16 @@ export function BookReviews({ book }: { book: Book }) {
                 </p>
               </article>
             ))
-          ) : (
+          )}
+          {!loading && bookReviews.length === 0 && (
             <div className="rounded-2xl border border-dashed border-forest-900/15 bg-cream-50 p-8 text-center">
               <Star size={22} className="mx-auto text-gold-500/40" />
               <p className="mt-2 text-sm font-semibold text-forest-900">
-                Be the first to review this book
+                Be the first to review this {kind === "audio" ? "audiobook" : "book"}
               </p>
               <p className="mt-1 text-[10px] text-muted">
-                Share how the book made you feel — help other readers decide.
+                Share how it made you feel — help other readers decide.
               </p>
-              <Link
-                href="/reviews#review-form"
-                className="mt-3 inline-flex items-center gap-1 text-[11px] font-semibold text-clay-600 hover:text-clay-500"
-              >
-                Write a review
-                <ArrowUpRight size={12} />
-              </Link>
             </div>
           )}
         </div>

@@ -107,15 +107,26 @@ export interface Publisher {
   imageSrc?: string;
 }
 
+export type ReviewSource = "user" | "admin";
+export type ReviewStatus = "pending" | "approved" | "rejected";
+export type ReviewKind = "book" | "audio";
+
 export interface Review {
   id: string;
-  name: string;
-  location: string;
+  source: ReviewSource;
+  status: ReviewStatus;
+  pinned: boolean;
   rating: number;
+  title: string;
   text: string;
   bookTitle: string;
   bookSlug: string;
+  kind: ReviewKind;
+  name: string;
+  location: string;
+  /** Human-readable label derived from createdAt for display. */
   date: string;
+  createdAt: string;
   avatarColor: string;
   verified: boolean;
   /** Optional admin reply shown under the review on the storefront. */

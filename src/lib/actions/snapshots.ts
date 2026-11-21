@@ -59,6 +59,8 @@ import {
   wholesaleDefaults,
 } from "@/lib/wholesale-content";
 import { wholesaleContentSchema } from "@/lib/wholesale-schema";
+import { REVIEW_CONTENT_KEY, reviewDefaults } from "@/lib/review-content";
+import { reviewCopySchema } from "@/lib/review-schema";
 import { authorContentSchema } from "@/lib/author-schema";
 import { publisherContentSchema } from "@/lib/publisher-schema";
 import {
@@ -88,6 +90,7 @@ const defaults: Record<string, unknown> = {
   [SELL_CONTENT_KEY]: sellDefaults,
   [USED_CONTENT_KEY]: usedDefaults,
   [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
+  [REVIEW_CONTENT_KEY]: reviewDefaults,
   [AUTHOR_CONTENT_KEY]: authorDefaults,
   [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
@@ -106,6 +109,7 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [SELL_CONTENT_KEY]: sellContentSchema,
   [USED_CONTENT_KEY]: usedContentSchema,
   [WHOLESALE_CONTENT_KEY]: wholesaleContentSchema,
+  [REVIEW_CONTENT_KEY]: reviewCopySchema,
   [AUTHOR_CONTENT_KEY]: authorContentSchema,
   [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };

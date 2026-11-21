@@ -12,6 +12,7 @@ import { audioChapters, audioPrice } from "@/lib/audio";
 import { accountFetch } from "@/lib/account-client";
 import { cn, formatPrice, toBn } from "@/lib/utils";
 import { BookCover } from "@/components/books/BookCover";
+import { BookReviews } from "@/components/books/BookReviews";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 
@@ -483,6 +484,12 @@ export function AudioLibrary() {
                 </p>
               </div>
             </div>
+          </div>
+        )}
+
+        {book && (
+          <div className="mt-8 border-t border-forest-900/8 pt-6">
+            <BookReviews book={book} />
           </div>
         )}
 

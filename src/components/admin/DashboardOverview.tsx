@@ -42,6 +42,7 @@ import { useStories } from "@/components/providers/StoriesProvider";
 import { adminNavGroups } from "@/lib/admin-nav";
 import { accountFetch } from "@/lib/account-client";
 import type { Order } from "@/lib/orders";
+import type { Review } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -208,8 +209,8 @@ export function DashboardOverview() {
   const { books, uploads, hydrated: booksHydrated } = useBookContent();
   const sell = useSellRequests();
   const wholesale = useWholesaleRequests();
-  const reviews = useReviews();
   const stories = useStories();
+  const [reviewRows, setReviewRows] = useState<Review[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -219,6 +220,13 @@ export function DashboardOverview() {
       })
       .catch(() => {
         if (alive) setOrders([]);
+      });
+    accountFetch<{ reviews: Review[] }>("/api/admin/reviews?status=pending&pageSize=20")
+      .then((data) => {
+        if (alive) setReviewRows(data.reviews);
+      })
+      .catch(() => {
+        if (alive) setReviewRows([]);
       });
     setNow(Date.now());
     setToday(
@@ -311,12 +319,12 @@ export function DashboardOverview() {
         href: "/admin/sections/reviews",
         icon: Star,
         color: "#96db9d",
-        rows: reviews.requests.map((request) => ({
-          id: request.id,
-          createdAt: request.createdAt,
-          status: request.status,
-          title: request.bookTitle,
-          subtitle: request.name,
+        rows: reviewRows.map((review) => ({
+          id: review.id,
+          createdAt: review.createdAt,
+          status: review.status === "pending" ? "Pending" : review.status === "approved" ? "Approved" : "Rejected",
+          title: review.bookTitle,
+          subtitle: review.name,
         })),
       },
       {
@@ -335,7 +343,7 @@ export function DashboardOverview() {
         })),
       },
     ],
-    [sell.requests, wholesale.requests, reviews.requests, stories.requests],
+    [sell.requests, wholesale.requests, reviewRows, stories.requests],
   );
 
   const allRequests = useMemo(
