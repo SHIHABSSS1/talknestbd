@@ -42,6 +42,8 @@ interface StoreContextValue {
 const StoreContext = createContext<StoreContextValue | null>(null);
 const CART_KEY = "talknestbd-cart-v1";
 const WISH_KEY = "talknestbd-wishlist-v1";
+/** Private token for anonymous wishlists — no localStorage item copies. */
+const GUEST_ID_KEY = "talknestbd-guest-id";
 
 const subscribeNoop = () => () => {};
 
@@ -82,11 +84,101 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const syncedFor = useRef<string | null>(null);
+  const wishMigratedFor = useRef<string | null>(null);
+  const [guestId, setGuestId] = useState("");
+
+  // Every visitor — guest or signed in — gets a private token. Anonymous
+  // wishlists are keyed by it on the server; signed-in readers use their id.
+  useEffect(() => {
+    try {
+      let id = window.localStorage.getItem(GUEST_ID_KEY) || "";
+      if (!id || !/^[0-9a-f-]{36}$/i.test(id)) {
+        id = crypto.randomUUID();
+        window.localStorage.setItem(GUEST_ID_KEY, id);
+      }
+      setGuestId(id);
+    } catch {
+      setGuestId(crypto.randomUUID());
+    }
+  }, []);
 
   useEffect(() => {
-    const savedWishlist = readJSON<string[]>(WISH_KEY, []);
-    if (Array.isArray(savedWishlist)) setWishlist(savedWishlist);
+    if (!guestId) return;
+    let cancelled = false;
 
+    (async () => {
+      const headers = { "x-guest-id": guestId };
+      try {
+        const legacy = readJSON<string[]>(WISH_KEY, []);
+        const accountData = await accountFetch<{ slugs: string[] }>("/api/wishlist", {
+          headers,
+        });
+        const accountSlugs = accountData.slugs ?? [];
+
+        // On first login, merge the guest wishlist (and any legacy copy) into
+        // the account, then clear the anonymous wishlist.
+        if (userId && wishMigratedFor.current !== userId) {
+          const guestData = await accountFetch<{ slugs: string[] }>(
+            "/api/wishlist?scope=guest",
+            { headers },
+          ).catch(() => ({ slugs: [] as string[] }));
+          const merged = Array.from(
+            new Set([...accountSlugs, ...(guestData.slugs ?? []), ...legacy]),
+          );
+          await Promise.all(
+            merged
+              .filter((slug) => !accountSlugs.includes(slug))
+              .map((slug) =>
+                accountFetch("/api/wishlist", {
+                  method: "POST",
+                  body: JSON.stringify({ slug }),
+                }).catch(() => undefined),
+              ),
+          );
+          await accountFetch("/api/wishlist?all=true&scope=guest", {
+            method: "DELETE",
+            headers,
+          }).catch(() => undefined);
+          wishMigratedFor.current = userId;
+          try {
+            window.localStorage.removeItem(WISH_KEY);
+          } catch {
+            // ignore unavailable storage
+          }
+          if (!cancelled) setWishlist(merged);
+        } else if (!cancelled) {
+          // First anonymous load: upload any legacy localStorage slugs once.
+          const toAdd = legacy.filter((slug) => !accountSlugs.includes(slug));
+          if (toAdd.length && wishMigratedFor.current !== `guest:${guestId}`) {
+            await Promise.all(
+              toAdd.map((slug) =>
+                accountFetch("/api/wishlist", {
+                  method: "POST",
+                  headers,
+                  body: JSON.stringify({ slug }),
+                }).catch(() => undefined),
+              ),
+            );
+            wishMigratedFor.current = `guest:${guestId}`;
+            try {
+              window.localStorage.removeItem(WISH_KEY);
+            } catch {
+              // ignore unavailable storage
+            }
+          }
+          setWishlist(Array.from(new Set([...accountSlugs, ...toAdd])));
+        }
+      } catch {
+        if (!cancelled) setWishlist(readJSON<string[]>(WISH_KEY, []));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, guestId]);
+
+  useEffect(() => {
     const guestCart = readJSON<CartItem[]>(CART_KEY, []).filter(
       (item) => item && item.slug && item.quantity > 0,
     );
@@ -132,11 +224,6 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated || userId) return;
     window.localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items, hydrated, userId]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    window.localStorage.setItem(WISH_KEY, JSON.stringify(wishlist));
-  }, [wishlist, hydrated]);
 
   useEffect(() => {
     return () => {
@@ -221,13 +308,20 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const toggleWishlist = useCallback(
     (slug: string) => {
-      setWishlist((previous) => {
-        const exists = previous.includes(slug);
-        notify(exists ? "Removed from wishlist" : "Added to wishlist");
-        return exists ? previous.filter((item) => item !== slug) : [...previous, slug];
-      });
+      const exists = wishlist.includes(slug);
+      setWishlist((previous) =>
+        exists ? previous.filter((item) => item !== slug) : [...previous, slug],
+      );
+      notify(exists ? "Removed from wishlist" : "Added to wishlist");
+
+      if (!guestId) return;
+      void accountFetch("/api/wishlist", {
+        method: exists ? "DELETE" : "POST",
+        headers: { "x-guest-id": guestId },
+        body: JSON.stringify({ slug }),
+      }).catch(() => undefined);
     },
-    [notify],
+    [notify, wishlist, guestId],
   );
 
   const isWishlisted = useCallback(

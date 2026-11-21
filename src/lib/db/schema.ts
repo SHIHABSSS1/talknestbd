@@ -420,3 +420,21 @@ export const cartItems = pgTable(
 );
 
 export type CartItemRow = typeof cartItems.$inferSelect;
+
+/** Wishlists for signed-in readers and anonymous visitors (private guest token). */
+export const wishlistItems = pgTable(
+  "wishlist_items",
+  {
+    id: text("id").primaryKey(),
+    /** `user_<id>` or `guest_<token>` — never mix the two namespaces. */
+    ownerKey: text("owner_key").notNull(),
+    slug: text("slug").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("wishlist_items_owner_slug_idx").on(table.ownerKey, table.slug),
+    index("wishlist_items_owner_idx").on(table.ownerKey),
+  ],
+);
+
+export type WishlistItemRow = typeof wishlistItems.$inferSelect;

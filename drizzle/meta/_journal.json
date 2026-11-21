@@ -78,6 +78,13 @@
       "when": 1795238264537,
       "tag": "0010_brown_corsair",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795244168633,
+      "tag": "0011_lying_richard_fisk",
+      "breakpoints": true
     }
   ]
 }
