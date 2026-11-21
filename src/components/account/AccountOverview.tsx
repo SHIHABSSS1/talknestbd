@@ -100,7 +100,7 @@ export function AccountOverview() {
       label: "My audiobooks",
       value: toBn(audioCount),
       icon: Headphones,
-      href: "/audio-books",
+      href: "/account/audiobooks",
       tint: "bg-forest-900/10 text-forest-800",
     },
   ];

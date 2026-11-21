@@ -75,6 +75,7 @@ import {
   reviewDefaults,
 } from "../review-content";
 import { reviews as demoReviews } from "../../data/reviews";
+import { audioDefaults } from "../audio-content";
 
 config({ path: [".env.local", ".env"] });
 
@@ -105,6 +106,7 @@ async function main() {
     [USED_CONTENT_KEY]: usedDefaults,
     [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
     [REVIEW_CONTENT_KEY]: reviewDefaults,
+    audio: audioDefaults,
   };
 
   try {
@@ -147,6 +149,48 @@ async function main() {
       console.log(`Seeded ${demoReviews.length} demo reviews.`);
     } else {
       console.log("Reviews already present — left untouched.");
+    }
+
+    const audioCount = await sql<{ n: number }[]>`
+      select count(*)::int as n from audiobooks
+    `;
+    if (audioCount[0]?.n === 0) {
+      const freeSlugs = new Set(["neel-megh", "moner-gohine"]);
+      for (const [index, entry] of audioDefaults.books.entries()) {
+        const id = `seed-audio-${entry.slug}`;
+        const price = entry.free ? 0 : entry.price;
+        await sql`
+          insert into audiobooks (
+            id, slug, title, author, author_slug, publisher, publisher_slug,
+            narrator, source, duration, description, long_description, highlights,
+            category, price, free, status, featured, cover, rating, review_count,
+            pages, language, binding, published_year, stock
+          ) values (
+            ${id}, ${entry.slug}, ${entry.title}, ${entry.author},
+            ${entry.author.toLowerCase().replace(/[^a-z0-9]+/g, "-")},
+            ${"TalkNest Audio"}, ${"talknestaudio"}, ${entry.narrator},
+            ${"Original TalkNest narration"}, ${entry.duration}, ${entry.description},
+            ${sql.json([entry.description])},
+            ${sql.json([] as string[])},
+            ${"uponnash"}, ${price.toFixed(2)}, ${freeSlugs.has(entry.slug)},
+            ${"published"}, ${index === 0}, ${sql.json(entry.cover as never)},
+            ${"4.8"}, ${0}, ${0}, ${"Bangla"}, ${"Audiobook"}, ${2026}, ${999}
+          )
+        `;
+        for (const [position, chapter] of entry.chapters.entries()) {
+          await sql`
+            insert into audio_chapters (id, audiobook_id, position, title, duration, src, free)
+            values (
+              ${`seed-ch-${entry.slug}-${position}`}, ${id}, ${position},
+              ${chapter.title}, ${chapter.duration}, ${chapter.src},
+              ${freeSlugs.has(entry.slug) || chapter.free}
+            )
+          `;
+        }
+      }
+      console.log(`Seeded ${audioDefaults.books.length} audiobooks with chapters.`);
+    } else {
+      console.log("Audiobooks already present — left untouched.");
     }
 
     const snapshot = await sql`

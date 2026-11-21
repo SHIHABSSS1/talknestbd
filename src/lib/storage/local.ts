@@ -2,6 +2,9 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { mkdir, stat, writeFile } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
+import { pipeline } from "node:stream/promises";
+import { Readable } from "node:stream";
 import path from "node:path";
 
 /**
@@ -131,6 +134,59 @@ export async function saveImageDataUrl(
     url: `${publicMediaBase()}/${key}`,
     mime,
     bytes: buffer.length,
+  };
+}
+
+function maxAudioBytes(): number {
+  const mb = Number(process.env.MAX_AUDIO_MB || 25);
+  return (Number.isFinite(mb) && mb > 0 ? mb : 25) * 1024 * 1024;
+}
+
+/** MP3 magic bytes: ID3 header or MPEG frame sync. */
+function isMp3(buffer: Buffer): boolean {
+  if (buffer.length < 3) return false;
+  if (buffer[0] === 0x49 && buffer[1] === 0x44 && buffer[2] === 0x33) return true;
+  return buffer[0] === 0xff && (buffer[1] & 0xe0) === 0xe0;
+}
+
+export type StoredAudio = {
+  key: string;
+  url: string;
+  mime: "audio/mpeg";
+  bytes: number;
+};
+
+/**
+ * Writes an uploaded MP3 to the local media volume. Files are streamed to a
+ * temporary path first, then renamed atomically — a 25 MB file never lives in
+ * a JSON envelope or in the database.
+ */
+export async function saveAudioFile(
+  data: Buffer,
+  folder: string,
+): Promise<StoredAudio> {
+  if (data.length === 0) throw new Error("That audio file is empty.");
+  if (data.length > maxAudioBytes()) {
+    throw new Error(
+      `Audio is larger than the ${Math.round(maxAudioBytes() / (1024 * 1024))} MB limit.`,
+    );
+  }
+  if (!isMp3(data)) throw new Error("Only MP3 audio files are accepted.");
+
+  const hash = createHash("sha256").update(data).digest("hex").slice(0, 32);
+  const key = `${folder.replace(/[^a-z0-9-]/gi, "") || "audio"}/${hash}.mp3`;
+  const destination = path.join(uploadRoot(), key);
+  await mkdir(path.dirname(destination), { recursive: true });
+  await writeFile(destination, data, { flag: "wx" }).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (error.code !== "EEXIST") throw error;
+    },
+  );
+  return {
+    key,
+    url: `${publicMediaBase()}/${key}`,
+    mime: "audio/mpeg",
+    bytes: data.length,
   };
 }
 

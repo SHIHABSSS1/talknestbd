@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   BadgeCheck, CheckCircle2, Clock3, Headphones, Lock, Pause, Play, ShoppingBag, Gift } from "lucide-react";
-import { useBookContent } from "@/components/providers/BookContentProvider";
 import { useAudioContent } from "@/components/providers/AudioContentProvider";
+import { toBookFromAudio } from "@/lib/audio-api";
 import { useStore } from "@/lib/store";
 import { audioChapters, audioPrice } from "@/lib/audio";
 import { accountFetch } from "@/lib/account-client";
@@ -26,12 +26,12 @@ function formatTime(seconds: number): string {
 export function AudioLibrary() {
   const router = useRouter();
   const { addItem } = useStore();
-  const { books } = useBookContent();
-  const { content } = useAudioContent();
-  const audioBooks = useMemo(
-    () => books.filter((book) => book.tags.includes("audio")),
-    [books],
+  const { content, audiobooks, loading } = useAudioContent();
+  const books = useMemo(
+    () => audiobooks.map((item) => toBookFromAudio(item)),
+    [audiobooks],
   );
+  const audioBooks = books;
   const [selectedSlug, setSelectedSlug] = useState(audioBooks[0]?.slug ?? "");
   const [chapterIndex, setChapterIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -90,7 +90,13 @@ export function AudioLibrary() {
     }
   }, [chapterIndex, chapter?.src]);
 
-  if (!book || !chapter) return null;
+  if (!book || !chapter) {
+    return (
+      <p className="rounded-2xl border border-dashed border-line bg-white p-8 text-center text-[11px] text-muted">
+        {loading ? "Loading audiobooks…" : "No audiobooks are available yet."}
+      </p>
+    );
+  }
 
   const togglePlay = () => {
     if (!playable) return;
@@ -274,8 +280,8 @@ export function AudioLibrary() {
                     <Clock3 size={12} className="text-gold-400" />
                     {toBn(chapters.length)} chapters
                   </span>
-                  <Link href={`/books/${book.slug}`} className="font-semibold text-gold-300 hover:text-gold-400">
-                    Book details →
+                  <Link href={`/audio-books/${book.slug}`} className="font-semibold text-gold-300 hover:text-gold-400">
+                    Audiobook details →
                   </Link>
                 </div>
               </div>

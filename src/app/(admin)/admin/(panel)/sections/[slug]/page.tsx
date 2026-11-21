@@ -4,7 +4,7 @@ export const instant = false;
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { AudioEditor } from "@/components/admin/AudioEditor";
+import { AdminAudioManager } from "@/components/admin/AdminAudioManager";
 import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
 import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { ReviewsEditor } from "@/components/admin/ReviewsEditor";
@@ -151,7 +151,7 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     return <WholesaleEditor label={label} />;
   }
   if (slug === "audio") {
-    return <AudioEditor label={label} />;
+    return <AdminAudioManager label={label} />;
   }
   if (slug === "authors") {
     return <AuthorsEditor label={label} />;

@@ -9,7 +9,7 @@ import { books } from "@/data/books";
 import { upSaleBooks } from "@/data/community";
 import { sunnahItems } from "@/data/sunnah";
 import { auth } from "@/lib/auth";
-import { audioPrice } from "@/lib/audio";
+import { audioPrice, isFreeAudio } from "@/lib/audio";
 import {
   normaliseOrderStatus,
   type AddressFormValues,
@@ -173,16 +173,24 @@ export function mapOrder(
  * Returns null for unknown slugs so the order is rejected rather than priced
  * with a client-supplied number.
  */
-export function resolveUnitPrice(slug: string, kind: OrderItem["kind"]): number | null {
+export async function resolveUnitPrice(
+  slug: string,
+  kind: OrderItem["kind"],
+): Promise<number | null> {
+  if (kind === "audio") {
+    // Audiobook prices are authoritative in the database, not the browser.
+    const { getAudiobookBySlug } = await import("@/lib/db/queries/audio");
+    const audio = await getAudiobookBySlug(slug);
+    if (audio) return audio.free ? 0 : audio.price;
+    // Legacy static audiobooks that have not been migrated yet.
+    const legacy = books.find((item) => item.slug === slug && item.audio);
+    return legacy ? (isFreeAudio(slug) ? 0 : audioPrice(legacy)) : null;
+  }
   if (kind === "book") {
     const book = books.find((item) => item.slug === slug);
     if (book) return book.price;
     const used = upSaleBooks.find((item) => item.cartSlug === slug);
     return used?.price ?? null;
   }
-  if (kind === "sunnah") {
-    return sunnahItems.find((item) => item.slug === slug)?.price ?? null;
-  }
-  const audioBook = books.find((item) => item.slug === slug);
-  return audioBook ? audioPrice(audioBook) : null;
+  return sunnahItems.find((item) => item.slug === slug)?.price ?? null;
 }

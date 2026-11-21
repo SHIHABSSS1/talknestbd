@@ -61,6 +61,8 @@ import {
 import { wholesaleContentSchema } from "@/lib/wholesale-schema";
 import { REVIEW_CONTENT_KEY, reviewDefaults } from "@/lib/review-content";
 import { reviewCopySchema } from "@/lib/review-schema";
+import { audioCopySchema } from "@/lib/audio-schema";
+import { cloneAudioDefaults } from "@/lib/audio-content";
 import { authorContentSchema } from "@/lib/author-schema";
 import { publisherContentSchema } from "@/lib/publisher-schema";
 import {
@@ -91,6 +93,7 @@ const defaults: Record<string, unknown> = {
   [USED_CONTENT_KEY]: usedDefaults,
   [WHOLESALE_CONTENT_KEY]: wholesaleDefaults,
   [REVIEW_CONTENT_KEY]: reviewDefaults,
+  audio: cloneAudioDefaults(),
   [AUTHOR_CONTENT_KEY]: authorDefaults,
   [PUBLISHER_CONTENT_KEY]: publisherDefaults,
 };
@@ -110,6 +113,7 @@ const validators: Record<string, { safeParse: (value: unknown) => { success: boo
   [USED_CONTENT_KEY]: usedContentSchema,
   [WHOLESALE_CONTENT_KEY]: wholesaleContentSchema,
   [REVIEW_CONTENT_KEY]: reviewCopySchema,
+  audio: audioCopySchema,
   [AUTHOR_CONTENT_KEY]: authorContentSchema,
   [PUBLISHER_CONTENT_KEY]: publisherContentSchema,
 };

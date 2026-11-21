@@ -21,6 +21,7 @@ export const SNAPSHOT_KEYS = [
   "used-books",
   "wholesale",
   "reviews",
+  "audio",
   "authors",
   "publishers",
 ] as const;
@@ -41,6 +42,7 @@ export const SNAPSHOT_LABELS: Record<SnapshotKey, string> = {
   "used-books": "Used books banner",
   wholesale: "Wholesale & free delivery",
   reviews: "Review section copy",
+  audio: "Audiobook section copy",
   authors: "Authors spotlight",
   publishers: "Publishers strip",
 };

@@ -49,10 +49,12 @@ export async function POST(request: Request) {
   const body = parsed.data;
   const email = body.email.toLowerCase();
 
-  const priced = body.items.map((item) => ({
-    item,
-    price: resolveUnitPrice(item.slug, item.kind),
-  }));
+  const priced = await Promise.all(
+    body.items.map(async (item) => ({
+      item,
+      price: await resolveUnitPrice(item.slug, item.kind),
+    })),
+  );
   if (priced.some((entry) => entry.price === null)) {
     return badRequest("An item is no longer available. Refresh your cart.");
   }

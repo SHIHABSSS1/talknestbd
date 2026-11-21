@@ -11,6 +11,7 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import type { BookCoverTheme } from "@/lib/types";
 
 /**
  * Editable page content — one row per block, keyed by a stable string.
@@ -438,3 +439,72 @@ export const wishlistItems = pgTable(
 );
 
 export type WishlistItemRow = typeof wishlistItems.$inferSelect;
+
+/**
+ * Audiobook catalogue. Rich book-like fields live here so editors capture the
+ * same metadata as a printed book; chapters are a child table.
+ */
+export const audiobooks = pgTable(
+  "audiobooks",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    subtitle: text("subtitle"),
+    author: text("author").notNull(),
+    authorSlug: text("author_slug").notNull().default(""),
+    publisher: text("publisher").notNull().default("TalkNest Audio"),
+    publisherSlug: text("publisher_slug").notNull().default("talknestaudio"),
+    narrator: text("narrator").notNull().default("TalkNest Voices"),
+    /** Source credit shown on the detail page (e.g. original, licensed, public domain). */
+    source: text("source").notNull().default(""),
+    duration: text("duration").notNull().default("—"),
+    description: text("description").notNull().default(""),
+    longDescription: jsonb("long_description").$type<string[]>().notNull().default([]),
+    highlights: jsonb("highlights").$type<string[]>().notNull().default([]),
+    category: text("category").notNull().default("uponnash"),
+    subcategory: text("subcategory"),
+    price: numeric("price", { precision: 10, scale: 2 }).notNull().default("0"),
+    oldPrice: numeric("old_price", { precision: 10, scale: 2 }),
+    free: boolean("free").notNull().default(false),
+    status: text("status").notNull().default("published"),
+    featured: boolean("featured").notNull().default(false),
+    cover: jsonb("cover").$type<BookCoverTheme>().notNull(),
+    rating: numeric("rating", { precision: 2, scale: 1 }).notNull().default("4.8"),
+    reviewCount: integer("review_count").notNull().default(0),
+    pages: integer("pages").notNull().default(0),
+    language: text("language").notNull().default("Bangla"),
+    binding: text("binding").notNull().default("Audiobook"),
+    publishedYear: integer("published_year").notNull().default(2026),
+    stock: integer("stock").notNull().default(999),
+    isbn: text("isbn"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("audiobooks_status_created_idx").on(table.status, table.createdAt),
+    index("audiobooks_category_idx").on(table.category),
+  ],
+);
+
+export const audioChapters = pgTable(
+  "audio_chapters",
+  {
+    id: text("id").primaryKey(),
+    audiobookId: text("audiobook_id")
+      .notNull()
+      .references(() => audiobooks.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    title: text("title").notNull(),
+    duration: text("duration").notNull().default("—"),
+    src: text("src").notNull(),
+    free: boolean("free").notNull().default(false),
+  },
+  (table) => [index("audio_chapters_book_idx").on(table.audiobookId)],
+);
+
+export type AudiobookRow = typeof audiobooks.$inferSelect;
+export type AudioChapterRow = typeof audioChapters.$inferSelect;

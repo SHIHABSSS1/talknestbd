@@ -3,41 +3,58 @@ import { Readable } from "node:stream";
 
 import { resolveMedia } from "@/lib/storage/local";
 
-/**
- * Serves uploaded files from UPLOAD_DIR at /media/*.
- *
- * In development this route is the only way to reach uploads: they deliberately
- * live outside public/, because public/ is copied at build time and runtime
- * writes there are lost on redeploy.
- *
- * In production Nginx should serve /media/ directly (docs/ARCHITECTURE.md
- * §8.4) — it adds Range support and caching headers for free.
- *
- * TODO: implement 206 Partial Content for audio/video once those uploads land.
- * Images never issue Range requests, so this is enough for the hero today.
- */
+/** Parses a single-range header. Returns null for invalid/multi ranges. */
+function parseRange(header: string, size: number): { start: number; end: number } | null {
+  const match = header.trim().match(/^bytes=(\d*)-(\d*)$/);
+  if (!match) return null;
+  const [, startText, endText] = match;
+  if (!startText && !endText) return null;
+  let start = startText ? Number(startText) : Math.max(0, size - Number(endText));
+  let end = endText && startText ? Number(endText) : size - 1;
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+  start = Math.max(0, Math.min(start, size - 1));
+  end = Math.max(start, Math.min(end, size - 1));
+  return { start, end };
+}
+
+/** Serves uploaded files from UPLOAD_DIR at /media/*, with HTTP Range support. */
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path: segments } = await params;
   const media = await resolveMedia(segments ?? []);
+  if (!media) return new Response("Not found", { status: 404 });
 
-  if (!media) {
-    return new Response("Not found", { status: 404 });
+  const baseHeaders: Record<string, string> = {
+    "Content-Type": media.contentType,
+    "Cache-Control": "public, max-age=31536000, immutable",
+    "X-Content-Type-Options": "nosniff",
+    "Accept-Ranges": "bytes",
+  };
+
+  const range = request.headers.get("range");
+  if (range && media.size > 0) {
+    const parsed = parseRange(range, media.size);
+    if (parsed) {
+      const { start, end } = parsed;
+      const stream = Readable.toWeb(
+        createReadStream(media.filePath, { start, end }),
+      ) as ReadableStream;
+      return new Response(stream, {
+        status: 206,
+        headers: {
+          ...baseHeaders,
+          "Content-Length": String(end - start + 1),
+          "Content-Range": `bytes ${start}-${end}/${media.size}`,
+        },
+      });
+    }
   }
 
   const stream = Readable.toWeb(createReadStream(media.filePath)) as ReadableStream;
-
   return new Response(stream, {
     status: 200,
-    headers: {
-      "Content-Type": media.contentType,
-      "Content-Length": String(media.size),
-      // Filenames are content hashes, so the bytes behind a URL never change.
-      "Cache-Control": "public, max-age=31536000, immutable",
-      "X-Content-Type-Options": "nosniff",
-      "Accept-Ranges": "bytes",
-    },
+    headers: { ...baseHeaders, "Content-Length": String(media.size) },
   });
 }

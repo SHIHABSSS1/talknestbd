@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Headphones, PlayCircle } from "lucide-react";
 import { useAudioContent } from "@/components/providers/AudioContentProvider";
-import { useBookContent } from "@/components/providers/BookContentProvider";
+import { toBookFromAudio } from "@/lib/audio-api";
 import { BookCover } from "@/components/books/BookCover";
 import { Container } from "@/components/ui/Container";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -14,9 +14,8 @@ import { formatPrice } from "@/lib/utils";
 const waveform = [30, 62, 42, 84, 52, 72, 36, 90, 58, 74, 44, 66, 34, 78, 48, 86, 40, 60];
 
 export function AudioShowcase() {
-  const { content } = useAudioContent();
-  const { books } = useBookContent();
-  const audioBooks = books.filter((book) => book.tags.includes("audio"));
+  const { content, audiobooks } = useAudioContent();
+  const audioBooks = audiobooks.map((item) => toBookFromAudio(item));
   const featured =
     audioBooks.find((book) => book.slug === content.section.featuredSlug) ??
     audioBooks[0];
@@ -45,7 +44,7 @@ export function AudioShowcase() {
             />
             <div className="relative flex gap-5">
               <Link
-                href={`/books/${featured.slug}`}
+                href={`/audio-books/${featured.slug}`}
                 className="h-40 w-28 shrink-0 overflow-hidden rounded-xl sm:h-48 sm:w-32"
               >
                 <BookCover book={featured} size="md" />
@@ -80,7 +79,7 @@ export function AudioShowcase() {
                     <PlayCircle size={13} /> Listen now
                   </Button>
                   <Link
-                    href={`/books/${featured.slug}`}
+                    href={`/audio-books/${featured.slug}`}
                     className="inline-flex h-9 items-center px-2 text-[11px] font-medium text-cream-100/70 hover:text-white"
                   >
                     Book details →

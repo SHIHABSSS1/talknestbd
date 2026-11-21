@@ -10,66 +10,95 @@ import {
   type ReactNode,
 } from "react";
 import {
-  AUDIO_STORAGE_KEY,
-  clearAudioContent,
+  resetAudioCopy,
+  saveAudioCopy,
+} from "@/lib/actions/audio";
+import {
   cloneAudioDefaults,
-  readAudioContent,
-  writeAudioContent,
-  type AudioBookEntry,
   type AudioContent,
   type SaveResult,
 } from "@/lib/audio-content";
+import type { AudioBookView } from "@/lib/audio-api";
 
 interface AudioContentContextValue {
   content: AudioContent;
+  audiobooks: AudioBookView[];
+  loading: boolean;
   hydrated: boolean;
-  save: (next: AudioContent) => SaveResult;
-  reset: () => SaveResult;
-  getEntry: (slug: string) => AudioBookEntry | undefined;
+  refresh: () => Promise<void>;
+  save: (next: AudioContent) => Promise<SaveResult>;
+  reset: () => Promise<SaveResult>;
 }
 
 const AudioContentContext = createContext<AudioContentContextValue | null>(null);
 
-// Stable first render (server + client) so hydration matches.
-const initialContent: AudioContent = cloneAudioDefaults();
-
-export function AudioContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<AudioContent>(initialContent);
+/** DB-backed audiobook copy + published catalogue from /api/audiobooks. */
+export function AudioContentProvider({
+  children,
+  initialContent,
+}: {
+  children: ReactNode;
+  initialContent?: AudioContent;
+}) {
+  const [content, setContent] = useState<AudioContent>(
+    initialContent ?? cloneAudioDefaults(),
+  );
+  const [audiobooks, setAudiobooks] = useState<AudioBookView[]>([]);
+  const [loading, setLoading] = useState(true);
   const [hydrated, setHydrated] = useState(false);
 
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch("/api/audiobooks", { cache: "no-store" });
+      if (!response.ok) throw new Error("Could not load audiobooks.");
+      const data = (await response.json()) as { audiobooks?: AudioBookView[] };
+      const books = data.audiobooks ?? [];
+      setAudiobooks(books);
+      setContent((current) => ({ ...current, books }));
+    } catch {
+      setAudiobooks([]);
+    } finally {
+      setLoading(false);
+      setHydrated(true);
+    }
+  }, []);
+
   useEffect(() => {
-    setContent(readAudioContent());
-    setHydrated(true);
+    void refresh();
+  }, [refresh]);
 
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === AUDIO_STORAGE_KEY || event.key === null) {
-        setContent(readAudioContent());
+  const save = useCallback(async (next: AudioContent) => {
+    try {
+      const result = await saveAudioCopy(next);
+      if (result.ok) setContent((current) => ({ ...current, ...next, books: current.books }));
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not save the copy.",
+      };
+    }
+  }, []);
+
+  const reset = useCallback(async () => {
+    try {
+      const result = await resetAudioCopy();
+      if (result.ok) {
+        const fresh = cloneAudioDefaults();
+        setContent((current) => ({ ...fresh, books: current.books }));
       }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+      return result;
+    } catch (error) {
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : "Could not reset the copy.",
+      };
+    }
   }, []);
-
-  const save = useCallback((next: AudioContent) => {
-    const result = writeAudioContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
-
-  const reset = useCallback(() => {
-    const result = clearAudioContent();
-    if (result.ok) setContent(cloneAudioDefaults());
-    return result;
-  }, []);
-
-  const getEntry = useCallback(
-    (slug: string) => content.books.find((book) => book.slug === slug),
-    [content.books],
-  );
 
   const value = useMemo(
-    () => ({ content, hydrated, save, reset, getEntry }),
-    [content, hydrated, save, reset, getEntry],
+    () => ({ content, audiobooks, loading, hydrated, refresh, save, reset }),
+    [content, audiobooks, loading, hydrated, refresh, save, reset],
   );
 
   return (

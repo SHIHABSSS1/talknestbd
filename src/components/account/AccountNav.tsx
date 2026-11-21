@@ -25,7 +25,7 @@ const links = [
   { label: "My Reviews", href: "/account/reviews", icon: MessageSquare },
   { label: "Saved Addresses", href: "/account/addresses", icon: MapPin },
   { label: "Wishlist", href: "/wishlist", icon: Heart },
-  { label: "Audio Library", href: "/audio-books", icon: Headphones },
+  { label: "My Audiobooks", href: "/account/audiobooks", icon: Headphones },
   { label: "Settings", href: "/account/settings", icon: Settings },
 ];
 

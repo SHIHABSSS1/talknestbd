@@ -66,13 +66,12 @@ export async function POST(request: Request) {
 
   const body = parsed.data;
   // Never trust prices supplied by the browser.
-  const pricedItems = body.items.map((item) => {
-    const unitPrice = resolveUnitPrice(item.slug, item.kind);
-    if (unitPrice === null) {
-      return { item, unitPrice: null };
-    }
-    return { item, unitPrice };
-  });
+  const pricedItems = await Promise.all(
+    body.items.map(async (item) => {
+      const unitPrice = await resolveUnitPrice(item.slug, item.kind);
+      return { item, unitPrice };
+    }),
+  );
   const unknown = pricedItems.find((entry) => entry.unitPrice === null);
   if (unknown) {
     return badRequest(`Unknown item: ${unknown.item.slug}`);
