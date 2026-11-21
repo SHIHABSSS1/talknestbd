@@ -1,96 +1,92 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
-import {
-  clearVideoQuizContent,
-  cloneVideoQuizDefaults,
-  readVideoQuizContent,
-  VIDEO_QUIZ_STORAGE_KEY,
-  writeVideoQuizContent,
-  type VideoComment,
-  type VideoQuizContent,
-  type SaveResult,
-} from "@/lib/video-quiz-content";
+/**
+ * Shared, API-backed video/quiz catalogue.
+ *
+ * Page copy arrives from the server (content_blocks via a cached query).
+ * Episodes, quizzes and questions are fetched from /api/videos and /api/quizzes
+ * so every storefront surface — homepage, /video and /quiz — sees the same
+ * live data after an admin publishes a change.
+ */
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-interface VideoQuizContextValue {
-  content: VideoQuizContent;
-  hydrated: boolean;
-  save: (next: VideoQuizContent) => SaveResult;
-  reset: () => SaveResult;
-  addComment: (comment: VideoComment) => void;
-  removeComment: (id: string) => void;
-}
+import { accountFetch } from "@/lib/account-client";
+import type { QuizView, VideoView } from "@/lib/video-quiz-api";
+import type { VideoQuizCopy } from "@/lib/video-quiz-content";
+
+type VideoQuizContextValue = {
+  copy: VideoQuizCopy;
+  videos: VideoView[];
+  quizzes: QuizView[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+  /** Published quiz of a given type, or null. */
+  quizOfType: (type: "book" | "watch") => QuizView | null;
+};
 
 const VideoQuizContext = createContext<VideoQuizContextValue | null>(null);
-const initialContent: VideoQuizContent = cloneVideoQuizDefaults();
 
-export function VideoQuizProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<VideoQuizContent>(initialContent);
-  const [hydrated, setHydrated] = useState(false);
+export function VideoQuizProvider({
+  initialCopy,
+  children,
+}: {
+  initialCopy: VideoQuizCopy;
+  children: React.ReactNode;
+}) {
+  const [copy, setCopy] = useState(initialCopy);
+  const [videos, setVideos] = useState<VideoView[]>([]);
+  const [quizzes, setQuizzes] = useState<QuizView[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [videoData, quizData] = await Promise.all([
+        accountFetch<{ videos: VideoView[] }>("/api/videos"),
+        accountFetch<{ quizzes: QuizView[] }>("/api/quizzes"),
+      ]);
+      setVideos(videoData.videos ?? []);
+      setQuizzes(quizData.quizzes ?? []);
+      setError(null);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Could not load videos and quizzes.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    setContent(readVideoQuizContent());
-    setHydrated(true);
-    const onStorage = (event: StorageEvent) => {
-      if (event.key === VIDEO_QUIZ_STORAGE_KEY || event.key === null) {
-        setContent(readVideoQuizContent());
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+    void refresh();
+  }, [refresh]);
 
-  const persist = useCallback((next: VideoQuizContent) => {
-    const result = writeVideoQuizContent(next);
-    if (result.ok) setContent(next);
-    return result;
-  }, []);
+  useEffect(() => {
+    setCopy(initialCopy);
+  }, [initialCopy]);
 
-  const save = useCallback((next: VideoQuizContent) => persist(next), [persist]);
-
-  const reset = useCallback(() => {
-    const result = clearVideoQuizContent();
-    if (result.ok) setContent(cloneVideoQuizDefaults());
-    return result;
-  }, []);
-
-  const addComment = useCallback(
-    (comment: VideoComment) => {
-      persist({ ...content, comments: [comment, ...content.comments] });
-    },
-    [content, persist],
-  );
-
-  const removeComment = useCallback(
-    (id: string) => {
-      persist({
-        ...content,
-        comments: content.comments.filter((item) => item.id !== id),
-      });
-    },
-    [content, persist],
-  );
-
-  const value = useMemo(
-    () => ({ content, hydrated, save, reset, addComment, removeComment }),
-    [content, hydrated, save, reset, addComment, removeComment],
+  const value = useMemo<VideoQuizContextValue>(
+    () => ({
+      copy,
+      videos,
+      quizzes,
+      loading,
+      error,
+      refresh,
+      quizOfType: (type) =>
+        quizzes.find((quiz) => quiz.type === type) ??
+        quizzes.find((quiz) => quiz.featured) ??
+        quizzes[0] ??
+        null,
+    }),
+    [copy, videos, quizzes, loading, error, refresh],
   );
 
   return <VideoQuizContext.Provider value={value}>{children}</VideoQuizContext.Provider>;
 }
 
 export function useVideoQuiz(): VideoQuizContextValue {
-  const context = useContext(VideoQuizContext);
-  if (!context) {
-    throw new Error("useVideoQuiz must be used within a VideoQuizProvider");
-  }
-  return context;
+  const value = useContext(VideoQuizContext);
+  if (!value) throw new Error("useVideoQuiz must be used inside VideoQuizProvider.");
+  return value;
 }

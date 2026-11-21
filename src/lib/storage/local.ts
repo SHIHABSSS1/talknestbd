@@ -1,7 +1,7 @@
 import "server-only";
 
-import { createHash } from "node:crypto";
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { createWriteStream } from "node:fs";
 import { pipeline } from "node:stream/promises";
 import { Readable } from "node:stream";
@@ -188,6 +188,91 @@ export async function saveAudioFile(
     mime: "audio/mpeg",
     bytes: data.length,
   };
+}
+
+function maxVideoBytes(): number {
+  const mb = Number(process.env.MAX_VIDEO_MB || 200);
+  return (Number.isFinite(mb) && mb > 0 ? mb : 200) * 1024 * 1024;
+}
+
+/** MP4 'ftyp' box at offset 4, or the WebM/Matroska EBML header. */
+function videoSignature(head: Buffer): "video/mp4" | "video/webm" | null {
+  if (head.length >= 8 && head.toString("ascii", 4, 8) === "ftyp") return "video/mp4";
+  if (
+    head.length >= 4 &&
+    head[0] === 0x1a &&
+    head[1] === 0x45 &&
+    head[2] === 0xdf &&
+    head[3] === 0xa3
+  ) {
+    return "video/webm";
+  }
+  return null;
+}
+
+export type StoredVideo = {
+  key: string;
+  url: string;
+  mime: "video/mp4" | "video/webm";
+  bytes: number;
+};
+
+/**
+ * Streams an uploaded video straight to a temporary file — `formData()` would
+ * buffer the whole body in memory, which is fatal for a 200 MB file. The first
+ * bytes are sniffed from the stream so a renamed executable cannot pass, and
+ * the file is atomically renamed into place only after it passes validation.
+ */
+export async function saveVideoStream(
+  stream: ReadableStream<Uint8Array>,
+  declaredBytes = 0,
+): Promise<StoredVideo> {
+  const max = maxVideoBytes();
+  if (Number.isFinite(declaredBytes) && declaredBytes > max + 1024 * 1024) {
+    throw new Error(`Video is larger than the ${Math.round(max / (1024 * 1024))} MB limit.`);
+  }
+
+  const root = uploadRoot();
+  const tempDir = path.join(root, "tmp");
+  await mkdir(tempDir, { recursive: true });
+  const tempPath = path.join(tempDir, `${randomUUID()}.part`);
+
+  const hash = createHash("sha256");
+  let head = Buffer.alloc(0);
+  let bytes = 0;
+
+  try {
+    await pipeline(
+      Readable.fromWeb(stream as Parameters<typeof Readable.fromWeb>[0]),
+      async function* (source) {
+        for await (const value of source) {
+          const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value as Uint8Array);
+          if (head.length < 12) {
+            head = Buffer.concat([head, chunk.subarray(0, 12 - head.length)]);
+          }
+          bytes += chunk.length;
+          if (bytes > max) throw new Error(`Video is larger than the ${Math.round(max / (1024 * 1024))} MB limit.`);
+          hash.update(chunk);
+          yield chunk;
+        }
+      },
+      createWriteStream(tempPath),
+    );
+
+    if (bytes === 0) throw new Error("That video file is empty.");
+    const mime = videoSignature(head);
+    if (!mime) throw new Error("Only MP4 or WebM video files are accepted.");
+
+    const extension = mime === "video/mp4" ? "mp4" : "webm";
+    const key = `video/${hash.digest("hex").slice(0, 32)}.${extension}`;
+    const destination = path.join(root, key);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await rename(tempPath, destination);
+    return { key, url: `${publicMediaBase()}/${key}`, mime, bytes };
+  } catch (error) {
+    await unlink(tempPath).catch(() => {});
+    throw error;
+  }
 }
 
 export type ResolvedMedia = {

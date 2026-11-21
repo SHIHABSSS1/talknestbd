@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { VideoGallery } from "@/components/video/VideoGallery";
 
 export function VideoPageContent() {
-  const { content } = useVideoQuiz();
-  const page = content.videoPage;
+  const { copy } = useVideoQuiz();
+  const page = copy.videoPage;
 
   return (
     <>

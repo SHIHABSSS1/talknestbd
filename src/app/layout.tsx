@@ -11,6 +11,7 @@ import { getUsedContent } from "@/lib/db/queries/used";
 import { getWholesaleContent } from "@/lib/db/queries/wholesale";
 import { getReviewContent } from "@/lib/db/queries/reviews";
 import { getAudioContent } from "@/lib/db/queries/audio";
+import { getVideoQuizCopy } from "@/lib/db/queries/video-quiz";
 import { BookContentProvider } from "@/components/providers/BookContentProvider";
 import { ShelfContentProvider } from "@/components/providers/ShelfContentProvider";
 import { SellContentProvider } from "@/components/providers/SellContentProvider";
@@ -95,6 +96,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     wholesaleContent,
     reviewContent,
     audioContent,
+    videoQuizCopy,
   ] = await Promise.all([
     getCategoryContent(),
     getAuthorContent(),
@@ -105,6 +107,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     getWholesaleContent(),
     getReviewContent(),
     getAudioContent(),
+    getVideoQuizCopy(),
   ]);
 
   return (
@@ -131,7 +134,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                                   <AuthorContentProvider initialContent={authorContent}>
                                     <PublisherContentProvider initialContent={publisherContent}>
                                       <ReviewsProvider initialContent={reviewContent}>
-                                        <VideoQuizProvider>
+                                        <VideoQuizProvider initialCopy={videoQuizCopy}>
                                           <StoriesProvider>
                                             <SiteSettingsProvider>
                                               <SiteScripts />

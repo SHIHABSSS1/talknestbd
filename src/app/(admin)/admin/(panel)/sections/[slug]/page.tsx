@@ -9,7 +9,7 @@ import { AuthorsEditor } from "@/components/admin/AuthorsEditor";
 import { PublishersEditor } from "@/components/admin/PublishersEditor";
 import { ReviewsEditor } from "@/components/admin/ReviewsEditor";
 import { StoriesEditor } from "@/components/admin/StoriesEditor";
-import { VideoQuizEditor } from "@/components/admin/VideoQuizEditor";
+import { AdminVideoQuizManager } from "@/components/admin/AdminVideoQuizManager";
 import { CategoryEditor } from "@/components/admin/CategoryEditor";
 import { HeroEditor } from "@/components/admin/HeroEditor";
 import { ViralBooksEditor } from "@/components/admin/ViralBooksEditor";
@@ -22,6 +22,7 @@ import { sectionDefaults, isKnownSection } from "@/lib/section-content";
 import { findAdminNavItem } from "@/lib/admin-nav";
 import { getHeroContent } from "@/lib/db/queries/hero";
 import { getTrustContent } from "@/lib/db/queries/trust-strip";
+import { getVideoQuizCopy } from "@/lib/db/queries/video-quiz";
 import {
   getInternationalShelfContent,
   getNewArrivalsShelfContent,
@@ -163,7 +164,8 @@ async function EditorLoader({ params }: { params: Promise<{ slug: string }> }) {
     return <ReviewsEditor label={label} />;
   }
   if (slug === "video-quiz") {
-    return <VideoQuizEditor label={label} />;
+    const copy = await getVideoQuizCopy();
+    return <AdminVideoQuizManager label={label} initialCopy={copy} />;
   }
   if (slug === "stories") {
     return <StoriesEditor label={label} />;

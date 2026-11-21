@@ -1,29 +1,36 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, CheckCircle2, PlayCircle } from "lucide-react";
+import { ArrowUpRight, BookOpen, CheckCircle2, PlayCircle, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type QuizTab = "watch" | "book";
+export type QuizTab = "watch" | "book" | "leaderboard";
 
 const tabs = [
   {
     id: "watch" as const,
     label: "Watch & Quiz",
-    description: "Watch an episode, then answer six questions about it.",
+    description: "Watch an episode, then answer the questions below it.",
     href: "/quiz?tab=watch",
     icon: PlayCircle,
   },
   {
     id: "book" as const,
     label: "Book Quiz",
-    description: "Jump straight into the book quiz and this week's leaderboard.",
+    description: "Jump straight into the book quiz and the leaderboard preview.",
     href: "/quiz?tab=book",
     icon: BookOpen,
+  },
+  {
+    id: "leaderboard" as const,
+    label: "Leaderboard",
+    description: "See the top readers, scores and ranks across every quiz.",
+    href: "/quiz?tab=leaderboard",
+    icon: Trophy,
   },
 ];
 
 export function QuizTabs({ active }: { active: QuizTab }) {
   return (
-    <nav aria-label="Quiz options" className="grid gap-3 sm:grid-cols-2">
+    <nav aria-label="Quiz options" className="grid gap-2.5 sm:grid-cols-3">
       {tabs.map((tab) => {
         const isActive = tab.id === active;
         const Icon = tab.icon;
@@ -43,9 +50,7 @@ export function QuizTabs({ active }: { active: QuizTab }) {
             <span
               className={cn(
                 "grid h-9 w-9 shrink-0 place-items-center rounded-[6px]",
-                isActive
-                  ? "bg-brand-600 text-white"
-                  : "bg-brand-50 text-brand-600 group-hover:bg-brand-100",
+                isActive ? "bg-brand-600 text-white" : "bg-brand-50 text-brand-600 group-hover:bg-brand-100",
               )}
             >
               <Icon size={17} />
@@ -55,14 +60,11 @@ export function QuizTabs({ active }: { active: QuizTab }) {
                 {tab.label}
                 {isActive && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-brand-600/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-[0.1em] text-brand-700">
-                    <CheckCircle2 size={8} />
-                    Now open
+                    <CheckCircle2 size={8} /> Now open
                   </span>
                 )}
               </span>
-              <span className="mt-0.5 block text-[10.5px] leading-relaxed text-muted">
-                {tab.description}
-              </span>
+              <span className="mt-0.5 block text-[10.5px] leading-relaxed text-muted">{tab.description}</span>
             </span>
             <ArrowUpRight
               size={14}

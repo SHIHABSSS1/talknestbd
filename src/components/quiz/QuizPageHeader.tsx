@@ -6,8 +6,8 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { toBn } from "@/lib/utils";
 
 export function QuizPageHeader() {
-  const { content } = useVideoQuiz();
-  const page = content.quizPage;
+  const { copy, quizzes } = useVideoQuiz();
+  const page = copy.quizPage;
   const [first, second, third, fourth] = page.pills;
 
   return (
@@ -26,7 +26,7 @@ export function QuizPageHeader() {
           <BookOpen size={11} /> {second}
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
-          <Brain size={11} /> {toBn(content.quizzes.length)} {third}
+          <Brain size={11} /> {toBn(quizzes.length)} {third}
         </span>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[10px] text-cream-100/80">
           <Trophy size={11} /> {fourth}

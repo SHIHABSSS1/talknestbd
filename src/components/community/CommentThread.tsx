@@ -1,136 +1,162 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Heart,
   MessageCircle,
   Reply,
   Send,
   ShieldCheck,
-  Smile,
-  Users,
+  Trash2,
   X,
 } from "lucide-react";
-import {
-  currentUser,
-  demoUsers,
-  findDemoUser,
-  roleClass,
-  type DemoComment,
-} from "@/data/comment-demo";
-import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
 
-/** Human-friendly timestamp for stored ISO dates, with a safe fallback. */
+import { accountFetch } from "@/lib/account-client";
+import type { DiscussionView } from "@/lib/video-quiz-api";
+import { cn } from "@/lib/utils";
+
+const AVATAR_COLORS = [
+  "bg-brand-600",
+  "bg-forest-700",
+  "bg-gold-600",
+  "bg-clay-600",
+  "bg-brand-800",
+];
+
+function initials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "R";
+}
+
+function colorFor(name: string): string {
+  let total = 0;
+  for (let index = 0; index < name.length; index += 1) total += name.charCodeAt(index);
+  return AVATAR_COLORS[total % AVATAR_COLORS.length]!;
+}
+
 function formatTime(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  const seconds = Math.round((parsed.getTime() - Date.now()) / 1000);
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const seconds = Math.round((date.getTime() - Date.now()) / 1000);
   const minutes = Math.round(seconds / 60);
   const hours = Math.round(minutes / 60);
   const days = Math.round(hours / 24);
-  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const relative = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
   if (Math.abs(seconds) < 60) return "just now";
-  if (Math.abs(minutes) < 60) return formatter.format(minutes, "minute");
-  if (Math.abs(hours) < 24) return formatter.format(hours, "hour");
-  if (Math.abs(days) < 30) return formatter.format(days, "day");
-  return new Intl.DateTimeFormat("en-BD", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(parsed);
+  if (Math.abs(minutes) < 60) return relative.format(minutes, "minute");
+  if (Math.abs(hours) < 24) return relative.format(hours, "hour");
+  if (Math.abs(days) < 30) return relative.format(days, "day");
+  return new Intl.DateTimeFormat("en-BD", { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
 
-function Avatar({
-  initials,
-  avatarClass,
-  small = false,
-}: {
-  initials: string;
-  avatarClass: string;
-  small?: boolean;
-}) {
+function Avatar({ comment, small }: { comment: DiscussionView; small?: boolean }) {
   return (
     <span
-      className={`grid shrink-0 place-items-center rounded-full font-bold text-white ${
-        small ? "h-6 w-6 text-[8px]" : "h-8 w-8 text-[9px]"
-      } ${avatarClass}`}
+      className={cn(
+        "grid shrink-0 place-items-center overflow-hidden rounded-full font-bold text-white",
+        small ? "h-6 w-6 text-[8px]" : "h-8 w-8 text-[9px]",
+        colorFor(comment.userName),
+      )}
     >
-      {initials}
+      {comment.userImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={comment.userImage} alt="" className="h-full w-full object-cover" />
+      ) : (
+        initials(comment.userName)
+      )}
     </span>
   );
 }
 
 function CommentItem({
   comment,
-  comments,
-  liked,
+  all,
+  viewerId,
   onLike,
   onReply,
+  onDelete,
   depth = 0,
 }: {
-  comment: DemoComment;
-  comments: DemoComment[];
-  liked: string[];
+  comment: DiscussionView;
+  all: DiscussionView[];
+  viewerId: string | null;
   onLike: (id: string) => void;
-  onReply: (id: string, name: string) => void;
+  onReply: (comment: DiscussionView) => void;
+  onDelete: (id: string) => void;
   depth?: number;
 }) {
-  const user = findDemoUser(comment.userId);
-  const replies = comments.filter((item) => item.parentId === comment.id);
-  const isLiked = liked.includes(comment.id);
-
+  const replies = all.filter((item) => item.parentId === comment.id);
   return (
     <li className={depth > 0 ? "ml-3 border-l-2 border-brand-100 pl-3 sm:ml-7" : ""}>
       <article className="flex gap-2.5 py-3">
-        <Avatar initials={user.initials} avatarClass={user.avatarClass} small={depth > 0} />
+        <Avatar comment={comment} small={depth > 0} />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-[11px] font-semibold text-ink">{user.name}</span>
-            <span className={`rounded-full px-1.5 py-0.5 text-[8px] font-medium ${roleClass(user.role)}`}>
-              {user.role}
-            </span>
-            <time className="text-[9px] text-muted" dateTime={comment.time}>
-              {formatTime(comment.time)}
+            <span className="text-[11px] font-semibold text-ink">{comment.userName}</span>
+            {comment.isAdmin && (
+              <span className="rounded-full bg-forest-900 px-1.5 py-0.5 text-[8px] font-semibold text-gold-300">
+                Admin reply
+              </span>
+            )}
+            <time className="text-[9px] text-muted" dateTime={comment.createdAt}>
+              {formatTime(comment.createdAt)}
             </time>
           </div>
           <p className="mt-1 break-words text-pretty text-[11px] leading-relaxed text-body">
-            {comment.text}
+            {comment.body}
           </p>
-          <div className="mt-1.5 flex items-center gap-3">
+          <div className="mt-1.5 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => onLike(comment.id)}
-              aria-label={isLiked ? `Unlike comment by ${user.name}` : `Like comment by ${user.name}`}
-              aria-pressed={isLiked}
-              className={`inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${
-                isLiked ? "text-clay-600" : "text-muted hover:text-clay-600"
-              }`}
+              aria-label={comment.likedByMe ? `Unlike comment by ${comment.userName}` : `Like comment by ${comment.userName}`}
+              aria-pressed={comment.likedByMe}
+              className={cn(
+                "inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium transition-colors",
+                comment.likedByMe ? "text-clay-600" : "text-muted hover:text-clay-600",
+              )}
             >
-              <Heart size={11} aria-hidden="true" className={isLiked ? "fill-current" : ""} />
-              <span className="tabular-nums">{comment.likes + (isLiked ? 1 : 0)}</span>
+              <Heart size={11} className={comment.likedByMe ? "fill-current" : ""} />
+              <span className="tabular-nums">{comment.likes}</span>
             </button>
-            <button
-              type="button"
-              onClick={() => onReply(comment.id, user.name)}
-              aria-label={`Reply to ${user.name}`}
-              className="inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium text-muted transition-colors hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
-            >
-              <Reply size={11} aria-hidden="true" /> Reply
-            </button>
+            {viewerId && (
+              <button
+                type="button"
+                onClick={() => onReply(comment)}
+                aria-label={`Reply to ${comment.userName}`}
+                className="inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium text-muted transition-colors hover:text-brand-700"
+              >
+                <Reply size={11} /> Reply
+              </button>
+            )}
+            {viewerId && comment.userId === viewerId && (
+              <button
+                type="button"
+                onClick={() => onDelete(comment.id)}
+                aria-label="Delete your comment"
+                className="inline-flex min-h-8 items-center gap-1 rounded-[4px] px-1 text-[9px] font-medium text-muted transition-colors hover:text-clay-600"
+              >
+                <Trash2 size={11} /> Delete
+              </button>
+            )}
           </div>
         </div>
       </article>
-
       {replies.length > 0 && (
         <ul className="divide-y divide-line">
           {replies.map((reply) => (
             <CommentItem
               key={reply.id}
               comment={reply}
-              comments={comments}
-              liked={liked}
+              all={all}
+              viewerId={viewerId}
               onLike={onLike}
               onReply={onReply}
+              onDelete={onDelete}
               depth={depth + 1}
             />
           ))}
@@ -142,50 +168,95 @@ function CommentItem({
 
 export function CommentThread({
   target,
+  targetId,
   title,
   compact = false,
 }: {
   target: "video" | "quiz";
+  targetId: string;
   title?: string;
   compact?: boolean;
 }) {
-  const { content, addComment } = useVideoQuiz();
-  const comments: DemoComment[] = content.comments
-    .filter((item) => item.target === target)
-    .map((item) => ({
-      id: item.id,
-      userId: item.userId,
-      text: item.text,
-      time: item.time,
-      likes: item.likes,
-      parentId: item.parentId,
-    }));
+  const [comments, setComments] = useState<DiscussionView[]>([]);
+  const [viewerId, setViewerId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState<"newest" | "oldest">("newest");
   const [draft, setDraft] = useState("");
-  const [replyTo, setReplyTo] = useState<{ id: string; name: string } | null>(null);
-  const [liked, setLiked] = useState<string[]>([]);
+  const [replyTo, setReplyTo] = useState<DiscussionView | null>(null);
   const [notice, setNotice] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const ordered = sort === "newest" ? [...comments].reverse() : comments;
+  const load = useCallback(async () => {
+    if (!targetId) return;
+    setLoading(true);
+    try {
+      const [thread, session] = await Promise.all([
+        accountFetch<{ comments: DiscussionView[] }>(
+          `/api/discussions?target=${target}&targetId=${encodeURIComponent(targetId)}`,
+        ),
+        fetch("/api/auth/get-session")
+          .then((response) => response.json().catch(() => null))
+          .catch(() => null),
+      ]);
+      setComments(thread.comments ?? []);
+      setViewerId((session as { user?: { id?: string } } | null)?.user?.id ?? null);
+    } catch {
+      setComments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [target, targetId]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  const ordered = useMemo(
+    () => (sort === "newest" ? [...comments].reverse() : comments),
+    [comments, sort],
+  );
   const topLevel = ordered.filter((comment) => !comment.parentId);
+  const participants = new Set(comments.map((comment) => comment.userName)).size;
 
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const text = draft.trim();
-    if (!text) return;
-    addComment({
-      id: `c-${Date.now()}`,
-      userId: currentUser.id,
-      userName: currentUser.name,
-      target,
-      text,
-      time: "Just now",
-      likes: 0,
-      parentId: replyTo?.id,
-    });
-    setDraft("");
-    setReplyTo(null);
-    setNotice("Your comment was added to the discussion.");
+    const body = draft.trim();
+    if (!body || busy) return;
+    setBusy(true);
+    setNotice("");
+    try {
+      await accountFetch("/api/discussions", {
+        method: "POST",
+        body: JSON.stringify({ target, targetId, body, parentId: replyTo?.id ?? null }),
+      });
+      setDraft("");
+      setReplyTo(null);
+      setNotice("Your comment was added.");
+      await load();
+    } catch (reason) {
+      setNotice(reason instanceof Error ? reason.message : "Could not post your comment.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const like = async (id: string) => {
+    if (!viewerId) return;
+    try {
+      await accountFetch(`/api/discussions/${id}/like`, { method: "POST" });
+      await load();
+    } catch {
+      setNotice("Could not update your like.");
+    }
+  };
+
+  const remove = async (id: string) => {
+    try {
+      await accountFetch(`/api/discussions/${id}`, { method: "DELETE" });
+      await load();
+    } catch (reason) {
+      setNotice(reason instanceof Error ? reason.message : "Could not delete the comment.");
+    }
   };
 
   return (
@@ -196,10 +267,7 @@ export function CommentThread({
           <h3 className="text-[12px] font-semibold text-ink">
             {title ?? (target === "video" ? "Episode discussion" : "Quiz discussion")}
           </h3>
-          <span
-            aria-label={`${comments.length} comments`}
-            className="rounded-full bg-brand-50 px-2 py-0.5 text-[9px] font-semibold tabular-nums text-brand-700"
-          >
+          <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[9px] font-semibold tabular-nums text-brand-700">
             {comments.length}
           </span>
         </div>
@@ -209,11 +277,10 @@ export function CommentThread({
               key={value}
               type="button"
               onClick={() => setSort(value)}
-              className={`px-2.5 py-1.5 text-[9px] font-medium capitalize transition-colors ${
-                sort === value
-                  ? "bg-brand-600 text-white"
-                  : "bg-white text-muted hover:text-brand-700"
-              }`}
+              className={cn(
+                "px-2.5 py-1.5 text-[9px] font-medium capitalize transition-colors",
+                sort === value ? "bg-brand-600 text-white" : "bg-white text-muted hover:text-brand-700",
+              )}
             >
               {value}
             </button>
@@ -221,99 +288,89 @@ export function CommentThread({
         </div>
       </div>
 
-      {/* Demo users */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-line bg-canvas/50 px-4 py-2.5">
-        <Users size={12} className="text-muted" />
-        <span className="text-[9px] font-medium text-muted">Readers here</span>
-        <div className="flex -space-x-2">
-          {demoUsers.slice(0, compact ? 3 : 5).map((user) => (
-            <span key={user.id} title={`${user.name} · ${user.role}`}>
-              <Avatar initials={user.initials} avatarClass={user.avatarClass} small />
-            </span>
-          ))}
+      {!loading && participants > 0 && (
+        <div className="flex flex-wrap items-center gap-2 border-b border-line bg-canvas/50 px-4 py-2.5">
+          <ShieldCheck size={12} className="text-muted" />
+          <span className="text-[9px] text-muted">{participants} readers in this discussion</span>
         </div>
-        <span className="text-[9px] text-muted">
-          + you · <span className="font-medium text-brand-700">community readers</span>
-        </span>
-      </div>
+      )}
 
-      {/* Composer */}
-      <form onSubmit={submit} className="flex gap-2.5 px-4 py-3">
-        <Avatar initials={currentUser.initials} avatarClass={currentUser.avatarClass} />
-        <div className="min-w-0 flex-1">
-          {replyTo && (
-            <div className="mb-1.5 flex items-center gap-1.5 rounded-[4px] bg-brand-50 px-2 py-1.5 text-[9px] text-muted">
-              Replying to <span className="font-semibold text-brand-700">{replyTo.name}</span>
+      {viewerId ? (
+        <form onSubmit={submit} className="flex gap-2.5 px-4 py-3">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-[9px] font-bold text-white">
+            YO
+          </span>
+          <div className="min-w-0 flex-1">
+            {replyTo && (
+              <div className="mb-1.5 flex items-center gap-1.5 rounded-[4px] bg-brand-50 px-2 py-1.5 text-[9px] text-muted">
+                Replying to <span className="font-semibold text-brand-700">{replyTo.userName}</span>
+                <button type="button" onClick={() => setReplyTo(null)} aria-label="Cancel reply" className="ml-auto rounded p-1 hover:text-ink">
+                  <X size={11} />
+                </button>
+              </div>
+            )}
+            <label htmlFor={`comment-draft-${target}-${targetId}`} className="sr-only">
+              {replyTo ? `Reply to ${replyTo.userName}` : "Write a comment"}
+            </label>
+            <textarea
+              id={`comment-draft-${target}-${targetId}`}
+              value={draft}
+              onChange={(event) => {
+                setDraft(event.target.value);
+                setNotice("");
+              }}
+              rows={compact ? 2 : 3}
+              maxLength={2000}
+              placeholder={replyTo ? `Reply to ${replyTo.userName}…` : "Add to the conversation…"}
+              className="w-full resize-none rounded-[6px] border border-line bg-white px-3 py-2 text-[11px] text-ink placeholder:text-muted/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15"
+            />
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[9px] text-muted">Be kind and specific · moderated discussion</span>
               <button
-                type="button"
-                onClick={() => setReplyTo(null)}
-                aria-label="Cancel reply"
-                className="ml-auto rounded-[4px] p-1 text-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40"
+                type="submit"
+                disabled={!draft.trim() || busy}
+                className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-3.5 text-[10px] font-semibold text-white transition-colors hover:bg-brand-700 disabled:pointer-events-none disabled:opacity-50"
               >
-                <X size={11} aria-hidden="true" />
+                <Send size={11} /> {busy ? "Posting…" : replyTo ? "Post reply" : "Post comment"}
               </button>
             </div>
-          )}
-          <label htmlFor={`comment-draft-${target}`} className="sr-only">
-            {replyTo ? `Reply to ${replyTo.name}` : "Write a comment"}
-          </label>
-          <textarea
-            id={`comment-draft-${target}`}
-            value={draft}
-            onChange={(event) => {
-              setDraft(event.target.value);
-              setNotice("");
-            }}
-            rows={compact ? 2 : 3}
-            placeholder={replyTo ? `Reply to ${replyTo.name}…` : "Add to the conversation…"}
-            className="w-full resize-none rounded-[6px] border border-line bg-white px-3 py-2 text-[11px] text-ink placeholder:text-muted/60 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/15"
-          />
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 text-[9px] text-muted">
-              <span className="inline-flex items-center gap-1">
-                <Smile size={11} aria-hidden="true" /> Be kind and specific
-              </span>
-              <span className="inline-flex items-center gap-1">
-                <ShieldCheck size={11} aria-hidden="true" /> Moderated discussion
-              </span>
-            </div>
-            <button
-              type="submit"
-              disabled={!draft.trim()}
-              className="inline-flex h-9 items-center gap-1.5 rounded-[4px] bg-brand-600 px-3.5 text-[10px] font-semibold text-white transition-colors hover:bg-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:pointer-events-none disabled:opacity-50"
-            >
-              <Send size={11} aria-hidden="true" /> {replyTo ? "Post reply" : "Post comment"}
-            </button>
+            <p aria-live="polite" className="mt-2 min-h-3 text-[9px] text-brand-700">{notice}</p>
           </div>
-          <p aria-live="polite" className="mt-2 min-h-3 text-[9px] text-brand-700">
-            {notice}
-          </p>
+        </form>
+      ) : (
+        <div className="px-4 py-4 text-center text-[10px] text-muted">
+          <a href="/login?callbackUrl=/quiz" className="font-semibold text-brand-700 hover:underline">
+            Sign in
+          </a>{" "}
+          to join the discussion.
         </div>
-      </form>
+      )}
 
-      {/* Comments */}
-      <ul className="max-h-72 divide-y divide-line overflow-y-auto border-t border-line px-4">
-        {topLevel.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            comments={comments}
-            liked={liked}
-            onLike={(id) =>
-              setLiked((current) =>
-                current.includes(id)
-                  ? current.filter((item) => item !== id)
-                  : [...current, id],
-              )
-            }
-            onReply={(id, name) => setReplyTo({ id, name })}
-          />
-        ))}
-      </ul>
-
-      <div className="border-t border-line px-4 py-2.5 text-center text-[9px] text-muted">
-        Join the discussion — comments are moderated before appearing.
-      </div>
+      {loading ? (
+        <div className="space-y-2 px-4 py-4" aria-hidden="true">
+          {[0, 1].map((item) => (
+            <div key={item} className="h-10 animate-pulse rounded bg-canvas" />
+          ))}
+        </div>
+      ) : topLevel.length ? (
+        <ul className="max-h-80 divide-y divide-line overflow-y-auto border-t border-line px-4">
+          {topLevel.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              all={comments}
+              viewerId={viewerId}
+              onLike={(id) => void like(id)}
+              onReply={setReplyTo}
+              onDelete={(id) => void remove(id)}
+            />
+          ))}
+        </ul>
+      ) : (
+        <p className="border-t border-line px-4 py-6 text-center text-[10px] text-muted">
+          No comments yet — start the conversation.
+        </p>
+      )}
     </section>
   );
 }

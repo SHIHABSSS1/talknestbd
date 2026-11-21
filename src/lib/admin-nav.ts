@@ -1,4 +1,4 @@
-import { BadgeCheck, BadgePercent, Bell, BookMarked, BookOpen, Building2, Flame, Gift, Globe2, GraduationCap, Headphones, HeartHandshake, Image as ImageIcon, LayoutDashboard, LayoutGrid, LibraryBig, Mic, Moon, Newspaper, PlayCircle, Repeat2, Settings, ShieldCheck, ShoppingBag, Package, TrendingUp, Users, UsersRound, UserRound, type LucideIcon } from "lucide-react";
+import { BadgeCheck, BadgePercent, Bell, BookMarked, BookOpen, Building2, Flame, Gift, Globe2, GraduationCap, Headphones, HeartHandshake, Image as ImageIcon, LayoutDashboard, LayoutGrid, LibraryBig, MessageCircle, Mic, Moon, Newspaper, PlayCircle, Repeat2, Settings, ShieldCheck, ShoppingBag, Package, TrendingUp, Users, UsersRound, UserRound, type LucideIcon } from "lucide-react";
 
 export interface AdminNavItem {
   label: string;
@@ -52,6 +52,9 @@ export const adminNavGroups: AdminNavGroup[] = [
       { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
       { label: "Customers", href: "/admin/customers", icon: UsersRound },
       { label: "All books view", href: "/admin/catalog", icon: BookOpen },
+      { label: "Videos", href: "/admin/videos", icon: PlayCircle },
+      { label: "Quizzes", href: "/admin/quizzes", icon: BookOpen },
+      { label: "Discussions", href: "/admin/discussions", icon: MessageCircle },
     ],
   },
   {

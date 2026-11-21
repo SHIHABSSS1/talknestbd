@@ -92,6 +92,13 @@
       "when": 1795255317300,
       "tag": "0012_same_taskmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795262074906,
+      "tag": "0013_medical_hulk",
+      "breakpoints": true
     }
   ]
 }

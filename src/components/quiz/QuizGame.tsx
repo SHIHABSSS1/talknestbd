@@ -1,39 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowRight, BookOpen, CheckCircle2, CircleHelp, Lightbulb, RotateCcw, Trophy, XCircle } from "lucide-react";
-import { useVideoQuiz } from "@/components/providers/VideoQuizProvider";
-import type { QuizQuestion } from "@/lib/types";
+  ArrowRight, BookOpen, CheckCircle2, CircleHelp, Lightbulb, RotateCcw, Trophy, XCircle,
+} from "lucide-react";
+
+import { accountFetch } from "@/lib/account-client";
+import type { QuizView } from "@/lib/video-quiz-api";
 import { cn, toBn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
-export function QuizGame({
-  label = "Book quiz",
-  questions,
-}: {
-  label?: string;
-  questions?: QuizQuestion[];
-}) {
-  const { content } = useVideoQuiz();
-  const quizQuestions = questions?.length
-    ? questions
-    : content.quizzes.filter((item) => !item.videoId);
+type SubmitState = "idle" | "saving" | "saved" | "error";
+
+export function QuizGame({ quiz, label = "Book quiz" }: { quiz: QuizView; label?: string }) {
+  const questions = quiz.questions;
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [answers, setAnswers] = useState<number[]>([]);
   const [finished, setFinished] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
+  const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [rank, setRank] = useState<number | null>(null);
 
-  const question = quizQuestions[index];
+  useEffect(() => {
+    fetch("/api/auth/get-session")
+      .then((response) => response.json().catch(() => null))
+      .then((session) => setSignedIn(Boolean((session as { user?: unknown } | null)?.user)))
+      .catch(() => setSignedIn(false));
+  }, []);
+
+  useEffect(() => {
+    setIndex(0);
+    setSelected(null);
+    setAnswers([]);
+    setFinished(false);
+    setSubmitState("idle");
+    setSubmitMessage("");
+    setRank(null);
+  }, [quiz.id]);
+
+  const question = questions[index];
   const answered = selected !== null;
-  const correct = answered && selected === question.answerIndex;
-  const score = answers.reduce((sum, answer, questionIndex) => {
-    return sum + (answer === quizQuestions[questionIndex]?.answerIndex ? 1 : 0);
-  }, 0);
+  const correct = answered && selected === question?.answerIndex;
+  const score = answers.reduce(
+    (sum, answer, questionIndex) =>
+      sum + (answer === questions[questionIndex]?.answerIndex ? questions[questionIndex]?.marks ?? 0 : 0),
+    0,
+  );
   const progress = useMemo(
-    () => Math.round((index / quizQuestions.length) * 100),
-    [index],
+    () => (questions.length ? Math.round((index / questions.length) * 100) : 0),
+    [index, questions.length],
   );
 
   const choose = (optionIndex: number) => {
@@ -47,12 +65,34 @@ export function QuizGame({
   };
 
   const next = () => {
-    if (index + 1 >= quizQuestions.length) {
+    if (index + 1 >= questions.length) {
       setFinished(true);
+      if (signedIn && submitState === "idle") void submit(answers);
       return;
     }
     setIndex((value) => value + 1);
     setSelected(null);
+  };
+
+  const submit = async (finalAnswers: number[]) => {
+    setSubmitState("saving");
+    try {
+      const result = await accountFetch<{
+        ok: boolean;
+        message: string;
+        score?: number;
+        rank?: number | null;
+      }>(`/api/quizzes/${quiz.slug}/attempts`, {
+        method: "POST",
+        body: JSON.stringify({ answers: finalAnswers, seconds: 0 }),
+      });
+      setSubmitState(result.ok ? "saved" : "error");
+      setSubmitMessage(result.message);
+      if (typeof result.rank === "number") setRank(result.rank);
+    } catch (reason) {
+      setSubmitState("error");
+      setSubmitMessage(reason instanceof Error ? reason.message : "Could not save your result.");
+    }
   };
 
   const restart = () => {
@@ -60,23 +100,32 @@ export function QuizGame({
     setSelected(null);
     setAnswers([]);
     setFinished(false);
+    setSubmitState("idle");
+    setSubmitMessage("");
+    setRank(null);
   };
 
+  if (!questions.length) {
+    return (
+      <div className="py-10 text-center text-[12px] text-muted">
+        This quiz has no questions yet.
+      </div>
+    );
+  }
+
   if (finished) {
-    const percentage = Math.round((score / quizQuestions.length) * 100);
+    const percentage = Math.round((score / quiz.totalMarks) * 100);
     const badge =
       percentage >= 80
         ? { title: "Bookworm Champion", emoji: "🏆", text: "Your knowledge of books and history is outstanding!" }
         : percentage >= 50
           ? { title: "Avid Reader", emoji: "📚", text: "Nice work! Keep reading to become a champion." }
-          : { title: "New Reader", emoji: "🌱", text: "You've made a start — every question is a chance to learn." };
+          : { title: "New Reader", emoji: "🌱", text: "Every question is a chance to learn something new." };
 
     return (
       <div className="mx-auto max-w-2xl">
         <div className="relative overflow-hidden rounded-[2rem] bg-forest-950 p-6 text-center text-cream-50 sm:p-10">
           <div aria-hidden="true" className="absolute inset-0 paper-texture opacity-[0.1]" />
-          <div aria-hidden="true" className="absolute -right-16 -top-20 h-56 w-56 rounded-full border border-gold-400/20" />
-          <div aria-hidden="true" className="absolute -bottom-24 -left-16 h-56 w-56 rounded-full border border-white/10" />
           <div className="relative">
             <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gold-500 font-display text-3xl">
               {badge.emoji}
@@ -89,9 +138,7 @@ export function QuizGame({
 
             <div className="mx-auto mt-5 flex max-w-xs items-center justify-center gap-5 rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
               <div>
-                <p className="font-display text-3xl font-bold text-gold-300">
-                  {toBn(score)}/{toBn(quizQuestions.length)}
-                </p>
+                <p className="font-display text-3xl font-bold text-gold-300">{toBn(score)}/{toBn(quiz.totalMarks)}</p>
                 <p className="text-[8px] text-cream-100/45">Correct answers</p>
               </div>
               <span className="h-10 w-px bg-white/10" />
@@ -101,20 +148,33 @@ export function QuizGame({
               </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
+            <div className="mt-4 min-h-6 text-[10px] text-cream-100/70" aria-live="polite">
+              {submitState === "saving" && "Saving your score…"}
+              {submitState === "saved" && `Saved to the leaderboard${rank ? ` · rank #${rank}` : ""}.`}
+              {submitState === "error" && (
+                <>
+                  {submitMessage}{" "}
+                  {!signedIn && (
+                    <a href="/login?callbackUrl=/quiz" className="font-semibold text-gold-300 hover:underline">
+                      Sign in to save it
+                    </a>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
               <Button type="button" variant="gold" size="sm" onClick={restart}>
                 <RotateCcw size={13} /> Play again
+              </Button>
+              <Button href="/quiz?tab=leaderboard" variant="light" size="sm">
+                <Trophy size={13} /> Leaderboard
               </Button>
               <Button href="/books" variant="light" size="sm">
                 <BookOpen size={13} /> Browse books
               </Button>
-              <Button href="/reviews" variant="light" size="sm">
-                Read reviews
-              </Button>
             </div>
-            <p className="mt-4 text-[8px] text-cream-100/35">
-              A reading quiz for fun · no prizes
-            </p>
+            <p className="mt-4 text-[8px] text-cream-100/35">A reading quiz for fun · no prizes</p>
           </div>
         </div>
 
@@ -123,11 +183,11 @@ export function QuizGame({
             <Trophy size={13} className="text-gold-600" /> Today&apos;s scorecard
           </p>
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
-            {quizQuestions.map((item, questionIndex) => {
+            {questions.map((item, questionIndex) => {
               const userAnswer = answers[questionIndex];
               const isCorrect = userAnswer === item.answerIndex;
               return (
-                <div key={item.question} className="flex items-start gap-1.5 rounded-lg bg-cream-100/60 px-2.5 py-2 text-[9px]">
+                <div key={item.id} className="flex items-start gap-1.5 rounded-lg bg-cream-100/60 px-2.5 py-2 text-[9px]">
                   {isCorrect ? (
                     <CheckCircle2 size={11} className="mt-0.5 shrink-0 text-forest-600" />
                   ) : (
@@ -145,12 +205,12 @@ export function QuizGame({
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-900 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-gold-300">
           <CircleHelp size={11} /> {label}
         </span>
         <span className="text-[10px] font-semibold text-forest-800">
-          Question {toBn(index + 1)} / {toBn(quizQuestions.length)}
+          Question {toBn(index + 1)} / {toBn(questions.length)}
         </span>
       </div>
 
@@ -160,7 +220,7 @@ export function QuizGame({
 
       <div className="mt-4 rounded-3xl border border-forest-900/8 bg-cream-50 p-5 sm:p-7">
         <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-clay-500">
-          Question {toBn(index + 1)}
+          Question {toBn(index + 1)} · {question.marks} {question.marks === 1 ? "mark" : "marks"}
         </p>
         <h2 className="mt-2 font-display text-xl font-bold leading-snug text-forest-950 sm:text-2xl">
           {question.question}
@@ -179,7 +239,7 @@ export function QuizGame({
             }
             return (
               <button
-                key={option}
+                key={`${question.id}-${optionIndex}`}
                 type="button"
                 onClick={() => choose(optionIndex)}
                 disabled={answered}
@@ -223,35 +283,34 @@ export function QuizGame({
               {correct ? <CheckCircle2 size={14} /> : <Lightbulb size={14} />}
               {correct ? "Correct answer!" : "Not quite right"}
             </p>
-            <p className="mt-1 text-[10px] leading-relaxed text-forest-800/75">{question.explanation}</p>
+            {question.explanation && (
+              <p className="mt-1 text-[10px] leading-relaxed text-forest-800/75">{question.explanation}</p>
+            )}
           </div>
         )}
 
         <div className="mt-4 flex items-center justify-between gap-3 border-t border-forest-900/8 pt-4">
-          <button
-            type="button"
-            onClick={restart}
-            className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted hover:text-forest-900"
-          >
+          <button type="button" onClick={restart} className="inline-flex items-center gap-1.5 text-[10px] font-medium text-muted hover:text-forest-900">
             <RotateCcw size={11} /> Reset
           </button>
           <Button type="button" size="sm" onClick={next} disabled={!answered}>
-            {index + 1 >= quizQuestions.length ? (
-              <>
-                See results <Trophy size={13} />
-              </>
+            {index + 1 >= questions.length ? (
+              <>See results <Trophy size={13} /></>
             ) : (
-              <>
-                Next question <ArrowRight size={13} />
-              </>
+              <>Next question <ArrowRight size={13} /></>
             )}
           </Button>
         </div>
       </div>
 
       <p className="mt-3 text-center text-[9px] text-muted">
-        {toBn(quizQuestions.length)} questions on books, authors and history · every correct answer is{" "}
-        <Link href="/books" className="font-semibold text-clay-600">a chance to learn something new</Link>
+        {toBn(questions.length)} questions · {quiz.description || "Test your reading knowledge"}
+        {!signedIn && (
+          <>
+            {" · "}
+            <Link href="/login?callbackUrl=/quiz" className="font-semibold text-clay-600">Sign in to appear on the leaderboard</Link>
+          </>
+        )}
       </p>
     </div>
   );

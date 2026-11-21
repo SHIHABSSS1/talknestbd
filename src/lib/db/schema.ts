@@ -508,3 +508,176 @@ export const audioChapters = pgTable(
 
 export type AudiobookRow = typeof audiobooks.$inferSelect;
 export type AudioChapterRow = typeof audioChapters.$inferSelect;
+
+/**
+ * Video & quiz catalogue.
+ *
+ * `video-quiz` page copy stays in content_blocks('video-quiz'); the episodes,
+ * quizzes, questions, attempts and discussions are relational because the
+ * admin panel needs real CRUD, the leaderboard needs aggregation and replies
+ * need threading. A video is either a validated YouTube id or a locally
+ * uploaded file under uploads/video, never a raw iframe string from a client.
+ */
+export const videos = pgTable(
+  "videos",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    category: text("category").notNull().default("Interview"),
+    host: text("host").notNull().default("TalkNest"),
+    episode: integer("episode").notNull().default(0),
+    duration: text("duration").notNull().default("—"),
+    views: text("views").notNull().default("0"),
+    /** A /media URL or an approved remote image URL. */
+    thumbnail: text("thumbnail").notNull().default(""),
+    /** "youtube" | "upload" — decided by the server, never by the browser. */
+    source: text("source").notNull().default("youtube"),
+    /** Normalised 11-character YouTube id (only when source = youtube). */
+    youtubeId: text("youtube_id"),
+    /** /media/video/<hash>.mp4 (only when source = upload). */
+    videoUrl: text("video_url"),
+    featured: boolean("featured").notNull().default(false),
+    status: text("status").notNull().default("published"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("videos_status_created_idx").on(table.status, table.createdAt),
+    index("videos_category_idx").on(table.category),
+    index("videos_featured_idx").on(table.featured),
+  ],
+);
+
+export const quizzes = pgTable(
+  "quizzes",
+  {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    category: text("category").notNull().default("General"),
+    instructions: text("instructions").notNull().default(""),
+    /** "book" | "watch" | "general" — used by the storefront tabs. */
+    type: text("type").notNull().default("book"),
+    /** Optional video this quiz belongs to (the Watch & Quiz shelf). */
+    videoId: text("video_id").references(() => videos.id, { onDelete: "set null" }),
+    durationMinutes: integer("duration_minutes").notNull().default(0),
+    featured: boolean("featured").notNull().default(false),
+    status: text("status").notNull().default("published"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("quizzes_status_created_idx").on(table.status, table.createdAt),
+    index("quizzes_type_idx").on(table.type),
+    index("quizzes_video_id_idx").on(table.videoId),
+  ],
+);
+
+export const quizQuestions = pgTable(
+  "quiz_questions",
+  {
+    id: text("id").primaryKey(),
+    quizId: text("quiz_id")
+      .notNull()
+      .references(() => quizzes.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    question: text("question").notNull(),
+    options: jsonb("options").$type<string[]>().notNull(),
+    answerIndex: integer("answer_index").notNull(),
+    explanation: text("explanation").notNull().default(""),
+    marks: integer("marks").notNull().default(1),
+  },
+  (table) => [index("quiz_questions_quiz_idx").on(table.quizId)],
+);
+
+/**
+ * One row per completed quiz attempt. The leaderboard aggregates the best row
+ * per (user, quiz); the score is always recomputed on the server from the
+ * stored questions — a client never submits a score.
+ */
+export const quizAttempts = pgTable(
+  "quiz_attempts",
+  {
+    id: text("id").primaryKey(),
+    quizId: text("quiz_id")
+      .notNull()
+      .references(() => quizzes.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    score: integer("score").notNull(),
+    totalMarks: integer("total_marks").notNull(),
+    percentage: integer("percentage").notNull(),
+    /** Selected option index per question, stored for the result review. */
+    answers: jsonb("answers").$type<number[]>().notNull().default([]),
+    seconds: integer("seconds").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("quiz_attempts_quiz_score_idx").on(table.quizId, table.score),
+    index("quiz_attempts_user_created_idx").on(table.userId, table.createdAt),
+  ],
+);
+
+/** Threaded, moderated discussion shared by videos and quizzes. */
+export const discussions = pgTable(
+  "discussions",
+  {
+    id: text("id").primaryKey(),
+    /** "video" | "quiz". */
+    target: text("target").notNull(),
+    /** Video id or quiz id. */
+    targetId: text("target_id").notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    /** Snapshot of the author name so a deleted account keeps its comments. */
+    userName: text("user_name").notNull(),
+    userImage: text("user_image"),
+    body: text("body").notNull(),
+    parentId: text("parent_id"),
+    /** Set by the server from the session — a client cannot claim admin. */
+    isAdmin: boolean("is_admin").notNull().default(false),
+    /** "visible" | "hidden" — hidden rows are still visible in the admin panel. */
+    status: text("status").notNull().default("visible"),
+    likes: integer("likes").notNull().default(0),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("discussions_target_idx").on(table.target, table.targetId, table.createdAt),
+    index("discussions_parent_idx").on(table.parentId),
+  ],
+);
+
+/** One like per reader per comment — prevents infinite like spam. */
+export const discussionLikes = pgTable(
+  "discussion_likes",
+  {
+    discussionId: text("discussion_id")
+      .notNull()
+      .references(() => discussions.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [primaryKey({ columns: [table.discussionId, table.userId] })],
+);
+
+export type VideoRow = typeof videos.$inferSelect;
+export type QuizRow = typeof quizzes.$inferSelect;
+export type QuizQuestionRow = typeof quizQuestions.$inferSelect;
+export type QuizAttemptRow = typeof quizAttempts.$inferSelect;
+export type DiscussionRow = typeof discussions.$inferSelect;

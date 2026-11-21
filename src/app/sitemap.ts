@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site-url";
+import { getPublishedVideos } from "@/lib/db/queries/video-quiz";
 
 /** Storefront routes only — admin and account pages are intentionally omitted. */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+  const publishedVideos = await getPublishedVideos();
   const routes = [
     "",
     "/about",
@@ -37,7 +39,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/terms",
     "/return-policy",
   ];
-  return routes.map((path) => ({
+  const videoRoutes = publishedVideos.map((video) => `/videos/${video.slug}`);
+  return [...routes, ...videoRoutes].map((path) => ({
     url: `${SITE_URL}${path || "/"}`,
     lastModified: now,
     changeFrequency: path === "" ? "daily" : "weekly",
